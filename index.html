@@ -1,0 +1,591 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Slice by Slice</title>
+  <meta name="claude:viewport-fit-sides" content="cover">
+  <meta name="description" content="Interactive RTLE review of CT image reconstruction (back projection, convolution, filtered back projection, Fourier transformation, helical interpolation, iterative reconstruction) and the three 3D MPR algorithms (MIP, SSD, SVD).">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Literata:opsz,wght@7..72,400;7..72,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<a class="skip" href="#basics">Skip to content</a>
+
+<div class="bar">
+  <div class="bar-in">
+    <a class="brand" href="#top">Slice by Slice</a>
+    <nav aria-label="Sections">
+      <a href="#basics">Start</a>
+      <a href="#mpr">3D MPR</a>
+      <a href="#math">Reconstruction</a>
+      <a href="#quiz">Self-check</a>
+      <a href="#summary">Summary</a>
+    </nav>
+  </div>
+</div>
+
+<header class="mast" id="top">
+  <div class="mast-text">
+    <h1>Slice by Slice</h1>
+    <p class="sub">A hands-on review of how a CT scanner turns its measurements into an image, and how that image becomes 3D. Built for the RTLE from Cluster 5, Computed Tomography, by Asst. Prof. Meynard Y. Castro, RRT, MSRT.</p>
+    <p class="how">You can touch and change everything on this page. <b>New to the topic? Start with "Start here".</b> Words with a <a class="term" href="#g-term">dotted underline</a> show their meaning when you tap them. Each topic ends with a quick check, and there is a printable summary at the end.</p>
+  </div>
+  <ol class="protocol" aria-label="Contents">
+    <li><a href="#basics"><b>Start</b><span>Start here</span><small>How CT works in plain words · Words to know</small></a></li>
+    <li><a href="#mpr"><b>Part A</b><span>Three 3D MPR algorithms</span><small>MIP · SSD · SVD</small></a></li>
+    <li><a href="#math"><b>Part B</b><span>Mathematical algorithms</span><small>Back projection · Convolution · Filtered back projection · Fourier transformation · Helical interpolation · Iterative reconstruction · Scanner bench</small></a></li>
+    <li><a href="#quiz"><b>Part C</b><span>Self-check</span><small>All board-style questions</small></a></li>
+    <li><a href="#summary"><b>Part D</b><span>Last-minute summary</span><small>Printable</small></a></li>
+  </ol>
+</header>
+
+<main>
+
+<!-- ================= START HERE ================= -->
+<section id="basics" class="part">
+  <h2><span class="pn">0</span>Start here</h2>
+
+  <article class="algo first">
+    <h3>How a CT scan works, in plain words</h3>
+    <ol class="steps">
+      <li>The patient lies on a table that slides into the <a class="term" href="#g-gantry">gantry</a>, the big ring-shaped part of the scanner.</li>
+      <li>Inside the ring, an <a class="term" href="#g-tube">x-ray tube</a> spins around the patient. Directly across from it, <a class="term" href="#g-detector">detectors</a> measure how much x-ray made it through the body.</li>
+      <li>Every thin line of x-rays from the tube to the detector is called a <a class="term" href="#g-ray">ray</a>. Dense things like bone block more x-ray than soft things like fat, so less reaches the detector. This weakening of the beam is called <a class="term" href="#g-attenuation">attenuation</a>.</li>
+      <li>All the rays measured from one angle make one <a class="term" href="#g-profile">attenuation profile</a> (also called a projection). It is a row of numbers, like a shadow of the body. The tube collects hundreds of these from different angles.</li>
+      <li>Together, all these measurements are the <a class="term" href="#g-raw">raw data</a>. They are numbers, not a picture yet.</li>
+      <li>A computer follows a <a class="term" href="#g-algorithm">reconstruction algorithm</a> (a step-by-step math recipe) to turn the raw data into <a class="term" href="#g-image">image data</a>: a grid (<a class="term" href="#g-matrix">matrix</a>) of tiny squares called <a class="term" href="#g-pixel">pixels</a>. Each pixel holds a <a class="term" href="#g-hu">CT number</a> that says how dense that spot is.</li>
+      <li>Stack many slices and you get a 3D block of tiny cubes called <a class="term" href="#g-voxel">voxels</a>. Other algorithms turn that block into 3D pictures.</li>
+    </ol>
+
+    <div class="map">
+      <div><small>Part B · comes first in the scanner</small><b>Mathematical algorithms</b><span>Raw data → one slice image. This is how the image is <i>built</i>.</span></div>
+      <div><small>Part A · comes after</small><b>3D MPR algorithms</b><span>Stack of slices → 3D view. This is how finished images are <i>shown in 3D</i>.</span></div>
+    </div>
+    <p class="lead">The lecture covers 3D first, so this page does too. If you prefer to follow the order the scanner works in, read Part B first. Both orders work.</p>
+  </article>
+
+  <article class="algo">
+    <h3>The CT number scale (HU)</h3>
+    <p class="lead">Every pixel gets a number in <a class="term" href="#g-hu">Hounsfield units (HU)</a>. Water is set to 0. Anything denser than water is positive, anything less dense is negative. You will use this scale in Part A.</p>
+    <ul class="hu" aria-label="Typical CT numbers">
+      <li style="--c:#000"><b>−1000</b>Air</li>
+      <li style="--c:#3a3a3a"><b>−100</b>Fat</li>
+      <li style="--c:#6e6e6e"><b>0</b>Water</li>
+      <li style="--c:#8c8c8c"><b>+40</b>Soft tissue, organs</li>
+      <li style="--c:#b8b8b8"><b>+200 to +400</b>Vessels filled with contrast</li>
+      <li style="--c:#f2f2f2"><b>+400 to +1000</b>Bone</li>
+    </ul>
+    <p class="lead">Higher number = denser = brighter on the image.</p>
+  </article>
+
+  <article class="algo" id="words">
+    <h3>Words to know</h3>
+    <p class="lead">Read these once now. You don't have to memorize them, because every underlined word on the page links back here.</p>
+
+    <div class="gloss">
+      <div>
+        <h4>The scanner</h4>
+        <dl>
+          <dt id="g-term">Dotted-underline word</dt><dd>Like this one. Tap any of them to see what it means.</dd>
+          <dt id="g-ct">CT (computed tomography)</dt><dd>An x-ray exam where a computer builds cross-section pictures ("slices") of the body from many x-ray measurements taken around the patient.</dd>
+          <dt id="g-gantry">Gantry</dt><dd>The ring-shaped part of the scanner. The x-ray tube and detectors spin around inside it.</dd>
+          <dt id="g-tube">X-ray tube</dt><dd>The part that produces the x-ray beam. It circles the patient during the scan.</dd>
+          <dt id="g-detector">Detector</dt><dd>Sits opposite the tube and measures how much x-ray came out the other side of the patient.</dd>
+          <dt id="g-ray">Ray</dt><dd>One thin line of x-rays going from the tube, through the patient, to one detector element.</dd>
+          <dt id="g-helical">Helical (spiral) scanning</dt><dd>Scanning while the table keeps moving. The tube's path around the patient becomes a spiral (a helix), like the line on a spring.</dd>
+          <dt id="g-dose">Dose</dt><dd>How much radiation the patient receives. Lower dose is safer but the image gets grainier (more noise).</dd>
+        </dl>
+      </div>
+      <div>
+        <h4>Data and images</h4>
+        <dl>
+          <dt id="g-attenuation">Attenuation</dt><dd>How much the x-ray beam is weakened as it passes through something. Bone attenuates a lot, air almost nothing.</dd>
+          <dt id="g-raysum">Ray sum</dt><dd>The total attenuation along one ray, meaning every value it passed through added together. The scanner only ever knows these totals, never the values inside.</dd>
+          <dt id="g-profile">Attenuation profile (projection)</dt><dd>All the ray sums measured from one angle, side by side. It looks like a row of bars, a kind of "shadow" of the body from that direction.</dd>
+          <dt id="g-raw">Raw data</dt><dd>The measurements straight from the detectors, before any image exists.</dd>
+          <dt id="g-sinogram">Sinogram</dt><dd>A picture of the raw data: every attenuation profile stacked as one row, one row per angle. It looks like wavy stripes, not like a body.</dd>
+          <dt id="g-image">Image data</dt><dd>The finished picture after reconstruction: pixels with CT numbers.</dd>
+          <dt id="g-algorithm">Algorithm</dt><dd>A set of step-by-step rules for getting a specific output from a specific input. Like a recipe, but for a computer.</dd>
+          <dt id="g-recon">Reconstruction</dt><dd>The process of turning raw data into image data.</dd>
+          <dt id="g-matrix">Matrix</dt><dd>The grid of rows and columns that makes up the image, for example 512 × 512 boxes.</dd>
+          <dt id="g-pixel">Pixel</dt><dd>One box in the matrix (2D, flat).</dd>
+          <dt id="g-voxel">Voxel</dt><dd>A pixel with thickness: one tiny cube of the patient's tissue. A pixel is what you see; a voxel is the piece of the body it stands for.</dd>
+          <dt id="g-hu">CT number / Hounsfield unit (HU)</dt><dd>The number stored in each pixel that tells how dense that tissue is. Water = 0, air = −1000, bone about +400 to +1000 or more.</dd>
+          <dt id="g-range">Operator-selected pixel range</dt><dd>A range of CT numbers that the person running the scanner chooses, for example 200 to 1200 HU. Only values inside the range are used.</dd>
+          <dt id="g-slice">Axial slice</dt><dd>A cross-section image cut straight across the body, as if slicing bread.</dd>
+          <dt id="g-postacq">Post-acquisition</dt><dd>Done after the scan is finished, using data already collected.</dd>
+        </dl>
+      </div>
+      <div>
+        <h4>3D and exams</h4>
+        <dl>
+          <dt id="g-mpr">MPR (multiplanar reformation)</dt><dd>Re-arranging the stack of slices to view the body in other directions or in 3D, without scanning again.</dd>
+          <dt id="g-render">Volume rendering</dt><dd>Showing the whole 3D block of voxels at once, partly see-through, so it looks like a real 3D object.</dd>
+          <dt id="g-contrast">Contrast medium</dt><dd>A dye (usually iodine) injected into the patient so blood vessels and some organs show up bright.</dd>
+          <dt id="g-cta">CT angiography (CTA)</dt><dd>A CT scan of blood vessels, done with contrast medium.</dd>
+          <dt id="g-vc">Virtual colonoscopy</dt><dd>Using CT to "fly through" the inside of the colon on screen, instead of putting a camera inside it.</dd>
+        </dl>
+        <h4>Image quality</h4>
+        <dl>
+          <dt id="g-artifact">Artifact</dt><dd>Anything on the image that is not really in the patient: a mistake made by the scanner or the math.</dd>
+          <dt id="g-star">Star pattern</dt><dd>The artifact of simple back projection: spokes or a halo of lines around bright objects.</dd>
+          <dt id="g-streak">Streak artifact</dt><dd>Bright or dark lines across the image, often coming from metal, motion or too little x-ray.</dd>
+          <dt id="g-noise">Noise</dt><dd>Grainy, speckled look on the image. It gets worse when the dose is lower or when edges are sharpened.</dd>
+          <dt id="g-spatial">Spatial resolution</dt><dd>How well the image shows tiny details and sharp edges as separate things.</dd>
+          <dt id="g-contrastres">Contrast resolution</dt><dd>How well the image shows tissues that are only slightly different in density.</dd>
+          <dt id="g-cnr">CNR (contrast-to-noise ratio)</dt><dd>How clearly a structure stands out compared with the graininess around it. Higher is better.</dd>
+          <dt id="g-photon">Photon starvation</dt><dd>Too few x-rays reach the detector (for example through both shoulders), which causes streaks.</dd>
+        </dl>
+      </div>
+      <div>
+        <h4>Processing words</h4>
+        <dl>
+          <dt id="g-filter">Filter (kernel)</dt><dd>A math formula that changes the numbers in an attenuation profile, either to smooth them or to sharpen edges.</dd>
+          <dt id="g-convolution">Convolution</dt><dd>Applying a filter to the raw data. Each value is changed based on its neighbours.</dd>
+          <dt id="g-deconv">Deconvolution</dt><dd>The reverse process: returning pixel values to their original level.</dd>
+          <dt id="g-bp">Back projection</dt><dd>Taking each ray sum and spreading ("smearing") it back across the image along the path it came from, then adding everything up.</dd>
+          <dt id="g-interp">Interpolation</dt><dd>Estimating a missing value from the known values on either side of it.</dd>
+          <dt id="g-iter">Iteration</dt><dd>One round of a repeat. Iterative = done again and again, getting a bit better each time.</dd>
+          <dt id="g-fourier">Fourier transformation</dt><dd>A math method that splits one complicated wave into simple waves of different frequencies.</dd>
+          <dt id="g-frequency">Frequency</dt><dd>How fast a wave goes up and down. A high-frequency sound is a high-pitched sound.</dd>
+          <dt id="g-gpu">GPU</dt><dd>A powerful computer chip built for heavy math. Iterative reconstruction needs it.</dd>
+        </dl>
+      </div>
+    </div>
+  </article>
+
+  <div class="check"><p class="ctl-title">Quick check · the basics</p><div class="quiz" data-topic="basics" data-n="3"></div></div>
+</section>
+
+<!-- ================= PART A ================= -->
+<section id="mpr" class="part">
+  <h2><span class="pn">A</span>Three 3D MPR algorithms</h2>
+  <p class="intro">After the scan you have a stack of flat slices. Stacked together they make a 3D block of <a class="term" href="#g-voxel">voxels</a>, each with a <a class="term" href="#g-hu">CT number</a>. To show the block as one 3D picture, the computer looks through it along many lines of sight, one for each dot on your screen. For each line it has to decide what to show. <b>MIP, SSD and SVD are three different rules for that decision.</b></p>
+  <ol class="steps compact">
+    <li>Pick an algorithm: MIP, SSD or SVD.</li>
+    <li>Drag the image to turn the body around.</li>
+    <li>Tap any spot. The graph shows every CT number along that line of sight, from front to back, and what the algorithm does with them.</li>
+  </ol>
+  <p class="lead">The scan below is a simulated abdomen with spine, ribs, a <a class="term" href="#g-contrast">contrast</a>-filled aorta and kidneys.</p>
+
+  <div class="lab lab-vol">
+    <figure class="film">
+      <canvas id="vol" width="150" height="150" aria-label="3D rendering of a simulated abdominal CT volume. Drag to rotate, tap to inspect a ray."></canvas>
+      <figcaption>Drag to rotate. Tap a spot to follow its line of sight.</figcaption>
+    </figure>
+
+    <div class="panel">
+      <div class="seg" role="group" aria-label="3D algorithm" id="volMode">
+        <button data-m="mip" aria-pressed="true">MIP</button>
+        <button data-m="ssd" aria-pressed="false">SSD</button>
+        <button data-m="svd" aria-pressed="false">SVD</button>
+      </div>
+
+      <div id="rangeBox" class="rangebox" hidden>
+        <p class="ctl-title">Operator-selected pixel range</p>
+        <p class="hint">Only CT numbers between these two limits are used. Try the presets first.</p>
+        <div class="presets" role="group" aria-label="Range presets">
+          <button data-lo="600" data-hi="1200">Bone</button>
+          <button data-lo="200" data-hi="1200">Vessels + bone</button>
+          <button data-lo="-400" data-hi="1200">Skin surface</button>
+        </div>
+        <label class="ctl" for="lo">Lower limit <output id="loOut">200 HU</output></label>
+        <input type="range" id="lo" min="-600" max="1000" step="10" value="200">
+        <label class="ctl" for="hi">Upper limit <output id="hiOut">1200 HU</output></label>
+        <input type="range" id="hi" min="-400" max="1200" step="10" value="1200">
+      </div>
+
+      <div class="probe">
+        <p class="ctl-title">One line of sight, front to back</p>
+        <canvas id="probe" width="560" height="220" aria-label="Chart of CT numbers along the selected ray"></canvas>
+        <p id="probeNote" class="probe-note"></p>
+      </div>
+    </div>
+
+    <aside class="notes" id="volNotes" aria-live="polite"></aside>
+  </div>
+
+  <div class="tablewrap">
+    <table class="compare">
+      <caption>Side by side</caption>
+      <thead><tr><th scope="col"></th><th scope="col">MIP</th><th scope="col">SSD</th><th scope="col">SVD</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">Full name</th><td>Maximum intensity projection</td><td>Shaded surface display</td><td>Shaded volume display</td></tr>
+        <tr><th scope="row">In plain words</th><td>Shows only the <b>brightest</b> thing on each line of sight</td><td>Shows only the <b>outer surface</b> of what you picked, like a solid plastic model</td><td>Shows <b>everything</b> in the range, partly see-through, like a glass model</td></tr>
+        <tr><th scope="row">Rule per ray</th><td>Keep the <b>highest value</b> pixel along the line</td><td>Keep only a <b>narrow range of values</b> as the object and show its surface</td><td>Blend <b>every voxel</b> inside the selected range</td></tr>
+        <tr><th scope="row">Looks</th><td>Flat, like an x-ray film</td><td>Solid shaded shell</td><td>Very 3D (<a class="term" href="#g-render">volume rendered</a>)</td></tr>
+        <tr><th scope="row">Board cue</th><td>Simplest 3D. <a class="term" href="#g-cta">CT angiography</a>.</td><td>Computer-aided. Bone imaging, <a class="term" href="#g-vc">virtual colonoscopy</a>.</td><td>Very sensitive to the <a class="term" href="#g-range">operator-selected pixel range</a>.</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="check"><p class="ctl-title">Quick check · 3D algorithms</p><div class="quiz" data-topic="mpr" data-n="3"></div></div>
+</section>
+
+<!-- ================= PART B ================= -->
+<section id="math" class="part">
+  <h2><span class="pn">B</span>Mathematical algorithms</h2>
+  <p class="intro">The scanner never takes a picture directly. It only collects numbers (<a class="term" href="#g-raw">raw data</a>). A reconstruction <a class="term" href="#g-algorithm">algorithm</a> is a set of rules or directions for getting a specific output from a specific input. Here the input is raw data and the output is an image. In the lecture's words, it <b>solves a mathematical problem</b>.</p>
+  <div class="ipo" aria-label="Input, process, output">
+    <div><small>Input</small><b>Raw data</b></div>
+    <div><small>Process</small><b>Software (formula)</b></div>
+    <div><small>Output</small><b>Image data</b></div>
+  </div>
+  <p class="lead">Go through the topics in order. Each one builds on the one before it. At the end, the scanner bench puts them all together.</p>
+
+  <!-- Back projection -->
+  <article class="algo" id="bp">
+    <h3>Back projection</h3>
+    <div class="split">
+      <div class="work">
+        <p class="lead">The scanner never sees the values inside the patient. It only sees <a class="term" href="#g-raysum">ray sums</a>, the total of everything each ray passed through. Back projection works backwards: it takes each total, <b>spreads it back along the path of its ray</b>, and adds up all the spreads.</p>
+        <p class="lead">This is the worked example from the lecture. The object is a tiny 2 × 2 <a class="term" href="#g-matrix">matrix</a> with the values 1, 2, 3, 4. The scanner measures it from four directions. Press <b>Next step</b> to watch the matrix fill up.</p>
+        <div class="bpfig">
+          <figure><svg id="bpRays" viewBox="0 0 240 230" role="img" aria-label="Object with the current set of rays"></svg><figcaption>Object and the rays being measured</figcaption></figure>
+          <figure><div class="mat" id="bpMat"></div><figcaption id="bpLabel">Running total</figcaption></figure>
+        </div>
+        <div class="stepper">
+          <button id="bpPrev">Back</button>
+          <button id="bpNext" class="primary">Next step</button>
+          <span id="bpCount" class="count"></span>
+        </div>
+        <p class="steptext" id="bpText" aria-live="polite"></p>
+      </div>
+      <aside class="notes">
+        <h4>Board points</h4>
+        <ul>
+          <li>Also called the <b>summation</b> or <b>linear superposition</b> method. Both names just mean "adding layers on top of each other".</li>
+          <li>Oldendorf (1961) and Kuhl and Edwards (1963)</li>
+          <li>Converts data from the <a class="term" href="#g-profile">attenuation profile</a> into a matrix</li>
+          <li>Sums all back-projected images to form the CT image</li>
+          <li>Does not produce a sharp image. <b>Not used in clinical CT.</b></li>
+          <li><a class="term" href="#g-artifact">Artifact</a>: the typical <a class="term" href="#g-star"><b>star pattern</b></a></li>
+          <li>One back projection reveals little. Many back projections make the image look like the object.</li>
+        </ul>
+      </aside>
+    </div>
+    <div class="check"><p class="ctl-title">Quick check · back projection</p><div class="quiz" data-topic="bp" data-n="3"></div></div>
+  </article>
+
+  <!-- Convolution -->
+  <article class="algo" id="conv">
+    <h3>Convolution</h3>
+    <div class="split">
+      <div class="work">
+        <p class="lead">Back projection alone gives a blurry image. To fix that, the scanner changes the numbers first. A <a class="term" href="#g-filter">convolution filter</a> is a math formula that changes an <a class="term" href="#g-profile">attenuation profile</a> <b>before</b> it is back projected. Think of a photo filter: one kind smooths things out, another sharpens edges.</p>
+        <p class="lead">The bars below are one profile across a structure with sharp edges. Pick a filter and compare it with the dashed original.</p>
+        <div class="seg" role="group" aria-label="Filter" id="convSeg">
+          <button data-c="raw" aria-pressed="true">No filter</button>
+          <button data-c="smooth" aria-pressed="false">Smoothing</button>
+          <button data-c="sharp" aria-pressed="false">Edge enhancing</button>
+        </div>
+        <svg id="convSvg" viewBox="0 0 420 190" role="img" aria-label="Attenuation profile bars"></svg>
+        <p class="steptext" id="convText" aria-live="polite"></p>
+        <div class="tablewrap">
+          <table class="compare small">
+            <thead><tr><th scope="col">Smoothing filter</th><th scope="col">Edge-enhancing filter</th></tr></thead>
+            <tbody>
+              <tr><td>Reduces the difference between adjacent (side-by-side) pixels</td><td>Accentuates (exaggerates) the difference between neighboring pixels</td></tr>
+              <tr><td>Low <a class="term" href="#g-contrastres">contrast resolution</a>, low <a class="term" href="#g-spatial">spatial resolution</a></td><td>High spatial resolution, high contrast resolution</td></tr>
+              <tr><td>Image smoothing: <b>soft tissue</b></td><td>Edge enhancement: <b>bone</b></td></tr>
+              <tr><td>Low <a class="term" href="#g-noise">noise</a>, more blurred</td><td>Low blurring, high noise</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <aside class="notes">
+        <h4>Board points</h4>
+        <ul>
+          <li>A digital image processing technique</li>
+          <li>Applies a filter to an attenuation profile, changing pixel values with a formula</li>
+          <li>Used to <b>minimize <a class="term" href="#g-streak">streak artifacts</a></b></li>
+          <li>Applied <b>only to raw data</b>, not image data</li>
+          <li><a class="term" href="#g-deconv"><b>Deconvolution</b></a> is the reverse: it returns pixel values to their original level</li>
+        </ul>
+        <p class="tryit">Memory trick: <b>smooth = soft tissue</b>, <b>sharp = skeleton</b>.</p>
+      </aside>
+    </div>
+    <div class="check"><p class="ctl-title">Quick check · convolution</p><div class="quiz" data-topic="conv" data-n="3"></div></div>
+  </article>
+
+  <!-- FBP -->
+  <article class="algo" id="fbp">
+    <h3>Filtered back projection</h3>
+    <div class="split">
+      <div class="work">
+        <p class="formula"><span>Convolution</span><i>+</i><span>Back projection</span><i>=</i><span class="hl">Filtered back projection</span></p>
+        <p class="lead">Filtered back projection (FBP) puts the last two topics together: <b>filter each profile first, then back project it.</b></p>
+        <p class="lead">Below, one small dot is scanned. <b>Left:</b> plain back projection. Each smear runs right across the image, so spokes stick out of the dot. <b>Right:</b> each profile is filtered first. The filter adds small negative values beside every edge, and when those are smeared back they cancel the spokes. Slide the number of projections up and watch.</p>
+        <div class="pair">
+          <figure class="film"><canvas id="dotBP" width="141" height="141" aria-label="Simple back projection of a dot"></canvas><figcaption>Back projection</figcaption></figure>
+          <figure class="film"><canvas id="dotFBP" width="141" height="141" aria-label="Filtered back projection of a dot"></canvas><figcaption>Filtered back projection</figcaption></figure>
+        </div>
+        <label class="ctl" for="dotN">Number of projections <output id="dotOut">3</output></label>
+        <input type="range" id="dotN" min="1" max="72" value="3">
+        <p class="steptext" id="dotText" aria-live="polite"></p>
+      </div>
+      <aside class="notes">
+        <h4>Board points</h4>
+        <ul>
+          <li>Also called the <b>convolution method</b>: the projection profile is convolved (filtered)</li>
+          <li><b>Advantage:</b> removes the star-like blurring of simple back projection</li>
+          <li><b>Disadvantage:</b> <a class="term" href="#g-noise">noise</a> and <a class="term" href="#g-streak">streak artifacts</a></li>
+        </ul>
+      </aside>
+    </div>
+    <div class="check"><p class="ctl-title">Quick check · filtered back projection</p><div class="quiz" data-topic="fbp" data-n="2"></div></div>
+  </article>
+
+  <!-- Fourier -->
+  <article class="algo" id="fourier">
+    <h3>Fourier transformation</h3>
+    <div class="split">
+      <div class="work">
+        <p class="lead"><a class="term" href="#g-fourier">Fourier transformation</a> splits one complicated wave into simple waves, each with its own <a class="term" href="#g-frequency">frequency</a>. Later, the simple waves can be added back together to rebuild the original.</p>
+        <p class="lead">The lecture compares it to hearing. A sound reaching your ear is one complicated wave. Your ear separates it into simple waves, and your brain puts them back together so you hear the original sound. Turn the waves on and off below, then listen.</p>
+        <div class="seg" role="group" aria-label="Component waves" id="waveSeg">
+          <button data-w="0" aria-pressed="true">Low wave</button>
+          <button data-w="1" aria-pressed="true">Middle wave</button>
+          <button data-w="2" aria-pressed="true">High wave</button>
+        </div>
+        <canvas id="waves" width="640" height="300" aria-label="A complex wave and its simple component waves"></canvas>
+        <div class="stepper"><button id="playBtn" class="primary">Play the sound</button><span class="count" id="playNote">Turn your volume down first.</span></div>
+        <ol class="hearing">
+          <li>Incoming sound waves</li><li>Ear</li><li>Separated into different signals</li><li>Intensities</li><li>Brain</li><li>Rearranged</li><li>Perception of the original sound</li>
+        </ol>
+      </div>
+      <aside class="notes">
+        <h4>Board points</h4>
+        <ul>
+          <li>Used to reconstruct images of the patient's anatomy in <b>MRI</b></li>
+          <li><b>Not used in modern CT scanners</b></li>
+          <li>Analogy: the <b>act of hearing</b></li>
+        </ul>
+      </aside>
+    </div>
+    <div class="check"><p class="ctl-title">Quick check · Fourier transformation</p><div class="quiz" data-topic="fourier" data-n="2"></div></div>
+  </article>
+
+  <!-- Helical -->
+  <article class="algo" id="helical">
+    <h3>Helical interpolation</h3>
+    <div class="split">
+      <div class="work">
+        <p class="lead">In <a class="term" href="#g-helical">helical scanning</a> the table keeps moving while the tube spins, so the tube draws a spiral around the patient instead of flat circles. That means <b>no complete flat slice is ever measured</b>.</p>
+        <p class="lead"><a class="term" href="#g-interp">Interpolation</a> fills the gap: it estimates a missing value from the two known values on either side. Below, the spiral is "unrolled" flat, so it becomes slanted lines. Across is the tube angle, up is the table position. Move the slider to choose where the flat slice goes. For each angle, the scanner takes the real measurement just below the slice and the one just above it (one full 360° turn later) and estimates the value in between. This is <b>360° linear interpolation</b>.</p>
+        <canvas id="helix" width="680" height="320" aria-label="Unrolled helical scan path with an interpolated slice"></canvas>
+        <label class="ctl" for="zPos">Where to place the slice <output id="zOut"></output></label>
+        <input type="range" id="zPos" min="0" max="100" value="50">
+        <p class="steptext" id="helixText" aria-live="polite"></p>
+      </div>
+      <aside class="notes">
+        <h4>Board points</h4>
+        <ul>
+          <li>A mathematical method of <b>creating missing data</b></li>
+          <li>Estimates an unknown value from known values</li>
+          <li><b>Linear interpolation:</b> the unknown point falls on a straight line between two known points (A = 5, C = 15, so B = 10)</li>
+          <li>Used to <b>straighten up the sectional image</b></li>
+          <li>A <a class="term" href="#g-postacq"><b>post-acquisition</b></a> algorithm applied to the data set</li>
+          <li>The 1st algorithm used <b>360° linear interpolation</b>. Disadvantage: <b>prominent blurring</b>.</li>
+        </ul>
+      </aside>
+    </div>
+    <div class="check"><p class="ctl-title">Quick check · helical interpolation</p><div class="quiz" data-topic="helical" data-n="3"></div></div>
+  </article>
+
+  <!-- Iterative -->
+  <article class="algo" id="iterative">
+    <h3>Iterative reconstruction</h3>
+    <div class="split">
+      <div class="work">
+        <p class="lead"><a class="term" href="#g-iter">Iterative</a> means "repeated". Iterative reconstruction is <b>guess and check</b>:</p>
+        <ol class="steps compact">
+          <li>Start with a guess where every box in the matrix has the same value.</li>
+          <li>Work out what the scanner <i>would</i> have measured if that guess were true.</li>
+          <li>Compare it with what the scanner <i>really</i> measured.</li>
+          <li>Correct the guess, then repeat until they match.</li>
+        </ol>
+        <p class="lead">Same 1, 2, 3, 4 object as in back projection. Press <b>Next step</b>.</p>
+        <div class="bpfig">
+          <figure><svg id="irRays" viewBox="0 0 240 230" role="img" aria-label="Measured ray sums compared with the current guess"></svg><figcaption>Measured vs guessed ray sums</figcaption></figure>
+          <figure><div class="mat" id="irMat"></div><figcaption id="irLabel">Current guess</figcaption></figure>
+        </div>
+        <div class="stepper">
+          <button id="irPrev">Back</button>
+          <button id="irNext" class="primary">Next step</button>
+          <span id="irCount" class="count"></span>
+        </div>
+        <p class="steptext" id="irText" aria-live="polite"></p>
+      </div>
+      <aside class="notes">
+        <h4>Board points</h4>
+        <ul>
+          <li>Starts by assuming <b>all points in the matrix have the same value</b></li>
+          <li>Performed <b>after obtaining all projection data sets</b></li>
+          <li><b>Advantages:</b> reduces image <a class="term" href="#g-noise">noise</a> (primary), low patient <a class="term" href="#g-dose">dose</a> (primary), improves <a class="term" href="#g-cnr">CNR</a>, minimal streak artifacts (metal, motion, <a class="term" href="#g-photon">photon starvation</a>)</li>
+          <li><b>Disadvantages:</b> needs high computing power (<a class="term" href="#g-gpu">GPUs</a>), computationally intensive, slower reconstruction</li>
+        </ul>
+      </aside>
+    </div>
+    <div class="check"><p class="ctl-title">Quick check · iterative reconstruction</p><div class="quiz" data-topic="iter" data-n="3"></div></div>
+  </article>
+
+  <!-- Scanner lab -->
+  <article class="algo" id="scanner">
+    <h3>Putting it together: the scanner bench</h3>
+    <p class="lead">Now see everything on a realistic slice. The three black panels are:</p>
+    <ol class="steps compact">
+      <li><b>Gantry:</b> the tube and detector going around the patient, with the <a class="term" href="#g-profile">attenuation profile</a> measured at each angle.</li>
+      <li><b>Raw data:</b> each profile stacked as one row of the <a class="term" href="#g-sinogram">sinogram</a>.</li>
+      <li><b>Image data:</b> the picture being rebuilt from the raw data.</li>
+    </ol>
+    <div class="guide">
+      <p class="ctl-title">Try these in order</p>
+      <ol>
+        <li>Press <b>Scan</b> with the starting settings (filtered back projection). That is the normal clinical result.</li>
+        <li>Change Method to <b>Back projection</b> and scan again. The image is blurry, the reason it is not used clinically.</li>
+        <li>Pick <b>Single dot</b> and set projections to about 6. You will see the star pattern.</li>
+        <li>Go back to <b>Abdomen slice</b> and <b>Filtered back projection</b>, then choose <b>Low dose</b>. The image gets grainy (noise). Switch between the two filters.</li>
+        <li>Keep Low dose and change Method to <b>Iterative</b>. It waits for all the projections, then the noise drops. That is why it allows a lower dose.</li>
+      </ol>
+    </div>
+
+    <div class="bench">
+      <figure class="film"><canvas id="gantry" width="360" height="360" aria-label="Gantry with x-ray tube, detector and attenuation profile"></canvas><figcaption>Gantry and attenuation profile</figcaption></figure>
+      <figure class="film"><canvas id="sino" width="360" height="360" aria-label="Sinogram of raw data"></canvas><figcaption>Raw data (sinogram): one row per projection</figcaption></figure>
+      <figure class="film"><canvas id="recon" width="360" height="360" aria-label="Reconstructed CT image"></canvas><figcaption id="reconCap">Image data</figcaption></figure>
+    </div>
+
+    <div class="console">
+      <div class="cgroup">
+        <p class="ctl-title">Patient</p>
+        <div class="seg" role="group" aria-label="Phantom" id="phantomSeg">
+          <button data-p="abdomen" aria-pressed="true">Abdomen slice</button>
+          <button data-p="dot" aria-pressed="false">Single dot</button>
+        </div>
+      </div>
+      <div class="cgroup">
+        <p class="ctl-title">Method</p>
+        <div class="seg" role="group" aria-label="Reconstruction method" id="methodSeg">
+          <button data-r="bp" aria-pressed="false">Back projection</button>
+          <button data-r="fbp" aria-pressed="true">Filtered back projection</button>
+          <button data-r="ir" aria-pressed="false">Iterative</button>
+        </div>
+      </div>
+      <div class="cgroup" id="kernelGroup">
+        <p class="ctl-title">Convolution filter</p>
+        <div class="seg" role="group" aria-label="Convolution filter" id="kernelSeg">
+          <button data-k="soft" aria-pressed="true">Smoothing (soft tissue)</button>
+          <button data-k="bone" aria-pressed="false">Edge enhancing (bone)</button>
+        </div>
+      </div>
+      <div class="cgroup">
+        <p class="ctl-title">Dose</p>
+        <div class="seg" role="group" aria-label="Dose" id="doseSeg">
+          <button data-d="std" aria-pressed="true">Standard</button>
+          <button data-d="low" aria-pressed="false">Low (noisy)</button>
+        </div>
+      </div>
+      <div class="cgroup">
+        <label class="ctl" for="nProj">Projections over 180° <output id="nOut">90</output></label>
+        <input type="range" id="nProj" min="2" max="180" value="90">
+      </div>
+      <div class="cgroup" id="iterGroup" hidden>
+        <label class="ctl" for="nIter">Iterations <output id="itOut">12</output></label>
+        <input type="range" id="nIter" min="1" max="40" value="12">
+      </div>
+      <div class="cgroup actions">
+        <button id="scanBtn" class="primary">Scan</button>
+        <button id="instantBtn">Show result now</button>
+      </div>
+    </div>
+    <p class="status" id="status" aria-live="polite"></p>
+    <p class="explain" id="methodNote"></p>
+    <p class="hint">Simplified for teaching: here half a rotation (180°) already gives a full set of data.</p>
+  </article>
+</section>
+
+<!-- ================= PART C ================= -->
+<section id="quiz" class="part">
+  <h2><span class="pn">C</span>Self-check</h2>
+  <p class="intro">Every question from the quick checks, plus a few more, shuffled each round. Questions you miss come back until you get them right.</p>
+  <div class="quiz" id="quizBox" data-topic="all"></div>
+</section>
+
+<!-- ================= PART D ================= -->
+<section id="summary" class="part">
+  <h2><span class="pn">D</span>Last-minute summary</h2>
+  <p class="intro noprint">Only the facts the board asks about. Read it the night before or print it.</p>
+  <div class="stepper noprint"><button class="primary" onclick="print()">Print summary and words to know</button></div>
+
+  <div class="sumgrid">
+    <div><h4>MIP · Maximum intensity projection</h4><ul>
+      <li>Keeps the <b>highest value</b> pixel along each line</li>
+      <li><b>Simplest</b> form of 3D imaging</li>
+      <li>Used in <b>CT angiography</b></li></ul></div>
+    <div><h4>SSD · Shaded surface display</h4><ul>
+      <li><b>Computer-aided</b> technique</li>
+      <li>A <b>narrow range of values</b> = the object; shows its surface</li>
+      <li><b>Bone imaging</b>, <b>virtual colonoscopy</b></li></ul></div>
+    <div><h4>SVD · Shaded volume display</h4><ul>
+      <li>Blends every voxel in the range</li>
+      <li>Looks <b>very 3D</b> (volume rendered)</li>
+      <li><b>Very sensitive to the operator-selected pixel range</b></li></ul></div>
+    <div><h4>Back projection</h4><ul>
+      <li>a.k.a. <b>summation / linear superposition</b> method</li>
+      <li><b>Oldendorf (1961)</b>, <b>Kuhl and Edwards (1963)</b></li>
+      <li>Not sharp → <b>star pattern</b> → <b>not used clinically</b></li>
+      <li>2 × 2 example: (BP + P1 + P2 + P3 − <b>10</b>) ÷ <b>3</b></li></ul></div>
+    <div><h4>Convolution</h4><ul>
+      <li>Filter applied to <b>raw data only</b></li>
+      <li>Minimizes <b>streak artifacts</b></li>
+      <li>Smoothing: <b>soft tissue</b>, low noise, more blur</li>
+      <li>Edge enhancing: <b>bone</b>, high spatial resolution, high noise</li>
+      <li><b>Deconvolution</b> = reverse process</li></ul></div>
+    <div><h4>Filtered back projection</h4><ul>
+      <li><b>Convolution + back projection</b></li>
+      <li>Also called the convolution method</li>
+      <li>+ Removes star-like blurring</li>
+      <li>− <b>Noise and streak artifacts</b></li></ul></div>
+    <div><h4>Fourier transformation</h4><ul>
+      <li>Used in <b>MRI</b></li>
+      <li><b>Not used in modern CT</b></li>
+      <li>Analogy: <b>act of hearing</b></li></ul></div>
+    <div><h4>Helical interpolation</h4><ul>
+      <li><b>Creates missing data</b></li>
+      <li><b>Straightens up the sectional image</b></li>
+      <li><b>Post-acquisition</b></li>
+      <li>1st algorithm: <b>360° linear</b> → <b>prominent blurring</b></li>
+      <li>A = 5, C = 15 → B = 10</li></ul></div>
+    <div><h4>Iterative reconstruction</h4><ul>
+      <li>Starts with <b>all points the same value</b></li>
+      <li>Done <b>after all projection data</b> is collected</li>
+      <li>+ <b>Less noise, low dose</b> (primary), better CNR, fewer streaks (metal, motion, photon starvation)</li>
+      <li>− Needs <b>GPUs</b>, computationally intensive, <b>slower</b></li></ul></div>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <p>Study aid based on Cluster 5, Computed Tomography, Asst. Prof. Meynard Y. Castro, RRT, MSRT (Future RRT Hub). The images are simulations made for teaching, not patient data.</p>
+</footer>
+
+<div id="gpop" popover>
+  <p class="gpop-t"></p>
+  <p class="gpop-d"></p>
+  <div class="stepper"><a href="#words" class="gpop-all">All words</a><button popovertarget="gpop" popovertargetaction="hide">Close</button></div>
+</div>
+
+<script src="js/util.js"></script>
+<script src="js/volume.js"></script>
+<script src="js/scanner.js"></script>
+<script src="js/matrix.js"></script>
+<script src="js/labs.js"></script>
+<script src="js/quiz.js"></script>
+</body>
+</html>
