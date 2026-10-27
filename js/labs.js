@@ -60,7 +60,7 @@
     const ink = css('--ink'), ink2 = css('--ink-2'), cols = [css('--control'), css('--beam-ink'), css('--marker')], rule = css('--rule');
     c.clearRect(0, 0, w, h);
     const L = Math.min(110, w * 0.2), top = h * 0.25, rowH = h * 0.18;
-    c.font = '12px "IBM Plex Mono", monospace'; c.textBaseline = 'middle';
+    c.font = '12px "JetBrains Mono", monospace'; c.textBaseline = 'middle';
     const wave = (yc, amp, fn, col, width, dash) => {
       c.strokeStyle = col; c.lineWidth = width; c.setLineDash(dash || []); c.beginPath();
       for (let x = 0; x <= w - L - 10; x += 2) { const t = x / (w - L - 10) * 4 * Math.PI, y = yc - fn(t) * amp; x ? c.lineTo(L + x, y) : c.moveTo(L + x, y); }
@@ -99,7 +99,7 @@
     const L = 54, R = 16, T = 16, B = 40, PW = w - L - R, PH = h - T - B;
     const zs = 1 + +$('zPos').value / 100 * 0.98;            // slice position in rotations
     const X = a => L + PW * a / 360, Y = z => T + PH * (1 - z / 3);
-    c.font = '11px "IBM Plex Mono", monospace'; c.textBaseline = 'middle';
+    c.font = '11px "JetBrains Mono", monospace'; c.textBaseline = 'middle';
     // axes
     c.strokeStyle = rule; c.lineWidth = 1;
     for (let z = 0; z <= 3; z++) { c.beginPath(); c.moveTo(L, Y(z)); c.lineTo(L + PW, Y(z)); c.stroke(); }

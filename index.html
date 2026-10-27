@@ -5,321 +5,1098 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>NerdRadTech</title>
   <meta name="claude:viewport-fit-sides" content="cover">
-  <meta name="description" content="Interactive RTLE review of CT image reconstruction (back projection, convolution, filtered back projection, Fourier transformation, helical interpolation, iterative reconstruction) and the three 3D MPR algorithms (MIP, SSD, SVD).">
+  <meta name="description" content="Visual RTLE review of the whole Cluster 5 Computed Tomography lecture: overview, physical principles, data acquisition, image reconstruction, image display, image quality and artifacts, with labs, quick checks and a mock board exam.">
   <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Literata:opsz,wght@7..72,400;7..72,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/main.css">
+  <script>try{const t=localStorage.getItem('nrt-theme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
 </head>
 <body>
-<a class="skip" href="#basics">Skip to content</a>
+<a class="skip" href="#ch1">Skip to content</a>
 
-<div class="bar">
-  <div class="bar-in">
-    <a class="brand" href="#top">NerdRadTech</a>
-    <nav aria-label="Sections">
-      <a href="#basics">Start</a>
-      <a href="#mpr">3D MPR</a>
-      <a href="#math">Reconstruction</a>
-      <a href="#quiz">Self-check</a>
-      <a href="#summary">Summary</a>
+<!-- clay icon sprite -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <radialGradient id="gW" cx="35%" cy="30%" r="80%"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#D9CCF0"/></radialGradient>
+    <radialGradient id="gP" cx="35%" cy="30%" r="80%"><stop offset="0" stop-color="#A994DA"/><stop offset="1" stop-color="#5E4693"/></radialGradient>
+    <radialGradient id="gO" cx="35%" cy="30%" r="80%"><stop offset="0" stop-color="#FFD9A0"/><stop offset="1" stop-color="#F08F1C"/></radialGradient>
+    <radialGradient id="gK" cx="35%" cy="30%" r="80%"><stop offset="0" stop-color="#FFC4DF"/><stop offset="1" stop-color="#EC5E9E"/></radialGradient>
+    <radialGradient id="gC" cx="35%" cy="30%" r="80%"><stop offset="0" stop-color="#C9F4FC"/><stop offset="1" stop-color="#2FB6DC"/></radialGradient>
+    <radialGradient id="gY" cx="35%" cy="30%" r="80%"><stop offset="0" stop-color="#FFEBA6"/><stop offset="1" stop-color="#F2B400"/></radialGradient>
+    <radialGradient id="gM" cx="35%" cy="30%" r="80%"><stop offset="0" stop-color="#CFF2DC"/><stop offset="1" stop-color="#4FB57A"/></radialGradient>
+    <radialGradient id="gD" cx="35%" cy="30%" r="80%"><stop offset="0" stop-color="#57506A"/><stop offset="1" stop-color="#1D1924"/></radialGradient>
+    <linearGradient id="gBeam" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFB257" stop-opacity=".95"/><stop offset="1" stop-color="#FFB257" stop-opacity=".15"/></linearGradient>
+  </defs>
+  <symbol id="spark" viewBox="0 0 24 24"><path d="M12 0C13 7.2 16.8 11 24 12 16.8 13 13 16.8 12 24 11 16.8 7.2 13 0 12 7.2 11 11 7.2 12 0Z" fill="currentColor"/></symbol>
+  <symbol id="logo" viewBox="0 0 32 32"><circle cx="16" cy="16" r="10.5" fill="none" stroke="#FFB257" stroke-width="6"/><path d="M5.5 26.5 26.5 5.5" stroke="#7D65AE" stroke-width="5" stroke-linecap="round"/></symbol>
+  <symbol id="i-gantry" viewBox="0 0 120 120">
+    <ellipse cx="60" cy="108" rx="40" ry="6" fill="#231F2B" opacity=".18"/>
+    <circle cx="60" cy="54" r="36" fill="none" stroke="url(#gW)" stroke-width="22"/>
+    <circle cx="60" cy="54" r="25" fill="#5E4693" opacity=".22"/>
+    <circle cx="60" cy="18" r="7" fill="url(#gC)"/>
+    <path d="M60 25 46 74h28z" fill="url(#gBeam)" opacity=".7"/>
+    <rect x="6" y="66" width="108" height="12" rx="6" fill="url(#gO)"/>
+    <ellipse cx="60" cy="62" rx="24" ry="8" fill="url(#gK)"/>
+    <path d="M40 26a36 36 0 0 1 34-6" stroke="#fff" stroke-width="5" stroke-linecap="round" fill="none" opacity=".85"/>
+  </symbol>
+  <symbol id="i-voxel" viewBox="0 0 120 120">
+    <ellipse cx="60" cy="110" rx="38" ry="6" fill="#231F2B" opacity=".18"/>
+    <path d="M60 12 104 37 60 62 16 37Z" fill="url(#gW)"/>
+    <path d="M16 37 60 62v46L16 83Z" fill="url(#gP)"/>
+    <path d="M104 37 60 62v46l44-25Z" fill="#4E3A82"/>
+    <path d="M38 24.5 82 49.5M82 24.5 38 49.5M31 51v44M45 59v44M75 59v44M89 51v44M16 52l44 25 44-25M16 67l44 25 44-25" stroke="#fff" stroke-opacity=".35" stroke-width="1.5" fill="none"/>
+    <path d="M60 12 82 24.5 60 37 38 24.5Z" fill="url(#gO)"/>
+  </symbol>
+  <symbol id="i-fan" viewBox="0 0 120 120">
+    <ellipse cx="60" cy="112" rx="40" ry="5" fill="#231F2B" opacity=".18"/>
+    <path d="M60 30 20 92h80z" fill="url(#gBeam)"/>
+    <rect x="34" y="8" width="52" height="24" rx="12" fill="url(#gC)"/>
+    <rect x="52" y="26" width="16" height="8" rx="3" fill="url(#gO)"/>
+    <path d="M14 90q46 26 92 0" stroke="url(#gP)" stroke-width="14" stroke-linecap="round" fill="none"/>
+    <path d="M24 95q36 18 72 0" stroke="#fff" stroke-opacity=".5" stroke-width="2" stroke-dasharray="3 5" fill="none"/>
+    <circle cx="60" cy="60" r="12" fill="url(#gK)"/>
+  </symbol>
+  <symbol id="i-matrix" viewBox="0 0 120 120">
+    <ellipse cx="60" cy="110" rx="40" ry="6" fill="#231F2B" opacity=".18"/>
+    <rect x="14" y="14" width="44" height="44" rx="12" fill="url(#gW)"/><rect x="62" y="14" width="44" height="44" rx="12" fill="url(#gP)"/>
+    <rect x="14" y="62" width="44" height="44" rx="12" fill="url(#gK)"/><rect x="62" y="62" width="44" height="44" rx="12" fill="url(#gO)"/>
+    <g font-family="JetBrains Mono,monospace" font-weight="700" font-size="24" text-anchor="middle" fill="#231F2B"><text x="36" y="44">1</text><text x="84" y="44" fill="#fff">2</text><text x="36" y="92">3</text><text x="84" y="92">4</text></g>
+  </symbol>
+  <symbol id="i-monitor" viewBox="0 0 120 120">
+    <ellipse cx="60" cy="112" rx="34" ry="5" fill="#231F2B" opacity=".18"/>
+    <rect x="50" y="80" width="20" height="22" rx="4" fill="url(#gP)"/><rect x="34" y="98" width="52" height="10" rx="5" fill="url(#gP)"/>
+    <rect x="8" y="12" width="104" height="74" rx="16" fill="url(#gW)"/>
+    <rect x="17" y="20" width="86" height="56" rx="10" fill="url(#gD)"/>
+    <ellipse cx="60" cy="48" rx="24" ry="18" fill="#9b95a6"/><ellipse cx="51" cy="47" rx="7" ry="9" fill="#2a2630"/><ellipse cx="69" cy="47" rx="7" ry="9" fill="#2a2630"/><circle cx="60" cy="58" r="4" fill="#fff"/>
+    <circle cx="92" cy="30" r="6" fill="url(#gO)"/>
+  </symbol>
+  <symbol id="i-lens" viewBox="0 0 120 120">
+    <ellipse cx="60" cy="112" rx="36" ry="5" fill="#231F2B" opacity=".18"/>
+    <rect x="70" y="72" width="18" height="44" rx="9" transform="rotate(-45 79 94)" fill="url(#gO)"/>
+    <circle cx="50" cy="50" r="38" fill="url(#gW)"/><circle cx="50" cy="50" r="28" fill="url(#gC)"/>
+    <path d="M50 30c1.4 10 5 13.6 15 15-10 1.4-13.6 5-15 15-1.4-10-5-13.6-15-15 10-1.4 13.6-5 15-15Z" fill="#fff"/>
+    <path d="M30 34a26 26 0 0 1 14-10" stroke="#fff" stroke-width="5" stroke-linecap="round" fill="none" opacity=".8"/>
+  </symbol>
+  <symbol id="i-exam" viewBox="0 0 120 120">
+    <ellipse cx="60" cy="112" rx="36" ry="5" fill="#231F2B" opacity=".18"/>
+    <rect x="18" y="14" width="84" height="94" rx="14" fill="url(#gP)"/><rect x="26" y="24" width="68" height="78" rx="9" fill="url(#gW)"/>
+    <rect x="42" y="8" width="36" height="16" rx="8" fill="url(#gO)"/>
+    <path d="M36 50l8 8 14-16M36 80l8 8 14-16" stroke="#4FB57A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <rect x="64" y="48" width="22" height="6" rx="3" fill="#C9B8EA"/><rect x="64" y="78" width="22" height="6" rx="3" fill="#C9B8EA"/>
+  </symbol>
+  <symbol id="i-notes" viewBox="0 0 120 120">
+    <ellipse cx="60" cy="112" rx="36" ry="5" fill="#231F2B" opacity=".18"/>
+    <rect x="30" y="10" width="70" height="88" rx="14" transform="rotate(10 65 54)" fill="url(#gK)"/>
+    <rect x="20" y="16" width="70" height="88" rx="14" fill="url(#gW)"/>
+    <rect x="32" y="34" width="46" height="6" rx="3" fill="#C9B8EA"/><rect x="32" y="48" width="38" height="6" rx="3" fill="#C9B8EA"/><rect x="32" y="62" width="44" height="6" rx="3" fill="#C9B8EA"/>
+    <path d="M86 70c1.6 11 5.6 15 16 16.6-10.4 1.6-14.4 5.6-16 16.4-1.6-10.8-5.6-14.8-16-16.4 10.4-1.6 14.4-5.6 16-16.6Z" fill="url(#gY)"/>
+  </symbol>
+</svg>
+
+<div class="sheet">
+
+<header class="top">
+  <div class="top-in">
+    <nav class="only-wide" aria-label="Main">
+      <a href="#chapters">Chapters</a><a href="#exam">Mock exam</a><a href="#summary">Summary</a>
     </nav>
+    <a class="logo" href="#top"><svg aria-hidden="true"><use href="#logo"/></svg>NerdRadTech</a>
+    <div class="top-r">
+      <a class="pill sm only-wide" href="#words">Words to know <i aria-hidden="true">↗</i></a>
+      <button class="iconbtn" id="themeBtn" aria-label="Switch light or dark theme"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9Z" fill="currentColor"/></svg></button>
+      <details class="menu">
+        <summary class="iconbtn" aria-label="All chapters"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></summary>
+        <div class="menu-list">
+          <a href="#ch1"><b>I</b>Overview</a><a href="#ch2"><b>II</b>Physical principles</a><a href="#ch3"><b>III</b>Data acquisition</a>
+          <a href="#ch4"><b>IV</b>Image reconstruction</a><a href="#ch5"><b>V</b>Image display</a><a href="#ch6"><b>VI</b>Image quality &amp; artifacts</a>
+          <a href="#exam"><b>✦</b>Mock board exam</a><a href="#summary"><b>✦</b>Last-minute summary</a><a href="#words"><b>✦</b>Words to know</a>
+        </div>
+      </details>
+    </div>
   </div>
-</div>
-
-<header class="mast" id="top">
-  <div class="mast-text">
-    <h1>NerdRadTech</h1>
-    <p class="sub">A hands-on review of how a CT scanner turns its measurements into an image, and how that image becomes 3D. Built for the RTLE from Cluster 5, Computed Tomography, by Asst. Prof. Meynard Y. Castro, RRT, MSRT.</p>
-    <p class="how">You can touch and change everything on this page. <b>New to the topic? Start with "Start here".</b> Words with a <a class="term" href="#g-term">dotted underline</a> show their meaning when you tap them. Each topic ends with a quick check, and there is a printable summary at the end.</p>
-  </div>
-  <ol class="protocol" aria-label="Contents">
-    <li><a href="#basics"><b>Start</b><span>Start here</span><small>How CT works in plain words · Words to know</small></a></li>
-    <li><a href="#mpr"><b>Part A</b><span>Three 3D MPR algorithms</span><small>MIP · SSD · SVD</small></a></li>
-    <li><a href="#math"><b>Part B</b><span>Mathematical algorithms</span><small>Back projection · Convolution · Filtered back projection · Fourier transformation · Helical interpolation · Iterative reconstruction · Scanner bench</small></a></li>
-    <li><a href="#quiz"><b>Part C</b><span>Self-check</span><small>All board-style questions</small></a></li>
-    <li><a href="#summary"><b>Part D</b><span>Last-minute summary</span><small>Printable</small></a></li>
-  </ol>
 </header>
+
+<!-- ================= HERO ================= -->
+<section class="hero" id="top">
+  <svg class="deco" style="left:3%;top:120px;width:30px;height:30px" aria-hidden="true"><use href="#spark"/></svg>
+  <svg class="deco o" style="right:9%;top:46%;width:38px;height:38px;animation-delay:-1.5s" aria-hidden="true"><use href="#spark"/></svg>
+  <div class="hero-top">
+    <p class="eyebrow">Cluster 5 · RTLE 2026 review</p>
+    <div class="badges"><span class="badge">Asst. Prof. Meynard Y. Castro, RRT, MSRT</span><span class="badge">310 slides → 1 page</span></div>
+  </div>
+  <h1 aria-label="Computed Tomography">
+    <span class="ln" aria-hidden="true">C<span class="o"><canvas id="o1" width="120" height="120"></canvas></span>mputed</span>
+    <span class="ln" aria-hidden="true">T<span class="o"><canvas id="o2" width="120" height="120"></canvas></span>m<span class="o"><canvas id="o3" width="120" height="120"></canvas></span>graphy</span>
+  </h1>
+  <div class="hero-row">
+    <p class="stats"><small>Made visual from</small><b>310 lecture slides</b><b><span id="bankCount2">200</span>+ board questions</b></p>
+    <p class="hero-lede">Every topic from the Cluster 5 CT lecture, turned into things you can spin, slide and scan. Read a topic, play with its lab, then pass its quick check.</p>
+    <a class="pill" href="#ch1">Start reviewing <i aria-hidden="true">↗</i></a>
+  </div>
+  <div class="stage">
+    <div class="tapes" aria-hidden="true">
+      <div class="tape t1"><div><span>✦ Hounsfield units</span><span>✦ Slip ring</span><span>✦ Helical pitch</span><span>✦ Filtered back projection</span><span>✦ Window width</span><span>✦ Scintillation</span><span>✦ Hounsfield units</span><span>✦ Slip ring</span><span>✦ Helical pitch</span><span>✦ Filtered back projection</span><span>✦ Window width</span><span>✦ Scintillation</span></div></div>
+      <div class="tape t2"><div><span>✦ Partial volume</span><span>✦ Beam hardening</span><span>✦ Matrix 512 × 512</span><span>✦ MIP · SSD · SVD</span><span>✦ Ring artifact</span><span>✦ Scanogram</span><span>✦ Partial volume</span><span>✦ Beam hardening</span><span>✦ Matrix 512 × 512</span><span>✦ MIP · SSD · SVD</span><span>✦ Ring artifact</span><span>✦ Scanogram</span></div></div>
+    </div>
+    <canvas id="heroGantry" aria-label="3D model of a CT gantry with the x-ray tube rotating around a patient while the couch moves through, tracing a helix. Drag to turn it."></canvas>
+    <span class="cap">3D gantry · drag to turn it</span>
+  </div>
+</section>
+
+<!-- ================= CHAPTER TILES ================= -->
+<nav class="tiles" id="chapters" aria-label="Chapters">
+  <div class="tiles-row">
+    <button class="arrow" id="tilePrev" aria-label="Scroll chapters left">←</button>
+    <div class="tiles-track" id="tileTrack">
+      <a class="tile" href="#ch1" data-ch="ch1"><div class="tile-art t-pink"><svg><use href="#i-gantry"/></svg></div><b>I · Overview</b><small><span>Definition · processes</span><span class="pct"></span></small><div class="meter"><i></i></div></a>
+      <a class="tile" href="#ch2" data-ch="ch2"><div class="tile-art t-lav"><svg><use href="#i-voxel"/></svg></div><b>II · Physical principles</b><small><span>Pixel · HU · ray</span><span class="pct"></span></small><div class="meter"><i></i></div></a>
+      <a class="tile" href="#ch3" data-ch="ch3"><div class="tile-art t-cyan"><svg><use href="#i-fan"/></svg></div><b>III · Data acquisition</b><small><span>Generations · detectors</span><span class="pct"></span></small><div class="meter"><i></i></div></a>
+      <a class="tile" href="#ch4" data-ch="ch4"><div class="tile-art t-orange"><svg><use href="#i-matrix"/></svg></div><b>IV · Image reconstruction</b><small><span>Algorithms · 3D</span><span class="pct"></span></small><div class="meter"><i></i></div></a>
+      <a class="tile" href="#ch5" data-ch="ch5"><div class="tile-art t-mint"><svg><use href="#i-monitor"/></svg></div><b>V · Image display</b><small><span>ROI · scout · tools</span><span class="pct"></span></small><div class="meter"><i></i></div></a>
+      <a class="tile" href="#ch6" data-ch="ch6"><div class="tile-art t-yellow"><svg><use href="#i-lens"/></svg></div><b>VI · Image quality</b><small><span>Resolution · artifacts</span><span class="pct"></span></small><div class="meter"><i></i></div></a>
+      <a class="tile" href="#exam"><div class="tile-art t-lav"><svg><use href="#i-exam"/></svg></div><b>Mock board exam</b><small><span>All questions</span></small></a>
+      <a class="tile" href="#summary"><div class="tile-art t-cream"><svg><use href="#i-notes"/></svg></div><b>Last-minute summary</b><small><span>Printable</span></small></a>
+    </div>
+    <button class="arrow" id="tileNext" aria-label="Scroll chapters right">→</button>
+  </div>
+</nav>
+
+<!-- ================= HOW TO USE ================= -->
+<section class="bento" aria-label="How to use this page">
+  <div class="b1"><span class="kick">How to read this</span><h3>Dotted words explain themselves</h3><p>Tap any <a class="term" href="#g-term">dotted word</a> and its meaning pops up. You never have to scroll away to look something up.</p><svg class="shape" style="color:#FFB257"><use href="#spark"/></svg></div>
+  <div class="b2"><span class="kick">Question bank</span><span class="big"><span id="bankCount">200</span>+</span><p>Board-style questions. The ones you miss come back until you get them right.</p></div>
+  <div class="b3"><span class="kick">Labs</span><span class="big">30+</span><p>Hands-on simulations, from windowing to scanner generations. Every image is simulated, never patient data.</p><svg class="shape" style="color:#2E7D52"><use href="#spark"/></svg></div>
+  <div class="b4"><span class="kick">Night before</span><h3>Printable summary</h3><p>Only the facts the board asks about, one page per chapter. <a href="#summary">Jump to it</a>.</p></div>
+  <div class="b5"><div class="cloud">
+    <a href="#windowing">Windowing</a><a href="#hu">HU</a><a href="#generations">Generations</a><a href="#pitch">Pitch</a><a href="#sliprings">Slip ring</a>
+    <a href="#detectors">Detectors</a><a href="#mpr">MIP</a><a href="#bp">Back projection</a><a href="#display-tools">ROI</a><a href="#artifacts">Artifacts</a><a href="#matrix">Matrix</a><a href="#collimation">Collimators</a>
+  </div></div>
+</section>
 
 <main>
 
-<!-- ================= START HERE ================= -->
-<section id="basics" class="part">
-  <h2><span class="pn">0</span>Start here</h2>
+<!-- ================= CHAPTER I · OVERVIEW ================= -->
+<section class="chapter" id="ch1" data-ch="ch1">
+  <svg class="deco" style="right:6%;top:40px;width:26px;height:26px" aria-hidden="true"><use href="#spark"/></svg>
+  <header class="ch-head">
+    <div class="ch-icon t-pink"><svg><use href="#i-gantry"/></svg></div>
+    <div><span class="ch-num">Chapter I</span><h2>Overview</h2></div>
+    <p class="ch-desc">What CT is, why we use it, what it can't do, and the six steps every scan goes through, from getting data to sending images.</p>
+  </header>
+  <ul class="toc">
+    <li><a href="#what-is-ct">Definition &amp; basic concepts</a></li><li><a href="#adv">Advantages &amp; disadvantages</a></li>
+    <li><a href="#processes">CT processes</a></li><li><a href="#windowing">Gray scale manipulation</a></li><li><a href="#storage">Storage &amp; communication</a></li>
+  </ul>
 
-  <article class="algo first">
-    <h3>How a CT scan works, in plain words</h3>
-    <ol class="steps">
-      <li>The patient lies on a table that slides into the <a class="term" href="#g-gantry">gantry</a>, the big ring-shaped part of the scanner.</li>
-      <li>Inside the ring, an <a class="term" href="#g-tube">x-ray tube</a> spins around the patient. Directly across from it, <a class="term" href="#g-detector">detectors</a> measure how much x-ray made it through the body.</li>
-      <li>Every thin line of x-rays from the tube to the detector is called a <a class="term" href="#g-ray">ray</a>. Dense things like bone block more x-ray than soft things like fat, so less reaches the detector. This weakening of the beam is called <a class="term" href="#g-attenuation">attenuation</a>.</li>
-      <li>All the rays measured from one angle make one <a class="term" href="#g-profile">attenuation profile</a> (also called a projection). It is a row of numbers, like a shadow of the body. The tube collects hundreds of these from different angles.</li>
-      <li>Together, all these measurements are the <a class="term" href="#g-raw">raw data</a>. They are numbers, not a picture yet.</li>
-      <li>A computer follows a <a class="term" href="#g-algorithm">reconstruction algorithm</a> (a step-by-step math recipe) to turn the raw data into <a class="term" href="#g-image">image data</a>: a grid (<a class="term" href="#g-matrix">matrix</a>) of tiny squares called <a class="term" href="#g-pixel">pixels</a>. Each pixel holds a <a class="term" href="#g-hu">CT number</a> that says how dense that spot is.</li>
-      <li>Stack many slices and you get a 3D block of tiny cubes called <a class="term" href="#g-voxel">voxels</a>. Other algorithms turn that block into 3D pictures.</li>
-    </ol>
-
-    <div class="map">
-      <div><small>Part B · comes first in the scanner</small><b>Mathematical algorithms</b><span>Raw data → one slice image. This is how the image is <i>built</i>.</span></div>
-      <div><small>Part A · comes after</small><b>3D MPR algorithms</b><span>Stack of slices → 3D view. This is how finished images are <i>shown in 3D</i>.</span></div>
-    </div>
-    <p class="lead">The lecture covers 3D first, so this page does too. If you prefer to follow the order the scanner works in, read Part B first. Both orders work.</p>
-  </article>
-
-  <article class="algo">
-    <h3>The CT number scale (HU)</h3>
-    <p class="lead">Every pixel gets a number in <a class="term" href="#g-hu">Hounsfield units (HU)</a>. Water is set to 0. Anything denser than water is positive, anything less dense is negative. You will use this scale in Part A.</p>
-    <ul class="hu" aria-label="Typical CT numbers">
-      <li style="--c:#000"><b>−1000</b>Air</li>
-      <li style="--c:#3a3a3a"><b>−100</b>Fat</li>
-      <li style="--c:#6e6e6e"><b>0</b>Water</li>
-      <li style="--c:#8c8c8c"><b>+40</b>Soft tissue, organs</li>
-      <li style="--c:#b8b8b8"><b>+200 to +400</b>Vessels filled with contrast</li>
-      <li style="--c:#f2f2f2"><b>+400 to +1000</b>Bone</li>
-    </ul>
-    <p class="lead">Higher number = denser = brighter on the image.</p>
-  </article>
-
-  <article class="algo" id="words">
-    <h3>Words to know</h3>
-    <p class="lead">Read these once now. You don't have to memorize them, because every underlined word on the page links back here.</p>
-
-    <div class="gloss">
-      <div>
-        <h4>The scanner</h4>
-        <dl>
-          <dt id="g-term">Dotted-underline word</dt><dd>Like this one. Tap any of them to see what it means.</dd>
-          <dt id="g-ct">CT (computed tomography)</dt><dd>An x-ray exam where a computer builds cross-section pictures ("slices") of the body from many x-ray measurements taken around the patient.</dd>
-          <dt id="g-gantry">Gantry</dt><dd>The ring-shaped part of the scanner. The x-ray tube and detectors spin around inside it.</dd>
-          <dt id="g-tube">X-ray tube</dt><dd>The part that produces the x-ray beam. It circles the patient during the scan.</dd>
-          <dt id="g-detector">Detector</dt><dd>Sits opposite the tube and measures how much x-ray came out the other side of the patient.</dd>
-          <dt id="g-ray">Ray</dt><dd>One thin line of x-rays going from the tube, through the patient, to one detector element.</dd>
-          <dt id="g-helical">Helical (spiral) scanning</dt><dd>Scanning while the table keeps moving. The tube's path around the patient becomes a spiral (a helix), like the line on a spring.</dd>
-          <dt id="g-dose">Dose</dt><dd>How much radiation the patient receives. Lower dose is safer but the image gets grainier (more noise).</dd>
-        </dl>
-      </div>
-      <div>
-        <h4>Data and images</h4>
-        <dl>
-          <dt id="g-attenuation">Attenuation</dt><dd>How much the x-ray beam is weakened as it passes through something. Bone attenuates a lot, air almost nothing.</dd>
-          <dt id="g-raysum">Ray sum</dt><dd>The total attenuation along one ray, meaning every value it passed through added together. The scanner only ever knows these totals, never the values inside.</dd>
-          <dt id="g-profile">Attenuation profile (projection)</dt><dd>All the ray sums measured from one angle, side by side. It looks like a row of bars, a kind of "shadow" of the body from that direction.</dd>
-          <dt id="g-raw">Raw data</dt><dd>The measurements straight from the detectors, before any image exists.</dd>
-          <dt id="g-sinogram">Sinogram</dt><dd>A picture of the raw data: every attenuation profile stacked as one row, one row per angle. It looks like wavy stripes, not like a body.</dd>
-          <dt id="g-image">Image data</dt><dd>The finished picture after reconstruction: pixels with CT numbers.</dd>
-          <dt id="g-algorithm">Algorithm</dt><dd>A set of step-by-step rules for getting a specific output from a specific input. Like a recipe, but for a computer.</dd>
-          <dt id="g-recon">Reconstruction</dt><dd>The process of turning raw data into image data.</dd>
-          <dt id="g-matrix">Matrix</dt><dd>The grid of rows and columns that makes up the image, for example 512 × 512 boxes.</dd>
-          <dt id="g-pixel">Pixel</dt><dd>One box in the matrix (2D, flat).</dd>
-          <dt id="g-voxel">Voxel</dt><dd>A pixel with thickness: one tiny cube of the patient's tissue. A pixel is what you see; a voxel is the piece of the body it stands for.</dd>
-          <dt id="g-hu">CT number / Hounsfield unit (HU)</dt><dd>The number stored in each pixel that tells how dense that tissue is. Water = 0, air = −1000, bone about +400 to +1000 or more.</dd>
-          <dt id="g-range">Operator-selected pixel range</dt><dd>A range of CT numbers that the person running the scanner chooses, for example 200 to 1200 HU. Only values inside the range are used.</dd>
-          <dt id="g-slice">Axial slice</dt><dd>A cross-section image cut straight across the body, as if slicing bread.</dd>
-          <dt id="g-postacq">Post-acquisition</dt><dd>Done after the scan is finished, using data already collected.</dd>
-        </dl>
-      </div>
-      <div>
-        <h4>3D and exams</h4>
-        <dl>
-          <dt id="g-mpr">MPR (multiplanar reformation)</dt><dd>Re-arranging the stack of slices to view the body in other directions or in 3D, without scanning again.</dd>
-          <dt id="g-render">Volume rendering</dt><dd>Showing the whole 3D block of voxels at once, partly see-through, so it looks like a real 3D object.</dd>
-          <dt id="g-contrast">Contrast medium</dt><dd>A dye (usually iodine) injected into the patient so blood vessels and some organs show up bright.</dd>
-          <dt id="g-cta">CT angiography (CTA)</dt><dd>A CT scan of blood vessels, done with contrast medium.</dd>
-          <dt id="g-vc">Virtual colonoscopy</dt><dd>Using CT to "fly through" the inside of the colon on screen, instead of putting a camera inside it.</dd>
-        </dl>
-        <h4>Image quality</h4>
-        <dl>
-          <dt id="g-artifact">Artifact</dt><dd>Anything on the image that is not really in the patient: a mistake made by the scanner or the math.</dd>
-          <dt id="g-star">Star pattern</dt><dd>The artifact of simple back projection: spokes or a halo of lines around bright objects.</dd>
-          <dt id="g-streak">Streak artifact</dt><dd>Bright or dark lines across the image, often coming from metal, motion or too little x-ray.</dd>
-          <dt id="g-noise">Noise</dt><dd>Grainy, speckled look on the image. It gets worse when the dose is lower or when edges are sharpened.</dd>
-          <dt id="g-spatial">Spatial resolution</dt><dd>How well the image shows tiny details and sharp edges as separate things.</dd>
-          <dt id="g-contrastres">Contrast resolution</dt><dd>How well the image shows tissues that are only slightly different in density.</dd>
-          <dt id="g-cnr">CNR (contrast-to-noise ratio)</dt><dd>How clearly a structure stands out compared with the graininess around it. Higher is better.</dd>
-          <dt id="g-photon">Photon starvation</dt><dd>Too few x-rays reach the detector (for example through both shoulders), which causes streaks.</dd>
-        </dl>
-      </div>
-      <div>
-        <h4>Processing words</h4>
-        <dl>
-          <dt id="g-filter">Filter (kernel)</dt><dd>A math formula that changes the numbers in an attenuation profile, either to smooth them or to sharpen edges.</dd>
-          <dt id="g-convolution">Convolution</dt><dd>Applying a filter to the raw data. Each value is changed based on its neighbours.</dd>
-          <dt id="g-deconv">Deconvolution</dt><dd>The reverse process: returning pixel values to their original level.</dd>
-          <dt id="g-bp">Back projection</dt><dd>Taking each ray sum and spreading ("smearing") it back across the image along the path it came from, then adding everything up.</dd>
-          <dt id="g-interp">Interpolation</dt><dd>Estimating a missing value from the known values on either side of it.</dd>
-          <dt id="g-iter">Iteration</dt><dd>One round of a repeat. Iterative = done again and again, getting a bit better each time.</dd>
-          <dt id="g-fourier">Fourier transformation</dt><dd>A math method that splits one complicated wave into simple waves of different frequencies.</dd>
-          <dt id="g-frequency">Frequency</dt><dd>How fast a wave goes up and down. A high-frequency sound is a high-pitched sound.</dd>
-          <dt id="g-gpu">GPU</dt><dd>A powerful computer chip built for heavy math. Iterative reconstruction needs it.</dd>
-        </dl>
-      </div>
-    </div>
-  </article>
-
-  <div class="check"><p class="ctl-title">Quick check · the basics</p><div class="quiz" data-topic="basics" data-n="3"></div></div>
-</section>
-
-<!-- ================= PART A ================= -->
-<section id="mpr" class="part">
-  <h2><span class="pn">A</span>Three 3D MPR algorithms</h2>
-  <p class="intro">After the scan you have a stack of flat slices. Stacked together they make a 3D block of <a class="term" href="#g-voxel">voxels</a>, each with a <a class="term" href="#g-hu">CT number</a>. To show the block as one 3D picture, the computer looks through it along many lines of sight, one for each dot on your screen. For each line it has to decide what to show. <b>MIP, SSD and SVD are three different rules for that decision.</b></p>
-  <ol class="steps compact">
-    <li>Pick an algorithm: MIP, SSD or SVD.</li>
-    <li>Drag the image to turn the body around.</li>
-    <li>Tap any spot. The graph shows every CT number along that line of sight, from front to back, and what the algorithm does with them.</li>
-  </ol>
-  <p class="lead">The scan below is a simulated abdomen with spine, ribs, a <a class="term" href="#g-contrast">contrast</a>-filled aorta and kidneys.</p>
-
-  <div class="lab lab-vol">
-    <figure class="film">
-      <canvas id="vol" width="150" height="150" aria-label="3D rendering of a simulated abdominal CT volume. Drag to rotate, tap to inspect a ray."></canvas>
-      <figcaption>Drag to rotate. Tap a spot to follow its line of sight.</figcaption>
-    </figure>
-
-    <div class="panel">
-      <div class="seg" role="group" aria-label="3D algorithm" id="volMode">
-        <button data-m="mip" aria-pressed="true">MIP</button>
-        <button data-m="ssd" aria-pressed="false">SSD</button>
-        <button data-m="svd" aria-pressed="false">SVD</button>
-      </div>
-
-      <div id="rangeBox" class="rangebox" hidden>
-        <p class="ctl-title">Operator-selected pixel range</p>
-        <p class="hint">Only CT numbers between these two limits are used. Try the presets first.</p>
-        <div class="presets" role="group" aria-label="Range presets">
-          <button data-lo="600" data-hi="1200">Bone</button>
-          <button data-lo="200" data-hi="1200">Vessels + bone</button>
-          <button data-lo="-400" data-hi="1200">Skin surface</button>
-        </div>
-        <label class="ctl" for="lo">Lower limit <output id="loOut">200 HU</output></label>
-        <input type="range" id="lo" min="-600" max="1000" step="10" value="200">
-        <label class="ctl" for="hi">Upper limit <output id="hiOut">1200 HU</output></label>
-        <input type="range" id="hi" min="-400" max="1200" step="10" value="1200">
-      </div>
-
-      <div class="probe">
-        <p class="ctl-title">One line of sight, front to back</p>
-        <canvas id="probe" width="560" height="220" aria-label="Chart of CT numbers along the selected ray"></canvas>
-        <p id="probeNote" class="probe-note"></p>
-      </div>
-    </div>
-
-    <aside class="notes" id="volNotes" aria-live="polite"></aside>
-  </div>
-
-  <div class="tablewrap">
-    <table class="compare">
-      <caption>Side by side</caption>
-      <thead><tr><th scope="col"></th><th scope="col">MIP</th><th scope="col">SSD</th><th scope="col">SVD</th></tr></thead>
-      <tbody>
-        <tr><th scope="row">Full name</th><td>Maximum intensity projection</td><td>Shaded surface display</td><td>Shaded volume display</td></tr>
-        <tr><th scope="row">In plain words</th><td>Shows only the <b>brightest</b> thing on each line of sight</td><td>Shows only the <b>outer surface</b> of what you picked, like a solid plastic model</td><td>Shows <b>everything</b> in the range, partly see-through, like a glass model</td></tr>
-        <tr><th scope="row">Rule per ray</th><td>Keep the <b>highest value</b> pixel along the line</td><td>Keep only a <b>narrow range of values</b> as the object and show its surface</td><td>Blend <b>every voxel</b> inside the selected range</td></tr>
-        <tr><th scope="row">Looks</th><td>Flat, like an x-ray film</td><td>Solid shaded shell</td><td>Very 3D (<a class="term" href="#g-render">volume rendered</a>)</td></tr>
-        <tr><th scope="row">Board cue</th><td>Simplest 3D. <a class="term" href="#g-cta">CT angiography</a>.</td><td>Computer-aided. Bone imaging, <a class="term" href="#g-vc">virtual colonoscopy</a>.</td><td>Very sensitive to the <a class="term" href="#g-range">operator-selected pixel range</a>.</td></tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div class="check"><p class="ctl-title">Quick check · 3D algorithms</p><div class="quiz" data-topic="mpr" data-n="3"></div></div>
-</section>
-
-<!-- ================= PART B ================= -->
-<section id="math" class="part">
-  <h2><span class="pn">B</span>Mathematical algorithms</h2>
-  <p class="intro">The scanner never takes a picture directly. It only collects numbers (<a class="term" href="#g-raw">raw data</a>). A reconstruction <a class="term" href="#g-algorithm">algorithm</a> is a set of rules or directions for getting a specific output from a specific input. Here the input is raw data and the output is an image. In the lecture's words, it <b>solves a mathematical problem</b>.</p>
-  <div class="ipo" aria-label="Input, process, output">
-    <div><small>Input</small><b>Raw data</b></div>
-    <div><small>Process</small><b>Software (formula)</b></div>
-    <div><small>Output</small><b>Image data</b></div>
-  </div>
-  <p class="lead">Go through the topics in order. Each one builds on the one before it. At the end, the scanner bench puts them all together.</p>
-
-  <!-- Back projection -->
-  <article class="algo" id="bp">
-    <h3>Back projection</h3>
+  <!-- 1.1 -->
+  <article class="topic" id="what-is-ct">
+    <div class="topic-head"><span class="kicker">1.1</span><h3>Definition and basic concepts</h3></div>
     <div class="split">
-      <div class="work">
-        <p class="lead">The scanner never sees the values inside the patient. It only sees <a class="term" href="#g-raysum">ray sums</a>, the total of everything each ray passed through. Back projection works backwards: it takes each total, <b>spreads it back along the path of its ray</b>, and adds up all the spreads.</p>
-        <p class="lead">This is the worked example from the lecture. The object is a tiny 2 × 2 <a class="term" href="#g-matrix">matrix</a> with the values 1, 2, 3, 4. The scanner measures it from four directions. Press <b>Next step</b> to watch the matrix fill up.</p>
+      <div class="stack">
+        <p class="lead big"><b><a class="term" href="#g-ct">Computed tomography</a> produces a 3D digital tomographic image from diagnostic x-rays.</b> "Tomo" means slice. CT slices the patient on a computer instead of with a knife.</p>
+        <ol class="flow arrows">
+          <li class="tone cyan"><small>Input</small><b>Radiation + anatomy</b><span>x-rays pass through the patient</span></li>
+          <li class="tone yellow"><small>Measured</small><b>Projections</b><span>many views from many angles</span></li>
+          <li class="tone mint"><small>Output</small><b>2D, 3D or virtual images</b><span>topogram and MPR · SSD and SVD · virtual colonoscopy</span></li>
+        </ol>
+        <div class="card">
+          <h4>How a CT scan works, in plain words</h4>
+          <ol class="steps">
+            <li>The patient lies on a couch that slides into the <a class="term" href="#g-gantry">gantry</a>, the big ring.</li>
+            <li>Inside the ring an <a class="term" href="#g-tube">x-ray tube</a> spins around the patient. Across from it, <a class="term" href="#g-detector">detectors</a> measure how much x-ray made it through.</li>
+            <li>Each thin line of x-rays is a <a class="term" href="#g-ray">ray</a>. Bone weakens it a lot, air hardly at all. That weakening is <a class="term" href="#g-attenuation">attenuation</a>.</li>
+            <li>All rays from one angle make one <a class="term" href="#g-profile">projection</a>. Hundreds of angles together are the <a class="term" href="#g-raw">raw data</a>: numbers, not a picture yet.</li>
+            <li>A computer runs a <a class="term" href="#g-algorithm">reconstruction algorithm</a> that turns the raw data into a <a class="term" href="#g-matrix">matrix</a> of <a class="term" href="#g-pixel">pixels</a>, each holding a <a class="term" href="#g-hu">CT number</a>.</li>
+            <li>The image is displayed, adjusted (windowing, 3D), stored and sent to wherever it is needed.</li>
+          </ol>
+        </div>
+      </div>
+      <aside class="board">
+        <h4><svg class="spark"><use href="#spark"/></svg>Board points</h4>
+        <ul>
+          <li>Produces a <b>3D digital tomographic image</b> from <b>diagnostic x-rays</b></li>
+          <li>Usually performed <b>transversely</b>, giving a high-quality <b>direct transverse</b> image</li>
+          <li>Direct coronal images are possible by positioning the patient and tilting the gantry</li>
+          <li>Consists of a <b>finely-collimated beam</b> and a <b>detector</b></li>
+          <li>2D images: <b>topogram</b>, <b>MPR</b> · 3D: <b>SVD</b>, <b>SSD</b> · Virtual: <b>virtual colonoscopy</b></li>
+        </ul>
+      </aside>
+    </div>
+
+    <div class="lab" id="raisin">
+      <div class="lab-title"><span class="lab-tag">Lab</span><h4>The raisin bread analogy</h4></div>
+      <p class="lead">The lecture's picture: the <b>patient's body is the whole loaf</b>, the <b>skin is the brown crust</b>, <b>internal organs are the white bread</b> and a <b>raisin is the pathology</b>. A plain x-ray squashes the whole loaf into one shadow, so raisins pile on top of each other. CT cuts the loaf into slices and shows each one on its own. Slide the knife along the loaf.</p>
+      <div class="lab-grid">
+        <svg id="loaf" viewBox="0 0 420 200" class="sheetfig" role="img" aria-label="Side view of a loaf of raisin bread with a knife marking the slice position"></svg>
+        <div class="stack">
+          <div class="seg" role="group" aria-label="View" id="loafSeg">
+            <button data-v="ct" aria-pressed="true">CT slice</button>
+            <button data-v="xr" aria-pressed="false">Plain x-ray (whole loaf)</button>
+          </div>
+          <svg id="loafSlice" viewBox="0 0 240 180" class="sheetfig" role="img" aria-label="Cross-section of the bread at the knife position" style="max-width:340px"></svg>
+          <label class="ctl" for="knife">Knife position <output id="knifeOut"></output></label>
+          <input type="range" id="knife" min="0" max="100" value="38">
+          <p class="say" id="loafText" aria-live="polite"></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div class="card">
+        <div class="h"><h4>Direct transverse vs direct coronal</h4></div>
+        <svg viewBox="0 0 360 150" role="img" aria-label="Left: patient lying flat through the gantry for a direct transverse image. Right: patient prone with head tipped back and gantry tilted for a direct coronal image.">
+          <g fill="none" stroke-width="10"><ellipse cx="90" cy="70" rx="16" ry="50" stroke="var(--lav)"/><ellipse cx="270" cy="70" rx="16" ry="50" stroke="var(--lav)" transform="rotate(-20 270 70)"/></g>
+          <rect x="20" y="92" width="150" height="8" rx="4" fill="var(--orange)"/><rect x="200" y="92" width="150" height="8" rx="4" fill="var(--orange)"/>
+          <rect x="40" y="76" width="110" height="16" rx="8" fill="var(--pink)"/><circle cx="40" cy="80" r="11" fill="var(--pink)"/>
+          <rect x="230" y="76" width="100" height="16" rx="8" fill="var(--pink)"/><circle cx="268" cy="66" r="11" fill="var(--pink)"/><path d="M262 72 236 80" stroke="var(--pink)" stroke-width="10" stroke-linecap="round"/>
+          <path d="M90 14v112" stroke="var(--purple)" stroke-width="2.5" stroke-dasharray="5 4"/><path d="M291 14 249 126" stroke="var(--purple)" stroke-width="2.5" stroke-dasharray="5 4"/>
+          <text x="90" y="144" text-anchor="middle" font-size="12" fill="var(--ink)">direct transverse</text><text x="270" y="144" text-anchor="middle" font-size="12" fill="var(--ink)">direct coronal (tilt)</text>
+        </svg>
+        <p class="hint">Transverse is the default. A direct coronal image (sinuses, for example) needs the head tipped back and the gantry tilted, so the beam cuts the anatomy in the coronal plane.</p>
+      </div>
+      <div class="card">
+        <div class="h"><h4>Evolution of terms</h4><span class="go" aria-hidden="true">↗</span></div>
+        <ol class="terms">
+          <li>Computed transverse axial tomography</li>
+          <li>Computer-assisted tomography or computerized axial tomography (CAT)</li>
+          <li>Computerized transaxial transmission reconstruction tomography</li>
+          <li>Computerized tomography</li>
+          <li>Reconstructive tomography</li>
+          <li>Computed tomography (CT): the term used today</li>
+        </ol>
+      </div>
+    </div>
+    <div class="check"><div class="quiz" data-topic="def" data-n="3"></div></div>
+  </article>
+
+  <!-- 1.2 -->
+  <article class="topic" id="adv">
+    <div class="topic-head"><span class="kicker">1.2</span><h3>Advantages and disadvantages</h3></div>
+    <div class="grid4">
+      <div class="card tone mint"><b>Good low contrast resolution</b><span class="hint">Tells apart tissues with small density differences</span></div>
+      <div class="card tone mint"><b>Variable contrast scale</b><span class="hint">Window width (WW) and window level (WL)</span></div>
+      <div class="card tone mint"><b>Volume data acquisition</b><span class="hint">Helical: continuous volume data of anatomy</span></div>
+      <div class="card tone mint"><b>Better 3D imaging and MPR</b><span class="hint">Thanks to that continuous volume</span></div>
+      <div class="card tone mint"><b>Good for bony structures</b><span class="hint">Fractures, spine, skull base</span></div>
+      <div class="card tone mint"><b>Less costly examination</b><span class="hint">Compared with other cross-sectional exams</span></div>
+      <div class="card tone mint"><b>Non-invasive</b><span class="hint">A diagnostic tool from outside the body</span></div>
+      <div class="card tone mint"><b>Excellent for large blood vessels</b><span class="hint">With iodinated contrast: <b>320</b> or <b>370 mg of iodine per 1 mL</b></span></div>
+      <div class="card tone mint"><b>Superior image quality</b><span class="hint">No superimposition of structures</span></div>
+    </div>
+
+    <div class="lab">
+      <div class="lab-title"><span class="lab-tag">Lab</span><h4>Step-and-shoot vs helical: where the volume data comes from</h4></div>
+      <div class="lab-grid">
+        <figure class="film"><canvas id="modeCv" width="420" height="280" aria-label="Side view of the patient showing which parts of the body were measured"></canvas><figcaption id="modeCap">Side view of the patient</figcaption></figure>
+        <div class="stack">
+          <div class="seg" role="group" aria-label="Scan mode" id="modeSeg">
+            <button data-m="step" aria-pressed="true">Step-and-shoot</button>
+            <button data-m="helical" aria-pressed="false">Helical</button>
+          </div>
+          <p class="say" id="modeText" aria-live="polite"></p>
+          <div class="tablewrap"><table class="compare small" style="min-width:380px">
+            <thead><tr><th scope="col">Step-and-shoot</th><th scope="col">Helical</th></tr></thead>
+            <tbody>
+              <tr><td>a.k.a. <b>axial</b>, <b>slice-by-slice</b>, <b>sequential</b> scanning</td><td>a.k.a. <b>spiral</b>, continuous acquisition</td></tr>
+              <tr><td>Table stops for each slice</td><td>Table moves without stopping</td></tr>
+              <tr><td><b>Separated data</b> of the anatomy</td><td><b>Continuous volume data</b> of the anatomy</td></tr>
+            </tbody>
+          </table></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="split">
+      <div class="stack">
+        <h4>Disadvantages</h4>
+        <div class="grid3">
+          <div class="card tone pink"><b>Worse spatial resolution</b><span class="hint">About 1 lp/mm (chart below)</span></div>
+          <div class="card tone pink"><b>Soft tissue not shown as well</b><span class="hint">MRI does soft tissue better</span></div>
+          <div class="card tone pink"><b>High patient dose</b><span class="hint">Much higher than a plain radiograph</span></div>
+          <div class="card tone pink"><b>Distinct artifacts</b><span class="hint">Chapter VI covers them</span></div>
+          <div class="card tone pink"><b>Risk of allergic reaction</b><span class="hint">To iodinated contrast</span></div>
+          <div class="card tone pink"><b>Uncomfortable posture</b><span class="hint">Arms up, breath-holds</span></div>
+          <div class="card tone pink"><b>Patient anxiety</b><span class="hint">Enclosed gantry, machine noise</span></div>
+        </div>
+      </div>
+      <div class="card">
+        <h4>Spatial resolution: CT is the blurriest</h4>
+        <svg viewBox="0 0 300 170" role="img" aria-label="Bar chart: screen-film radiography 7 line pairs per millimetre, digital radiography 5, CT 1">
+          <g font-size="12" fill="var(--ink)">
+            <text x="0" y="34">Screen-film</text><rect x="92" y="20" width="196" height="22" rx="11" fill="var(--purple)"/><text x="280" y="35" text-anchor="end" fill="#fff" font-weight="700">7 lp/mm</text>
+            <text x="0" y="84">Digital (DR)</text><rect x="92" y="70" width="140" height="22" rx="11" fill="var(--lav)"/><text x="224" y="85" text-anchor="end" fill="#231F2B" font-weight="700">5 lp/mm</text>
+            <text x="0" y="134">CT</text><rect x="92" y="120" width="28" height="22" rx="11" fill="var(--orange)"/><text x="128" y="135" font-weight="700">1 lp/mm</text>
+          </g>
+        </svg>
+        <p class="hint">Line pairs per millimetre (lp/mm): more pairs means finer detail. CT trades detail for contrast: it sees small <i>density</i> differences far better than plain films do.</p>
+      </div>
+    </div>
+    <div class="tip"><b>Prof's tip</b><p>Classic pairing: CT has <b>good low-contrast resolution</b> (an advantage) but <b>worse spatial resolution</b> (a disadvantage). Expect a question that swaps the two.</p></div>
+    <div class="check"><div class="quiz" data-topic="adv" data-n="3"></div></div>
+  </article>
+
+  <!-- 1.3 -->
+  <article class="topic" id="processes">
+    <div class="topic-head"><span class="kicker">1.3</span><h3>CT processes</h3></div>
+    <p class="lead">The hardware is a <b>gantry</b>, a <b>patient table</b>, and a <b>computer, monitor and software</b> linked to <b>PACS</b> for storage and communication. Every scan then goes through six steps. Tap each step.</p>
+    <div class="lab">
+      <div class="row" id="pipe" role="group" aria-label="CT process steps">
+        <button class="flowbtn" data-s="0" aria-pressed="true"><small>Step 1 · "get data"</small><b>Data acquisition</b></button>
+        <button class="flowbtn" data-s="1" aria-pressed="false"><small>Step 2 · "use data"</small><b>Image reconstruction</b></button>
+        <button class="flowbtn" data-s="2" aria-pressed="false"><small>Step 3 · "display data"</small><b>Image display</b></button>
+        <button class="flowbtn" data-s="3" aria-pressed="false"><small>Step 4</small><b>Image manipulation</b></button>
+        <button class="flowbtn" data-s="4" aria-pressed="false"><small>Step 5</small><b>Image storage</b></button>
+        <button class="flowbtn" data-s="5" aria-pressed="false"><small>Step 6</small><b>Image communication</b></button>
+      </div>
+      <div class="lab-grid">
+        <svg id="pipeArt" viewBox="0 0 360 200" class="sheetfig" role="img" aria-label="Diagram of the selected step"></svg>
+        <div class="stack" id="pipeText" aria-live="polite"></div>
+      </div>
+    </div>
+
+    <div class="lab">
+      <div class="lab-title"><span class="lab-tag">Lab</span><h4>Prospective vs retrospective reconstruction</h4></div>
+      <div class="lab-grid">
+        <div class="pair">
+          <figure class="film"><canvas id="proCv" width="200" height="200" aria-label="Prospective image"></canvas><figcaption>Prospective: made during the scan</figcaption></figure>
+          <figure class="film"><canvas id="retroCv" width="200" height="200" aria-label="Retrospective image"></canvas><figcaption id="retroCap">Retrospective: made later</figcaption></figure>
+        </div>
+        <div class="stack">
+          <p class="lead"><b>Prospective</b> reconstruction is produced <b>automatically during scanning</b>. <b>Retrospective</b> reconstruction <b>uses the same raw data later to generate a new image</b>. The patient is not scanned again. Pick what the radiologist asks for:</p>
+          <div class="seg" role="group" aria-label="Retrospective request" id="retroSeg">
+            <button data-r="same" aria-pressed="true">Nothing yet</button>
+            <button data-r="zoom" aria-pressed="false">Smaller DFOV on the spine</button>
+            <button data-r="thin" aria-pressed="false">Sharper detail</button>
+          </div>
+          <p class="say" id="retroText" aria-live="polite"></p>
+        </div>
+      </div>
+    </div>
+    <div class="check"><div class="quiz" data-topic="proc" data-n="3"></div></div>
+  </article>
+
+  <!-- 1.4 -->
+  <article class="topic" id="windowing">
+    <div class="topic-head"><span class="kicker">1.4</span><h3>Image manipulation: gray scale (windowing)</h3></div>
+    <p class="lead">Image manipulation is digital processing that makes images more useful for diagnosis: <b>image smoothing</b>, <b>edge enhancement</b>, <b>gray scale manipulation</b> and <b>3D image processing</b> (such as MIP and <b>minimum intensity projection</b>, which keeps the <i>lowest</i> values and so shows air-filled airways).</p>
+    <p class="lead">Gray scale manipulation is the one you calculate on the board. A CT image holds about 4,000 HU values, but a monitor shows only a few hundred grays. The <a class="term" href="#g-ww"><b>window width (WW)</b></a> is how many HU are spread across the grays, and the <a class="term" href="#g-wl"><b>window level (WL)</b></a> is the HU at the middle gray.</p>
+    <div class="lab">
+      <div class="lab-title"><span class="lab-tag">Lab</span><h4>Window it yourself</h4></div>
+      <div class="lab-grid">
+        <figure class="film"><canvas id="winCv" width="320" height="320" aria-label="Simulated chest CT slice displayed with the chosen window"></canvas><figcaption id="winProbe">Point at the image to read the HU</figcaption></figure>
+        <div class="stack">
+          <div class="presets" role="group" aria-label="Window presets" id="winPresets">
+            <button data-ww="1500" data-wl="-500">Lung · 1500 / −500</button>
+            <button data-ww="2000" data-wl="300">Bone · 2000 / 300</button>
+            <button data-ww="400" data-wl="40">Soft tissue · 400 / 40</button>
+          </div>
+          <label class="ctl" for="ww">Window width (WW) <output id="wwOut"></output></label>
+          <input type="range" id="ww" min="1" max="4000" value="400">
+          <label class="ctl" for="wl">Window level (WL) <output id="wlOut"></output></label>
+          <input type="range" id="wl" min="-1000" max="1500" value="40">
+          <label class="ctl" for="winZ">Slice <output id="winZOut"></output></label>
+          <input type="range" id="winZ" min="5" max="95" value="38">
+          <div><div class="graybar" id="grayBar"></div><div class="graybar-scale"><span>−1000</span><span>0</span><span>+1000</span><span>+2000</span><span>+3000</span></div></div>
+          <div class="calc" id="winCalc" aria-live="polite"></div>
+        </div>
+      </div>
+      <div class="card">
+        <h4>Practice: work out the range</h4>
+        <div class="drill">
+          <p class="lead" id="drillQ" style="flex:1 1 100%"></p>
+          <label class="ctl" style="flex-direction:column">Lower limit<input type="number" id="drLo" inputmode="numeric"></label>
+          <label class="ctl" style="flex-direction:column">Upper limit<input type="number" id="drHi" inputmode="numeric"></label>
+          <button class="primary" id="drCheck">Check</button><button id="drNew">New numbers</button>
+        </div>
+        <p class="say" id="drillSay" aria-live="polite">Lower = WL − WW/2. Upper = WL + WW/2.</p>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="card purple">
+        <div class="h"><h4>Bone window (from the slides)</h4><span class="go">✦</span></div>
+        <p class="calc" style="margin:0">WW 2000 · WL 300 · WW/2 = 1000<br>Upper = 300 + 1000 = <b>1300</b><br>Lower = 300 − 1000 = <b>−700</b></p>
+        <p>Gray: −700 to 1300 · Black: below −700 · White: above 1300</p>
+      </div>
+      <div class="card feat">
+        <div class="h"><h4>Lung window (from the slides)</h4><span class="go">✦</span></div>
+        <p class="calc" style="margin:0;color:var(--ink)">WW 1500 · WL −500 · WW/2 = 750<br>Upper = −500 + 750 = <b>250</b><br>Lower = −500 − 750 = <b>−1250</b></p>
+        <p>Gray: −1250 to 250 · Black: below −1250 · White: above 250</p>
+      </div>
+    </div>
+    <div class="tip"><b>Prof's tip</b><p><b>Wide WW</b> = long scale of contrast, more grays, lower contrast (lung, bone). <b>Narrow WW</b> = short scale, high contrast (brain, soft tissue). <b>WL</b> should sit near the HU of the tissue you want to see.</p></div>
+    <div class="check"><div class="quiz" data-topic="win" data-n="3"></div></div>
+  </article>
+
+  <!-- 1.5 -->
+  <article class="topic" id="storage">
+    <div class="topic-head"><span class="kicker">1.5</span><h3>Image storage and communication</h3></div>
+    <div class="split">
+      <svg viewBox="0 0 520 260" class="sheetfig" role="img" aria-label="Network: the CT scanner sends DICOM images to PACS, which connects with RIS and HIS, and out to laser printers, workstations, display monitors, ICU, trauma and operating rooms, and computers outside the hospital.">
+        <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 10 5 0 10z" fill="var(--purple)"/></marker></defs>
+        <g stroke="var(--purple)" stroke-width="2" fill="none" marker-end="url(#ah)">
+          <path d="M120 130h76"/><path d="M300 112 360 50"/><path d="M300 122 360 100"/><path d="M300 138 360 160"/><path d="M300 148 360 210"/>
+        </g>
+        <g stroke="var(--orange)" stroke-width="3"><path d="M248 80V58M248 180v22"/></g>
+        <rect x="16" y="98" width="104" height="64" rx="18" fill="var(--pink)"/><text x="68" y="126" text-anchor="middle" font-size="13" font-weight="700" fill="#231F2B">CT scanner</text><text x="68" y="144" text-anchor="middle" font-size="10" fill="#231F2B">DICOM out</text>
+        <rect x="196" y="100" width="104" height="60" rx="30" fill="var(--purple)"/><text x="248" y="135" text-anchor="middle" font-size="16" font-weight="700" fill="#fff">PACS</text>
+        <rect x="208" y="22" width="80" height="36" rx="18" fill="var(--yellow)"/><text x="248" y="45" text-anchor="middle" font-size="13" font-weight="700" fill="#231F2B">RIS</text>
+        <rect x="208" y="202" width="80" height="36" rx="18" fill="var(--cyan)"/><text x="248" y="225" text-anchor="middle" font-size="13" font-weight="700" fill="#231F2B">HIS</text>
+        <g font-size="11" fill="var(--ink)"><text x="366" y="48">Laser printers</text><text x="366" y="104">Diagnostic workstations</text><text x="366" y="164">ICU · trauma · OR monitors</text><text x="366" y="214">Computers outside</text><text x="366" y="228">the hospital</text></g>
+        <text x="158" y="122" text-anchor="middle" font-size="10" fill="var(--ink-2)">network</text>
+      </svg>
+      <div class="stack">
+        <div class="card"><h4>Image storage (archiving)</h4><p>Storing CT images for later analysis:</p><ul><li>Magnetic tape and disk</li><li>Optical / laser storage</li><li><b>Laser camera:</b> records CT images (on film)</li></ul></div>
+        <div class="card purple"><h4>Image communication</h4><p>Electronic transmission of text data and images from the CT scanner to printers, workstations, monitors, ICU/trauma/OR and outside computers.</p><ul><li><b>DICOM</b> = Digital Imaging and Communications in Medicine, the shared standard (and DICOM printers)</li><li>Must make <b>connectivity (networking)</b> among imaging modalities possible: <b>PACS · RIS · HIS</b></li></ul></div>
+      </div>
+    </div>
+    <div class="check"><div class="quiz" data-topic="store" data-n="2"></div></div>
+  </article>
+</section>
+
+<!-- ================= CHAPTER II · PHYSICAL PRINCIPLES ================= -->
+<section class="chapter" id="ch2" data-ch="ch2">
+  <svg class="deco o" style="right:5%;top:56px;width:30px;height:30px" aria-hidden="true"><use href="#spark"/></svg>
+  <header class="ch-head">
+    <div class="ch-icon t-lav"><svg><use href="#i-voxel"/></svg></div>
+    <div><span class="ch-num">Chapter II</span><h2>Physical principles</h2></div>
+    <p class="ch-desc">The building blocks: what a slice is, how it is cut into pixels and voxels, how x-rays get weaker in tissue, and the number scale that comes out.</p>
+  </header>
+  <ul class="toc">
+    <li><a href="#slice">Cross-sectional slice</a></li><li><a href="#matrix">Pixel, voxel, matrix</a></li><li><a href="#fov">Field of view</a></li>
+    <li><a href="#atten">Attenuation &amp; µ</a></li><li><a href="#hu">Hounsfield units</a></li><li><a href="#rays">Ray, projection, translation</a></li>
+  </ul>
+
+  <!-- 2.1 -->
+  <article class="topic" id="slice">
+    <div class="topic-head"><span class="kicker">2.1</span><h3>The cross-sectional slice</h3></div>
+    <div class="split">
+      <svg viewBox="0 0 420 240" class="sheetfig" role="img" aria-label="A slab of tissue with three axes: X across is width, Y up and down is height, Z through the slab is thickness. One small cube in the slab is a voxel.">
+        <path d="M110 70 290 70 350 30 170 30Z" fill="var(--lav)"/>
+        <path d="M110 70H290V200H110Z" fill="var(--lav-soft)" stroke="var(--purple)" stroke-width="2"/>
+        <path d="M290 70 350 30V160L290 200Z" fill="var(--purple)" opacity=".75"/>
+        <g stroke="var(--purple)" stroke-opacity=".35"><path d="M146 70V200M182 70V200M218 70V200M254 70V200M110 96H290M110 122H290M110 148H290M110 174H290"/></g>
+        <rect x="182" y="122" width="36" height="26" fill="var(--orange)"/><path d="M182 122l8-6h36l-8 6zM218 122l8-6v26l-8 6z" fill="#E08A1E"/>
+        <g stroke-width="3" fill="none" stroke-linecap="round">
+          <path d="M110 220H300" stroke="var(--marker)"/><path d="M300 220l-10-6M300 220l-10 6" stroke="var(--marker)"/>
+          <path d="M80 200V60" stroke="var(--cyan)"/><path d="M80 60l-6 10M80 60l6 10" stroke="var(--cyan)"/>
+          <path d="M360 175 396 151" stroke="var(--beam)"/><path d="M396 151l-11 1M396 151l-4 10" stroke="var(--beam)"/>
+        </g>
+        <g font-size="13" font-weight="700" fill="var(--ink)"><text x="205" y="238" text-anchor="middle">X · width</text><text x="64" y="134" text-anchor="middle" transform="rotate(-90 64 134)">Y · height</text><text x="414" y="204" text-anchor="end">Z · thickness</text></g>
+        <text x="200" y="20" text-anchor="middle" font-size="12" fill="var(--ink-2)">orange cube = one voxel</text>
+      </svg>
+      <aside class="board">
+        <h4><svg class="spark"><use href="#spark"/></svg>Board points</h4>
+        <ul>
+          <li><b>Z-axis</b> = <b>thickness</b> of the slice (along the patient, head to feet)</li>
+          <li><b>X-axis</b> = <b>width</b> of the slice</li>
+          <li><b>Y-axis</b> = <b>height</b> of the slice</li>
+          <li><b>X-direction miscentering:</b> the patient lies more to <b>one side of the table</b></li>
+          <li><b>Y-direction miscentering:</b> the technologist sets the <b>table too low or too high</b> within the gantry</li>
+        </ul>
+      </aside>
+    </div>
+    <div class="lab">
+      <div class="lab-title"><span class="lab-tag">Lab</span><h4>Center the patient with the lasers</h4></div>
+      <div class="lab-grid">
+        <svg id="misc" viewBox="0 0 320 300" class="sheetfig" role="img" aria-label="Front view of the gantry with the patient's cross-section, the isocenter and red positioning lasers" style="max-width:420px"></svg>
+        <div class="stack">
+          <p class="lead">The red <a class="term" href="#g-laser">gantry lasers</a> cross at the <a class="term" href="#g-iso">isocenter</a>, the middle of the gantry. Move the patient and the table until the patient's center sits on it.</p>
+          <label class="ctl" for="mx">Patient side to side (X) <output id="mxOut"></output></label>
+          <input type="range" id="mx" min="-12" max="12" value="7">
+          <label class="ctl" for="my">Table height (Y) <output id="myOut"></output></label>
+          <input type="range" id="my" min="-12" max="12" value="-6">
+          <p class="say" id="miscText" aria-live="polite"></p>
+        </div>
+      </div>
+    </div>
+    <div class="check"><div class="quiz" data-topic="slice" data-n="2"></div></div>
+  </article>
+
+  <!-- 2.2 -->
+  <article class="topic" id="matrix">
+    <div class="topic-head"><span class="kicker">2.2</span><h3>Pixel, voxel and matrix</h3></div>
+    <div class="grid3">
+      <div class="card"><div class="h"><h4>Pixel</h4><span class="go">2D</span></div><p><b>Picture element</b>: each cell of information on the flat image.</p><ul><li>Large pixel → <b>poor</b> spatial resolution</li><li>Small pixel → <b>better</b> spatial resolution</li></ul></div>
+      <div class="card feat"><div class="h"><h4>Voxel</h4><span class="go">3D</span></div><p><b>Volume element</b>: the pixel plus the slice thickness, so a small block of the patient.</p><ul><li>Large voxel → <b>poor</b> spatial resolution</li><li>Small voxel → <b>better</b> spatial resolution</li></ul></div>
+      <div class="card"><div class="h"><h4>Matrix</h4><span class="go">#</span></div><p>The <b>grid of rows and columns</b> of pixels.</p><ul><li>Original EMI: <b>80 × 80</b></li><li>Most common: <b>512 × 512</b></li><li>Large matrix → <b>better</b> spatial resolution</li></ul></div>
+    </div>
+
+    <div class="lab">
+      <div class="lab-title"><span class="lab-tag">Lab</span><h4>Partial volume averaging</h4></div>
+      <div class="lab-grid">
+        <div id="pvGrid" aria-live="polite"></div>
+        <div class="stack">
+          <p class="lead">One big pixel can't show four different tissues. It stores their <b>average</b>. The lecture's example: +500, −200, +60 and +40 inside one pixel.</p>
+          <div class="seg" role="group" aria-label="Pixel size" id="pvSeg">
+            <button data-p="large" aria-pressed="true">Large pixel</button>
+            <button data-p="small" aria-pressed="false">Small pixels</button>
+          </div>
+          <p class="say" id="pvText"></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="lab">
+      <div class="lab-title"><span class="lab-tag">Lab</span><h4>Matrix × FOV = pixel size</h4></div>
+      <div class="lab-grid">
+        <figure class="film"><canvas id="mxCv" width="300" height="300" aria-label="Simulated CT slice reconstructed with the chosen matrix and field of view"></canvas><figcaption id="mxCap"></figcaption></figure>
+        <div class="stack">
+          <p class="ctl-title">Matrix</p>
+          <div class="seg" role="group" aria-label="Matrix size" id="mxSeg">
+            <button data-m="16" aria-pressed="false">16²</button><button data-m="80" aria-pressed="false">80² (EMI)</button>
+            <button data-m="256" aria-pressed="false">256²</button><button data-m="512" aria-pressed="true">512²</button>
+          </div>
+          <label class="ctl" for="fovR">Field of view <output id="fovOut"></output></label>
+          <input type="range" id="fovR" min="10" max="50" value="40">
+          <label class="ctl" for="thk">Slice thickness <output id="thkOut"></output></label>
+          <input type="range" id="thk" min="1" max="10" value="5">
+          <div class="readout"><div><small>Pixel size</small><b id="pxOut"></b></div><div><small>Voxel volume</small><b id="vxOut"></b></div></div>
+          <p class="say" id="mxText" aria-live="polite"></p>
+        </div>
+      </div>
+      <div class="grid2">
+        <div class="card tone cyan"><b>Fixed matrix size</b><p>Increase the FOV → increase the pixel size (worse detail).</p></div>
+        <div class="card tone yellow"><b>Fixed FOV</b><p>Increase the matrix size → reduce the pixel size (better detail).</p></div>
+      </div>
+    </div>
+    <div class="tip"><b>Prof's tip <span class="beyond">beyond the slides</span></b><p><b>Pixel size = FOV ÷ matrix</b>. A 25 cm FOV on a 512 matrix: 250 mm ÷ 512 ≈ <b>0.49 mm</b>. <b>Voxel volume = pixel size² × slice thickness.</b> Convert cm to mm first. This calculation shows up on boards a lot.</p></div>
+    <div class="check"><div class="quiz" data-topic="pix" data-n="3"></div></div>
+  </article>
+
+  <!-- 2.3 -->
+  <article class="topic" id="fov">
+    <div class="topic-head"><span class="kicker">2.3</span><h3>Field of view (FOV)</h3></div>
+    <div class="split">
+      <div class="lab">
+        <svg id="fovArt" viewBox="0 0 360 300" class="sheetfig" role="img" aria-label="Gantry aperture containing the scan field of view, with the display field of view inside it" style="max-width:460px;margin:0 auto"></svg>
+        <label class="ctl" for="dfov">Display FOV <output id="dfovOut"></output></label>
+        <input type="range" id="dfov" min="8" max="60" value="25">
+        <p class="say" id="fovText" aria-live="polite"></p>
+      </div>
+      <div class="stack">
+        <div class="card"><h4>FOV</h4><p>The <b>diameter of image reconstruction</b>. Unit: <b>cm</b>. Two types: display FOV and scan FOV.</p></div>
+        <div class="card purple"><h4>Display FOV (DFOV)</h4><ul><li><b>Target</b> or <b>zoom</b> region</li><li>The section of data selected for display on the image</li><li><b>Cannot be larger than the SFOV</b></li></ul></div>
+        <div class="card feat"><h4>Scan FOV (SFOV)</h4><ul><li>Also called the <b>calibration FOV</b></li><li>The area within the gantry from which raw data for calibration is acquired</li><li><b>Anything outside the SFOV is not imaged</b> → out-of-field artifact</li></ul></div>
+      </div>
+    </div>
+    <div class="check"><div class="quiz" data-topic="fov" data-n="2"></div></div>
+  </article>
+
+  <!-- 2.4 -->
+  <article class="topic" id="atten">
+    <div class="topic-head"><span class="kicker">2.4</span><h3>Beam attenuation and the linear attenuation coefficient</h3></div>
+    <p class="lead"><b>Beam attenuation</b> is the reduction in the intensity of a radiation beam as it passes through an object. Four things decide how much: <b>tissue mass density</b>, <b>tissue thickness</b>, <b>atomic number</b> and <b>radiation energy</b>.</p>
+    <div class="lab">
+      <div class="lab-title"><span class="lab-tag">Lab</span><h4>Send photons through tissue</h4></div>
+      <div class="lab-grid">
+        <svg id="atArt" viewBox="0 0 420 220" class="sheetfig" role="img" aria-label="Photons entering a block of tissue from the left; fewer come out on the right"></svg>
+        <div class="stack">
+          <p class="ctl-title">Tissue (density and atomic number)</p>
+          <div class="seg" role="group" aria-label="Tissue" id="atTissue">
+            <button data-t="fat" aria-pressed="false">Fat</button><button data-t="water" aria-pressed="true">Water</button>
+            <button data-t="muscle" aria-pressed="false">Muscle</button><button data-t="bone" aria-pressed="false">Bone</button>
+          </div>
+          <label class="ctl" for="atThk">Thickness <output id="atThkOut"></output></label>
+          <input type="range" id="atThk" min="1" max="20" value="5">
+          <p class="ctl-title">Energy</p>
+          <div class="seg" role="group" aria-label="Energy" id="atKv">
+            <button data-k="80" aria-pressed="false">80 kVp</button><button data-k="120" aria-pressed="true">120 kVp</button><button data-k="140" aria-pressed="false">140 kVp</button>
+          </div>
+          <div class="readout"><div><small><span class="mu">µ</span> (cm⁻¹)</small><b id="atMu"></b></div><div><small>Transmitted</small><b id="atTr"></b></div></div>
+          <p class="hint">Teaching values, rounded. Water is set to the lecture's 0.18 cm⁻¹.</p>
+        </div>
+      </div>
+    </div>
+    <div class="split">
+      <div class="card feat">
+        <h4>Linear attenuation coefficient (µ)</h4>
+        <p>The amount of the x-ray beam that is <b>scattered or absorbed</b> per unit of material (the slide says "per unit mass"; its unit is <b>cm⁻¹</b>, meaning per centimetre).</p>
+        <p><b>Water: µ = 0.18 cm⁻¹ at 125 kVp</b> → about <b>18%</b> of the beam absorbed or scattered per centimetre.</p>
+      </div>
+      <div class="tip"><b>Prof's tip</b><p>Bone attenuates more than water because it is <b>denser</b> and has a <b>higher atomic number</b> (calcium). A higher kVp makes every tissue attenuate <b>less</b>.</p></div>
+    </div>
+    <div class="check"><div class="quiz" data-topic="atten" data-n="2"></div></div>
+  </article>
+
+  <!-- 2.5 -->
+  <article class="topic" id="hu">
+    <div class="topic-head"><span class="kicker">2.5</span><h3>Hounsfield units (HU)</h3></div>
+    <p class="lead">Also called <b>CT numbers</b> or <b>density values</b>: the number stored in each pixel. It measures how much a structure attenuates the beam compared with water, and is used to judge <b>what kind of tissue</b> it is. Move along the scale.</p>
+    <div class="lab">
+      <div class="hu-ruler" id="huRuler" role="img" aria-label="Hounsfield scale from minus 1000 to plus 3000 with typical tissues"></div>
+      <p class="say" id="huSay" aria-live="polite">Point at the scale.</p>
+      <div class="grid2">
+        <div class="card">
+          <h4>Calculate a CT number <span class="beyond">beyond the slides</span></h4>
+          <p class="calc" style="margin:0">HU = 1000 × (µ<sub>tissue</sub> − µ<sub>water</sub>) ÷ µ<sub>water</sub></p>
+          <label class="ctl" for="muT"><span class="mu">µ</span> of the tissue <output id="muTOut"></output></label>
+          <input type="range" id="muT" min="0" max="72" value="19">
+          <p class="say" id="muSay" aria-live="polite"></p>
+        </div>
+        <aside class="board">
+          <h4><svg class="spark"><use href="#spark"/></svg>Board points</h4>
+          <ul>
+            <li>Range on the slides: <b>−1000 to +3000</b></li>
+            <li><b>Negative:</b> attenuates <b>less than water</b> (fat, lung, air)</li>
+            <li><b>Positive:</b> attenuates <b>more than water</b> (blood, organs, bone)</li>
+            <li>Water = <b>0</b>, air = <b>−1000</b> by definition</li>
+          </ul>
+        </aside>
+      </div>
+    </div>
+    <div class="check"><div class="quiz" data-topic="hu" data-n="3"></div></div>
+  </article>
+
+  <!-- 2.6 -->
+  <article class="topic" id="rays">
+    <div class="topic-head"><span class="kicker">2.6</span><h3>Ray, projection and translation</h3></div>
+    <div class="lab">
+      <div class="lab-title"><span class="lab-tag">Lab</span><h4>Measure a 3 × 3 patient</h4></div>
+      <div class="lab-grid">
+        <svg id="rayArt" viewBox="0 0 400 300" class="sheetfig" role="img" aria-label="A 3 by 3 grid of attenuation values with rays passing through and their ray sums forming a projection"></svg>
+        <div class="stack">
+          <div class="seg" role="group" aria-label="Direction" id="raySeg">
+            <button data-d="h" aria-pressed="true">Across</button><button data-d="v" aria-pressed="false">Down</button><button data-d="d" aria-pressed="false">Diagonal</button>
+          </div>
+          <div class="stepper"><button class="primary" id="transBtn">Run a translation</button><span class="count" id="transOut"></span></div>
+          <p class="say" id="rayText" aria-live="polite"></p>
+        </div>
+      </div>
+    </div>
+    <div class="grid3">
+      <div class="card"><h4>Ray</h4><p>The path the x-ray beam takes <b>from the tube to the detector</b>.</p><p><b>Ray sum:</b> how much of the beam was attenuated along that ray.</p></div>
+      <div class="card purple"><h4>Projection / view</h4><p>The <b>attenuation (intensity) profile</b>: a set of rays striking a detector array. <b>A complete set of ray sums.</b></p></div>
+      <div class="card feat"><h4>Translation</h4><p>A <b>sweep or scan</b>: the movement of the source-detector assembly <b>across</b> the patient. It results in <b>one projection (view)</b>.</p></div>
+    </div>
+    <div class="check"><div class="quiz" data-topic="ray" data-n="2"></div></div>
+  </article>
+</section>
+
+<!-- ================= CHAPTER III · DATA ACQUISITION ================= -->
+<section class="chapter" id="ch3" data-ch="ch3">
+  <svg class="deco" style="right:7%;top:50px;width:28px;height:28px" aria-hidden="true"><use href="#spark"/></svg>
+  <header class="ch-head">
+    <div class="ch-icon t-cyan"><svg><use href="#i-fan"/></svg></div>
+    <div><span class="ch-num">Chapter III</span><h2>Data acquisition</h2></div>
+    <p class="ch-desc">The first step of the CT process: how the patient is scanned to get enough data. Seven generations of scanners, helical pitch, slip rings, the parts in the gantry, and the detectors.</p>
+  </header>
+  <ul class="toc">
+    <li><a href="#generations">Scanner generations</a></li><li><a href="#pitch">Helical CT &amp; pitch</a></li><li><a href="#msct">Multislice CT</a></li>
+    <li><a href="#sliprings">Slip rings</a></li><li><a href="#xray-system">X-ray system</a></li><li><a href="#collimation">Collimation</a></li><li><a href="#detectors">Detectors</a></li>
+  </ul>
+
+  <!-- 3.1 -->
+  <article class="topic" id="generations">
+    <div class="topic-head"><span class="kicker">3.1</span><h3>Basic scheme and scanner generations</h3></div>
+    <div class="grid2">
+      <div class="card"><h4>Basic scheme for data acquisition</h4><ul><li>The <b>first step</b> of the CT process</li><li>The method by which the patient is scanned to obtain <b>enough data for image reconstruction</b></li><li>Involves the <b>gantry</b> and the <b>patient couch</b></li></ul></div>
+      <div class="card purple"><h4>Scanner generation</h4><p>Decided by how the <b>x-ray tube is arranged relative to the detectors</b>, based on:</p><ul><li>Scanning <b>geometry</b> (parallel, fan or cone beam)</li><li>Scanning <b>motion</b> (translate, rotate, stationary)</li><li><b>Number of detectors</b></li></ul><p>There are <b>1st to 7th</b> generations.</p></div>
+    </div>
+    <div class="lab">
+      <div class="lab-title"><span class="lab-tag">Lab</span><h4>Watch each generation move</h4></div>
+      <div class="seg" role="group" aria-label="Scanner generation" id="genSeg">
+        <button data-g="1" aria-pressed="true">1st</button><button data-g="2" aria-pressed="false">2nd</button><button data-g="3" aria-pressed="false">3rd</button>
+        <button data-g="4" aria-pressed="false">4th</button><button data-g="5" aria-pressed="false">5th</button><button data-g="6" aria-pressed="false">6th</button><button data-g="7" aria-pressed="false">7th</button>
+      </div>
+      <div class="gen-stage">
+        <figure class="film"><canvas id="genCv" width="360" height="360" aria-label="Animation of the selected scanner generation"></canvas><figcaption id="genCap"></figcaption></figure>
+        <div class="gen-facts" id="genFacts" aria-live="polite"></div>
+      </div>
+      <div class="tablewrap" id="genTable"></div>
+    </div>
+    <div class="tip"><b>Prof's tip</b><p>Remember the motions: <b>1st and 2nd translate–rotate</b>, <b>3rd rotate–rotate</b>, <b>4th rotate–stationary</b>, <b>5th stationary–stationary</b> (nothing moves). In the 3rd generation the beam's apex is at the <b>tube</b>. In the 4th it is at the <b>detector</b>.</p></div>
+    <div class="check"><div class="quiz" data-topic="gen" data-n="4"></div></div>
+  </article>
+
+  <!-- 3.2 -->
+  <article class="topic" id="pitch">
+    <div class="topic-head"><span class="kicker">3.2</span><h3>Helical CT and pitch</h3></div>
+    <div class="grid3">
+      <div class="card"><h4>Helical (spiral) CT</h4><ul><li><b>Continuous acquisition</b> scanning</li><li>Continuously rotating x-ray tube with <b>constant output</b></li><li><b>Uninterrupted table movement</b></li><li><b>Volumetric</b> scanning</li><li>Reconstruct at <b>any z-axis</b> position (interpolated)</li><li>Made possible by <b>slip-ring technology</b></li></ul></div>
+      <div class="card tone mint"><h4>Advantages</h4><ul><li>Increased speed</li><li>Improved image resolution</li><li>Better iodinated contrast concentration in images</li><li>Fewer motion artifacts</li><li>Needs <b>less contrast media</b></li><li>Superior MPR and 3D reformation</li><li>More patient comfort, more department productivity</li></ul></div>
+      <div class="card tone pink"><h4>Disadvantages</h4><ul><li>A full 360° set of projection data is <b>not acquired for each section</b></li><li>The data is <b>slanted</b>, so it has to be <b>interpolated</b></li><li><b>Slightly poorer resolution</b> than step-and-shoot</li></ul></div>
+    </div>
+    <div class="lab">
+      <div class="lab-title"><span class="lab-tag">Lab</span><h4>Pitch: couch movement vs beam width</h4></div>
+      <figure class="film"><canvas id="pitchCv" width="900" height="300" aria-label="Unrolled helical scan showing the beam band for each rotation along the table"></canvas><figcaption>Each band = the slab of patient covered during one rotation · 10 mm beam</figcaption></figure>
+      <div class="lab-grid">
+        <div class="stack">
+          <label class="ctl" for="pitchR">Pitch <output id="pitchOut"></output></label>
+          <input type="range" id="pitchR" min="0.5" max="2" step="0.05" value="1">
+          <div class="readout"><div><small>Table feed / rotation</small><b id="feedOut"></b></div><div><small>Sampling</small><b id="pitchKind"></b></div></div>
+          <p class="calc" style="margin:0">Pitch = table movement per rotation ÷ x-ray beam width</p>
+        </div>
+        <p class="say" id="pitchText" aria-live="polite"></p>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="card purple"><div class="h"><h4>Low pitch (&lt; 1)</h4><span class="go">↓</span></div><ul><li>Slower scan time</li><li><b>High dose</b></li><li><b>High spatial resolution</b></li><li>Covers less anatomy (lesser FOV imaged)</li><li><b>Oversampling</b></li></ul></div>
+      <div class="card feat"><div class="h"><h4>High pitch (&gt; 1)</h4><span class="go">↑</span></div><ul><li>Faster scan time</li><li><b>Low dose</b></li><li><b>Low spatial resolution</b></li><li>Covers more anatomy (greater FOV imaged)</li><li><b>Undersampling</b></li></ul></div>
+    </div>
+    <div class="check"><div class="quiz" data-topic="pitch" data-n="3"></div></div>
+  </article>
+
+  <!-- 3.3 -->
+  <article class="topic" id="msct">
+    <div class="topic-head"><span class="kicker">3.3</span><h3>Seventh generation: multislice CT</h3></div>
+    <div class="split">
+      <div class="stack">
+        <p class="lead"><b>Multislice</b> or <b>multidetector CT</b> (MSCT/MDCT) has many detector rows side by side along z, so it produces <b>multiple slices per gantry rotation</b>. Single-detector CT uses a thin <b>fan beam</b>. MDCT opens the beam into a <b>cone beam</b>. <b>Spatial resolution is decided by the width of the detector</b>, not by the beam.</p>
+        <div class="lab">
+          <div class="lab-title"><span class="lab-tag">Lab</span><h4>One 20 mm beam, three ways to slice it</h4></div>
+          <svg id="msctArt" viewBox="0 0 420 230" class="sheetfig" role="img" aria-label="A 20 millimetre beam falling on four 5 millimetre detectors, grouped into sections"></svg>
+          <div class="seg" role="group" aria-label="Detector grouping" id="msctSeg">
+            <button data-m="4" aria-pressed="true">Four 5 mm</button><button data-m="2" aria-pressed="false">Two 10 mm</button><button data-m="1" aria-pressed="false">One 20 mm</button>
+          </div>
+          <p class="say" id="msctText" aria-live="polite"></p>
+        </div>
+      </div>
+      <aside class="board">
+        <h4><svg class="spark"><use href="#spark"/></svg>MSCT advantages</h4>
+        <ul>
+          <li>Longer and faster <b>z-axis coverage</b> per gantry rotation</li>
+          <li>More volume covered per unit time</li>
+          <li>Allows <b>post-acquisition reconstruction</b></li>
+          <li>Increases image resolution</li>
+          <li><b>Adjustable slice thickness</b></li>
+          <li>Lecture example: 20 mm collimated beam, four 5 mm detectors → four 5 mm, two 10 mm, or one 20 mm section</li>
+        </ul>
+      </aside>
+    </div>
+    <div class="check"><div class="quiz" data-topic="msct" data-n="2"></div></div>
+  </article>
+
+  <!-- 3.4 -->
+  <article class="topic" id="sliprings">
+    <div class="topic-head"><span class="kicker">3.4</span><h3>Slip ring technology</h3></div>
+    <div class="lab">
+      <div class="lab-title"><span class="lab-tag">Lab</span><h4>Cable vs slip ring</h4></div>
+      <div class="lab-grid">
+        <figure class="film"><canvas id="slipCv" width="340" height="340" aria-label="Gantry end view comparing a cable-connected tube with a slip-ring connected tube"></canvas><figcaption id="slipCap"></figcaption></figure>
+        <div class="stack">
+          <div class="seg" role="group" aria-label="Connection" id="slipSeg">
+            <button data-s="cable" aria-pressed="true">Old: high-voltage cable</button><button data-s="slip" aria-pressed="false">Slip rings</button>
+          </div>
+          <p class="say" id="slipText" aria-live="polite"></p>
+          <div class="card"><h4>What slip rings are</h4><p><b>Electromechanical devices</b>: circular, electrically conductive <b>rings and brushes</b> that transmit electrical energy across a <b>rotating interface</b>. They <b>made helical CT possible</b>.</p><ul><li>Supply electric power to run the <b>x-ray tube</b></li><li>Carry <b>detector signals</b> out to the reconstruction computer</li></ul></div>
+        </div>
+      </div>
+    </div>
+    <div class="grid3">
+      <div class="card tone mint"><b>Continuous tube rotation</b></div><div class="card tone mint"><b>Acquires volume data faster</b></div><div class="card tone mint"><b>Faster scan time</b></div>
+      <div class="card tone mint"><b>No high-voltage cable</b></div><div class="card tone mint"><b>Minimal interscan delays</b></div><div class="card tone mint"><b>No start–stop process, no cable wrap-around</b></div>
+    </div>
+    <div class="check"><div class="quiz" data-topic="slip" data-n="2"></div></div>
+  </article>
+
+  <!-- 3.5 -->
+  <article class="topic" id="xray-system">
+    <div class="topic-head"><span class="kicker">3.5</span><h3>X-ray system components</h3></div>
+    <p class="lead">Gantry, x-ray generator, x-ray tube, beam filter, collimators and patient couch. Take the cover off, tap a part, and change the scan to see how they work together.</p>
+    <div class="lab">
+      <div class="lab-title"><span class="lab-tag">3D lab</span><h4>Gantry explorer</h4></div>
+      <div class="stage" style="margin:0;aspect-ratio:16/9">
+        <canvas id="g3d" aria-label="Interactive 3D CT gantry. Drag to turn, tap a part to learn about it."></canvas>
+        <span class="cap">drag to turn · tap a part</span>
+        <div class="stage-ui"><button id="g3Scan" aria-pressed="true">X-ray on</button><button id="g3Cover" aria-pressed="false">Cover on</button></div>
+      </div>
+      <div class="lab-grid">
+        <div class="stack">
+          <p class="ctl-title">Parts</p>
+          <div class="chips" id="g3Parts">
+            <button data-p="gantry">Gantry</button><button data-p="aperture">Aperture</button><button data-p="tube">X-ray tube</button><button data-p="generator">HV generator</button>
+            <button data-p="filter">Bowtie filter</button><button data-p="collimator">Pre-patient collimator</button><button data-p="postcoll">Post-patient collimator</button>
+            <button data-p="detectors">Detectors</button><button data-p="das">DAS</button><button data-p="sliprings">Slip rings</button><button data-p="lasers">Lasers</button>
+            <button data-p="panel">Control panel &amp; mic</button><button data-p="couch">Patient couch</button>
+          </div>
+          <p class="ctl-title">Scanner type</p>
+          <div class="seg" role="group" aria-label="Scanner type" id="g3Mode">
+            <button data-m="single" aria-pressed="true">Single slice (fan)</button><button data-m="multi" aria-pressed="false">Multislice (cone)</button><button data-m="dual" aria-pressed="false">Dual source</button>
+          </div>
+          <label class="ctl" for="g3Pitch">Pitch <output id="g3PitchOut">1.0</output></label><input type="range" id="g3Pitch" min="0.5" max="2" step="0.1" value="1">
+          <label class="ctl" for="g3Tilt">Gantry tilt <output id="g3TiltOut">0°</output></label><input type="range" id="g3Tilt" min="-30" max="30" value="0">
+          <label class="ctl" for="g3Height">Table height <output id="g3HeightOut">centered</output></label><input type="range" id="g3Height" min="-4" max="4" value="0">
+        </div>
+        <div class="card purple" id="g3Info" aria-live="polite"></div>
+      </div>
+    </div>
+
+    <div class="grid3">
+      <div class="card"><div class="h"><h4>Gantry</h4><span class="go">◯</span></div><ul><li>Ring-shaped, the <b>largest</b> and most visible part, with a rotating scan frame</li><li>Houses slip rings, x-ray tube, HV generators, collimators, detectors, DAS</li><li><b>Aperture</b> (opening): most scanners <b>70 cm</b>; ranges 70–90 cm, 50–85 cm, 20–34 in.</li><li><b>Tilt ±30°</b>. Standard ±12° to ±30° in <b>0.5° steps</b>, for partial coronal images</li><li><b>Cooling:</b> old units had AC in the gantry. Current units circulate the room's ambient air</li><li><b>Lasers</b> (red) for transverse, coronal and sagittal centering · <b>control panels</b> on the side (light, tilt, table) · <b>microphone</b> to talk to the patient</li></ul></div>
+      <div class="card"><div class="h"><h4>X-ray generator</h4><span class="go">⚡</span></div><ul><li>Old: single-phase and three-phase power, <b>outside</b> the gantry, long high-tension cable</li><li>Current: <b>high-frequency (HF)</b>, <b>inside</b> the gantry, small, short high-tension cable</li><li>Power rating <b>20–100 kW</b> (current units up to <b>120 kW</b>)</li><li>At 30–60 kW: kVp <b>80, 100, 120, 130, 140</b> · mA <b>20–500</b> in 1 mA steps</li></ul></div>
+      <div class="card"><div class="h"><h4>X-ray tube</h4><span class="go">✦</span></div><ul><li>Produces a <b>heterogeneous</b> (polychromatic) beam</li><li><b>Fixed anode, oil-cooled</b> tubes: 1st and 2nd generation</li><li><b>Rotating anode</b>: common today, anode diameter <b>5 in. or more</b></li><li>Helical CT: <b>brazed graphite anode disk</b>, tungsten–rhenium focal track on a graphite body</li><li>Target angle <b>12°</b> · <b>3,600–10,000 rpm</b> · metal enclosure</li><li><b>Straton tube</b>: for MSCT, the whole tube sits in oil (<b>direct-cooled</b>), <b>5 MHU/min</b>, high mA, long exposure and coverage</li></ul></div>
+      <div class="card"><div class="h"><h4>Filtration</h4><span class="go">▽</span></div><ul><li>Hardens the beam: removes long-wavelength, <b>low-energy</b> x-rays</li><li>Makes the polychromatic beam closer to <b>monochromatic</b>, increasing its <b>mean energy</b></li><li>Inherent: <b>3.0 mm Al</b> · added: <b>0.1–0.4 mm Al</b> (per slides)</li><li><b>Bowtie filter</b>: shapes the energy distribution across the beam for <b>uniform beam hardening</b></li></ul></div>
+      <div class="card"><div class="h"><h4>Patient couch</h4><span class="go">▭</span></div><ul><li>Flat or curved, made of <b>low-Z carbon graphite fiber</b> to reduce beam attenuation</li><li>Moves vertically, horizontally, both, or automatically</li><li><b>Emergency pull</b> stops the table in an emergency or malfunction</li><li>Weight limit <b>220 kg</b> · head first or feet first, supine or prone</li><li><b>Scannable range</b>: how far the table moves horizontally, meaning how much can be scanned without repositioning</li></ul></div>
+      <div class="card feat"><div class="h"><h4>Detectors</h4><span class="go">▦</span></div><p>Capture the radiation coming out of the patient, convert it to electrical signals and then to binary data. They collect the attenuation information. <b>SID: 44 in.</b></p><p><a href="#detectors" style="color:#fff">Detectors in depth ↓</a></p></div>
+    </div>
+    <div class="check"><div class="quiz" data-topic="parts" data-n="4"></div></div>
+  </article>
+
+  <!-- 3.6 -->
+  <article class="topic" id="collimation">
+    <div class="topic-head"><span class="kicker">3.6</span><h3>Collimation</h3></div>
+    <p class="lead">CT has <b>two collimators</b>, and together they affect both <b>patient dose</b> and <b>image quality</b>. Open and close each one.</p>
+    <div class="lab">
+      <div class="lab-grid">
+        <svg id="collArt" viewBox="0 0 420 330" class="sheetfig" role="img" aria-label="Side view of the beam: tube, pre-patient collimator, patient, post-patient collimator, detector, with the dose profile and sensitivity profile"></svg>
+        <div class="stack">
+          <label class="ctl" for="preC">Pre-patient (source) collimator <output id="preOut"></output></label><input type="range" id="preC" min="2" max="20" value="10">
+          <label class="ctl" for="postC">Post-patient (predetector) collimator <output id="postOut"></output></label><input type="range" id="postC" min="2" max="20" value="6">
+          <p class="say" id="collText" aria-live="polite"></p>
+        </div>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="card purple"><h4>Pre-patient collimator</h4><ul><li>a.k.a. <b>source collimator</b></li><li>Between the <b>x-ray tube and the patient</b></li><li>Limits the area of the patient in the useful beam</li><li>Determines <b>patient dose</b> (<b>dose profile</b>)</li></ul></div>
+      <div class="card feat"><h4>Post-patient collimator</h4><ul><li>a.k.a. <b>predetector collimator</b></li><li><b>Below the patient, above the detector</b> array</li><li>Restricts the beam the detectors see · <b>decreases scatter</b> · <b>improves contrast</b></li><li>Determines <b>slice thickness</b> (<b>sensitivity profile</b>)</li></ul></div>
+    </div>
+    <div class="check"><div class="quiz" data-topic="coll" data-n="2"></div></div>
+  </article>
+
+  <!-- 3.7 -->
+  <article class="topic" id="detectors">
+    <div class="topic-head"><span class="kicker">3.7</span><h3>Detectors</h3></div>
+    <p class="lead">Detectors <b>capture</b> the radiation beam coming out of the patient, <b>convert</b> it into electrical signals, which are then turned into <b>binary coded</b> data. Eight characteristics describe a good one.</p>
+    <div class="grid4" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,250px),1fr))">
+      <div class="card tone lav"><b>Efficiency</b><span class="hint">Capture, absorb and convert photons (lab below)</span></div>
+      <div class="card tone cyan"><b>Response time</b><span class="hint">Detect one event and recover for the next. Very short (ms), to avoid afterglow and "pile-up"</span></div>
+      <div class="card tone yellow"><b>Dynamic range</b><span class="hint">Largest signal ÷ smallest signal it can tell apart: <b>1,000,000 : 1</b></span></div>
+      <div class="card tone mint"><b>Stability</b><span class="hint">Steadiness of response. Unstable systems need frequent calibration. <b>Gas detectors are more stable</b></span></div>
+      <div class="card tone pink"><b>Afterglow</b><span class="hint">The image persists after the beam stops. CT must be low: <b>&lt; 0.01% at 100 ms</b>, subtracted before reconstruction</span></div>
+      <div class="card tone orange"><b>Resolution</b><span class="hint">Set by element size, focal spot size, sampling (detector pitch) and crosstalk. Higher with small detectors, small FSS, low pitch and spacing bars</span></div>
+      <div class="card tone cream"><b>Crosstalk</b><span class="hint">Signal leaking into the neighbouring element. Causes noise and lowers resolution. Reduced by spacing bars, small gaps, pre/post and septal collimators</span></div>
+      <div class="card tone lav"><b>Accuracy</b><span class="hint">Measures the true transmitted intensity</span></div>
+    </div>
+
+    <div class="lab">
+      <div class="lab-title"><span class="lab-tag">Lab</span><h4>Detector designer: follow 1,000 photons</h4></div>
+      <div class="lab-grid">
+        <div class="stack">
+          <label class="ctl" for="effSize">Detector face width <output id="effSizeOut"></output></label><input type="range" id="effSize" min="2" max="10" value="8">
+          <label class="ctl" for="effGap">Gap between detectors <output id="effGapOut"></output></label><input type="range" id="effGap" min="0" max="5" value="1">
+          <p class="ctl-title">Material</p>
+          <div class="seg" role="group" aria-label="Detector material" id="effMat"><button data-m="xe" aria-pressed="false">Xenon gas</button><button data-m="sc" aria-pressed="true">Scintillation crystal</button></div>
+          <label class="ctl" for="effConv">Conversion to electrical signal <output id="effConvOut"></output></label><input type="range" id="effConv" min="40" max="100" value="85">
+        </div>
+        <div class="stack">
+          <div class="meters" id="effMeters"></div>
+          <p class="say" id="effText" aria-live="polite"></p>
+        </div>
+      </div>
+      <div class="grid3">
+        <div class="card"><h4>Capture efficiency</h4><p class="calc" style="margin:0;font-size:.8rem">(total detected photons ÷ total incident photons) × 100</p><p>Affected by the <b>size of the detector area facing the beam</b> and the <b>distance between two detectors</b>. High capture → more reliable data.</p></div>
+        <div class="card"><h4>Absorption efficiency</h4><p>The number of photons <b>absorbed</b> by the detector. Depends on its <b>atomic number</b>, <b>physical density</b>, <b>size</b> and <b>face thickness</b>. High → low dose, low noise, high resolution.</p></div>
+        <div class="card"><h4>Conversion efficiency</h4><p class="calc" style="margin:0;font-size:.8rem">(total electrical signals ÷ total incident photons) × 100</p><p>High → high SNR, less grainy image, low dose, faster scan, better contrast and resolution.</p></div>
+      </div>
+    </div>
+
+    <div class="lab">
+      <div class="lab-title"><span class="lab-tag">Lab</span><h4>Inside the two detector types</h4></div>
+      <div class="lab-grid">
+        <svg id="detArt" viewBox="0 0 400 260" class="sheetfig" role="img" aria-label="Cross-section of the selected detector type showing the current step"></svg>
+        <div class="stack">
+          <div class="seg" role="group" aria-label="Detector type" id="detType"><button data-t="xe" aria-pressed="true">Xenon gas ionization</button><button data-t="sc" aria-pressed="false">Scintillation</button></div>
+          <div class="stepper"><button id="detPrev">Back</button><button class="primary" id="detNext">Next step</button><span class="count" id="detCount"></span></div>
+          <p class="say" id="detText" aria-live="polite"></p>
+        </div>
+      </div>
+      <div class="tablewrap"><table class="compare">
+        <thead><tr><th scope="col"></th><th scope="col">Xenon gas (ionization chamber)</th><th scope="col">Scintillation (solid state)</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Principle</th><td>Measures ionization in gas (<b>xenon</b> or krypton). Ion charge = photon energy</td><td>Crystals that <b>fluoresce</b> (high Z and density). A <b>photodiode</b> turns the light into an analog electrical signal</td></tr>
+          <tr><th scope="row">Materials</th><td>Gas + <b>thin tungsten electrode plates 1.5 mm apart</b> (the spacing sets the display pixel size)</td><td>NaI, bismuth germanate (Bi₄Ge₃O₁₂), CsI, cadmium tungstate (CdWO₄), gadolinium or yttrium ceramics</td></tr>
+          <tr><th scope="row">Absorption</th><td><b>Low: 60–90%</b> (photons lost in the casing window)</td><td><b>High: nearly 100%</b>, no loss in a front window. NaI 100% but high afterglow · others ~90% with minimal afterglow</td></tr>
+          <tr><th scope="row">Afterglow</th><td><b>None</b>, no lag</td><td><b>Produces afterglow</b></td></tr>
+          <tr><th scope="row">Stability</th><td><b>Highly stable</b>, stable under pressure, easier to calibrate</td><td>More <b>sensitive to temperature changes and moisture</b></td></tr>
+          <tr><th scope="row">Direction</th><td><b>Highly directional</b>: fixed, pointed at the tube. Can be packed extremely close</td><td>Not highly directional</td></tr>
+          <tr><th scope="row">Used in</th><td>Inexpensive scanners · <b>not</b> in the original EMI (not sensitive enough) · <b>not in 4th generation or helical</b></td><td><b>All helical and MSCT</b> scanners</td></tr>
+          <tr><th scope="row">Cost</th><td>Less expensive</td><td>More expensive</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+
+    <div class="split">
+      <svg viewBox="0 0 420 230" class="sheetfig" role="img" aria-label="Left: a deep, narrow detector accepts little scatter. Right: a short, wide detector accepts more scatter.">
+        <g font-size="12" font-weight="700" fill="var(--ink)"><text x="105" y="22" text-anchor="middle">Deep, narrow ✓</text><text x="315" y="22" text-anchor="middle">Short, wide ✗</text></g>
+        <rect x="85" y="80" width="40" height="120" rx="6" fill="var(--purple)"/><rect x="255" y="150" width="120" height="50" rx="6" fill="var(--lav)"/>
+        <g stroke="var(--beam)" stroke-width="3" fill="none"><path d="M105 34V76"/><path d="M315 34V146"/></g>
+        <g stroke="var(--marker)" stroke-width="2.5" stroke-dasharray="5 4" fill="none"><path d="M30 50 88 86"/><path d="M180 50 122 86"/><path d="M240 60 270 146"/><path d="M400 60 362 146"/><path d="M220 110 258 150"/></g>
+        <g fill="var(--marker)"><circle cx="88" cy="86" r="4"/><circle cx="122" cy="86" r="4"/></g>
+        <text x="105" y="222" text-anchor="middle" font-size="11" fill="var(--ink-2)">scatter hits the walls</text><text x="315" y="222" text-anchor="middle" font-size="11" fill="var(--ink-2)">scatter gets in</text>
+      </svg>
+      <div class="board">
+        <h4><svg class="spark"><use href="#spark"/></svg>Placement, size, spacing</h4>
+        <ul>
+          <li><b>Placement:</b> as close together as possible, so all x-rays become data</li>
+          <li><b>Size and shape:</b> <b>deep, narrow</b> accepts less scatter (desirable). Short, wide accepts more (undesirable)</li>
+          <li><b>Spacing:</b> measured from the middle of one detector to the middle of the next</li>
+          <li><b>Aperture:</b> the size of the opening. Small aperture = good spatial resolution and good scatter rejection</li>
+          <li><b>Spacing bars</b> separate detectors, let them sit in an arc or circle, and prevent crosstalk</li>
+        </ul>
+      </div>
+    </div>
+    <div class="check"><div class="quiz" data-topic="det" data-n="4"></div></div>
+  </article>
+</section>
+
+<!-- ================= CHAPTER IV · IMAGE RECONSTRUCTION ================= -->
+<section class="chapter" id="ch4" data-ch="ch4">
+  <svg class="deco o" style="right:6%;top:48px;width:32px;height:32px" aria-hidden="true"><use href="#spark"/></svg>
+  <header class="ch-head">
+    <div class="ch-icon t-orange"><svg><use href="#i-matrix"/></svg></div>
+    <div><span class="ch-num">Chapter IV</span><h2>Image reconstruction</h2></div>
+    <p class="ch-desc">How raw numbers become a picture: the three 3D MPR algorithms and the six mathematical algorithms, each one hands-on, plus a full scanner bench at the end.</p>
+  </header>
+  <ul class="toc">
+    <li><a href="#recon-basics">Basics</a></li><li><a href="#mpr">MIP · SSD · SVD</a></li><li><a href="#bp">Back projection</a></li><li><a href="#conv">Convolution</a></li><li><a href="#fbp">Filtered BP</a></li>
+    <li><a href="#fourier">Fourier</a></li><li><a href="#helical">Helical interpolation</a></li><li><a href="#iterative">Iterative</a></li><li><a href="#scanner">Scanner bench</a></li>
+  </ul>
+
+  <!-- 4.1 -->
+  <article class="topic" id="recon-basics">
+    <div class="topic-head"><span class="kicker">4.1</span><h3>What reconstruction is</h3></div>
+    <p class="lead big">Image reconstruction is <b>the process of using raw data to create an image</b>. A reconstruction <a class="term" href="#g-algorithm">algorithm</a> is <b>a set of rules or directions for getting a specific output from a specific input</b>. It <b>solves a mathematical problem</b>.</p>
+    <div class="ipo" aria-label="Input, process, output">
+      <div><small>Input</small><b>Raw data</b></div>
+      <div><small>Process (formula)</small><b>Software</b></div>
+      <div><small>Output</small><b>Image data</b></div>
+    </div>
+    <div class="grid4">
+      <div class="card"><span class="unit">MICROPROCESSOR</span><span class="num">30 s</span><span class="hint">Single processor</span></div>
+      <div class="card feat"><span class="unit">ARRAY PROCESSOR</span><span class="num">&lt; 1 s</span><span class="hint">Subsecond: many processors in parallel</span></div>
+      <div class="card"><span class="unit">SINGLE SOURCE CT</span><span class="num">180°</span><span class="hint">+ fan/cone angle for a full data set</span></div>
+      <div class="card purple"><span class="unit">DUAL SOURCE CT</span><span class="num">90°</span><span class="hint">+ fan/cone angle for a full data set</span></div>
+    </div>
+    <div class="grid2">
+      <div class="card tone yellow"><h4>Three 3D MPR algorithms</h4><p>Maximum intensity projection (MIP) · Shaded surface display (SSD) · Shaded volume display (SVD)</p></div>
+      <div class="card tone cyan"><h4>Mathematical algorithms</h4><p>Back projection · Convolution · Filtered back projection · Fourier transformation · Helical interpolation · Iterative reconstruction</p></div>
+    </div>
+    <div class="tip"><b>Prof's tip</b><p>Dual source needs only <b>90°</b> because two tubes 90° apart together cover the 180° that one tube needs. Half the rotation time means <b>better temporal resolution</b>, which is why it is used for the heart.</p></div>
+    <div class="check"><div class="quiz" data-topic="recon" data-n="2"></div></div>
+  </article>
+
+  <!-- 4.2 MPR -->
+  <article class="topic" id="mpr">
+    <div class="topic-head"><span class="kicker">4.2</span><h3>Three 3D MPR algorithms: MIP, SSD, SVD</h3></div>
+    <p class="lead">After the scan you have a stack of slices: a 3D block of <a class="term" href="#g-voxel">voxels</a>, each with a <a class="term" href="#g-hu">CT number</a>. To show it as one 3D picture, the computer looks through the block along one line of sight per screen dot and must decide what to show. <b>MIP, SSD and SVD are three different rules for that decision.</b> Pick one, drag to turn the body, tap a spot to see its line of sight.</p>
+    <div class="lab">
+      <div class="lab-vol">
+        <figure class="film">
+          <canvas id="vol" width="150" height="150" aria-label="3D rendering of a simulated abdominal CT volume. Drag to rotate, tap to inspect a ray."></canvas>
+          <figcaption>Drag to rotate · tap a spot to follow its line of sight</figcaption>
+        </figure>
+        <div class="panel">
+          <div class="seg" role="group" aria-label="3D algorithm" id="volMode">
+            <button data-m="mip" aria-pressed="true">MIP</button><button data-m="ssd" aria-pressed="false">SSD</button><button data-m="svd" aria-pressed="false">SVD</button>
+          </div>
+          <div id="rangeBox" class="rangebox" hidden>
+            <p class="ctl-title">Operator-selected pixel range</p>
+            <div class="presets" role="group" aria-label="Range presets">
+              <button data-lo="600" data-hi="1200">Bone</button><button data-lo="200" data-hi="1200">Vessels + bone</button><button data-lo="-400" data-hi="1200">Skin surface</button>
+            </div>
+            <label class="ctl" for="lo">Lower limit <output id="loOut">200 HU</output></label>
+            <input type="range" id="lo" min="-600" max="1000" step="10" value="200">
+            <label class="ctl" for="hi">Upper limit <output id="hiOut">1200 HU</output></label>
+            <input type="range" id="hi" min="-400" max="1200" step="10" value="1200">
+          </div>
+          <div class="probe">
+            <p class="ctl-title">One line of sight, front to back</p>
+            <canvas id="probe" width="560" height="220" aria-label="Chart of CT numbers along the selected ray"></canvas>
+            <p id="probeNote" class="probe-note"></p>
+          </div>
+        </div>
+        <aside class="notes" id="volNotes" aria-live="polite"></aside>
+      </div>
+    </div>
+    <div class="tablewrap">
+      <table class="compare">
+        <thead><tr><th scope="col"></th><th scope="col">MIP</th><th scope="col">SSD</th><th scope="col">SVD</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Full name</th><td>Maximum intensity projection</td><td>Shaded surface display</td><td>Shaded volume display</td></tr>
+          <tr><th scope="row">In plain words</th><td>Shows only the <b>brightest</b> thing on each line of sight</td><td>Shows only the <b>outer surface</b> of what you picked, like a solid plastic model</td><td>Shows <b>everything</b> in the range, partly see-through, like a glass model</td></tr>
+          <tr><th scope="row">Rule per ray</th><td>Keep the <b>highest value</b> pixel along the line</td><td>A <b>narrow range of values</b> = the object. Show its surface</td><td>Blend <b>every voxel</b> inside the selected range</td></tr>
+          <tr><th scope="row">Board cue</th><td><b>Simplest</b> 3D · <a class="term" href="#g-cta">CT angiography</a></td><td><b>Computer-aided</b> · bone imaging · <a class="term" href="#g-vc">virtual colonoscopy</a></td><td><b>Very sensitive to the operator-selected pixel range</b> · looks very 3D</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="check"><div class="quiz" data-topic="mpr" data-n="3"></div></div>
+  </article>
+
+  <!-- 4.3 BP -->
+  <article class="topic" id="bp">
+    <div class="topic-head"><span class="kicker">4.3</span><h3>Back projection</h3></div>
+    <div class="split">
+      <div class="lab">
+        <p class="lead">The scanner only knows <a class="term" href="#g-raysum">ray sums</a>. Back projection works backwards: it <b>spreads each sum back along its ray</b> and adds all the spreads. This is the lecture's worked example: a 2 × 2 object holding 1, 2, 3, 4, measured from four directions.</p>
         <div class="bpfig">
           <figure><svg id="bpRays" viewBox="0 0 240 230" role="img" aria-label="Object with the current set of rays"></svg><figcaption>Object and the rays being measured</figcaption></figure>
           <figure><div class="mat" id="bpMat"></div><figcaption id="bpLabel">Running total</figcaption></figure>
         </div>
-        <div class="stepper">
-          <button id="bpPrev">Back</button>
-          <button id="bpNext" class="primary">Next step</button>
-          <span id="bpCount" class="count"></span>
-        </div>
+        <div class="stepper"><button id="bpPrev">Back</button><button id="bpNext" class="primary">Next step</button><span id="bpCount" class="count"></span></div>
         <p class="steptext" id="bpText" aria-live="polite"></p>
       </div>
-      <aside class="notes">
-        <h4>Board points</h4>
+      <aside class="board">
+        <h4><svg class="spark"><use href="#spark"/></svg>Board points</h4>
         <ul>
-          <li>Also called the <b>summation</b> or <b>linear superposition</b> method. Both names just mean "adding layers on top of each other".</li>
-          <li>Oldendorf (1961) and Kuhl and Edwards (1963)</li>
+          <li>a.k.a. <b>summation</b> or <b>linear superposition</b> method</li>
+          <li><b>Oldendorf (1961)</b> and <b>Kuhl and Edwards (1963)</b></li>
           <li>Converts data from the <a class="term" href="#g-profile">attenuation profile</a> into a matrix</li>
           <li>Sums all back-projected images to form the CT image</li>
-          <li>Does not produce a sharp image. <b>Not used in clinical CT.</b></li>
-          <li><a class="term" href="#g-artifact">Artifact</a>: the typical <a class="term" href="#g-star"><b>star pattern</b></a></li>
-          <li>One back projection reveals little. Many back projections make the image look like the object.</li>
+          <li>Not sharp · <b>not used in clinical CT</b></li>
+          <li>Artifact: the typical <a class="term" href="#g-star"><b>star pattern</b></a></li>
+          <li>One back projection reveals little. Many back projections resemble the object</li>
+          <li>2 × 2 answer: (BP + P1 + P2 + P3 − <b>10</b>) ÷ <b>3</b></li>
         </ul>
       </aside>
     </div>
-    <div class="check"><p class="ctl-title">Quick check · back projection</p><div class="quiz" data-topic="bp" data-n="3"></div></div>
+    <div class="check"><div class="quiz" data-topic="bp" data-n="3"></div></div>
   </article>
 
-  <!-- Convolution -->
-  <article class="algo" id="conv">
-    <h3>Convolution</h3>
+  <!-- 4.4 Convolution -->
+  <article class="topic" id="conv">
+    <div class="topic-head"><span class="kicker">4.4</span><h3>Convolution</h3></div>
     <div class="split">
-      <div class="work">
-        <p class="lead">Back projection alone gives a blurry image. To fix that, the scanner changes the numbers first. A <a class="term" href="#g-filter">convolution filter</a> is a math formula that changes an <a class="term" href="#g-profile">attenuation profile</a> <b>before</b> it is back projected. Think of a photo filter: one kind smooths things out, another sharpens edges.</p>
-        <p class="lead">The bars below are one profile across a structure with sharp edges. Pick a filter and compare it with the dashed original.</p>
+      <div class="lab">
+        <p class="lead">A <a class="term" href="#g-filter">convolution filter</a> changes an attenuation profile <b>before</b> it is back projected, like a photo filter that smooths or sharpens. Pick one and compare it with the dashed original.</p>
         <div class="seg" role="group" aria-label="Filter" id="convSeg">
-          <button data-c="raw" aria-pressed="true">No filter</button>
-          <button data-c="smooth" aria-pressed="false">Smoothing</button>
-          <button data-c="sharp" aria-pressed="false">Edge enhancing</button>
+          <button data-c="raw" aria-pressed="true">No filter</button><button data-c="smooth" aria-pressed="false">Smoothing</button><button data-c="sharp" aria-pressed="false">Edge enhancing</button>
         </div>
         <svg id="convSvg" viewBox="0 0 420 190" role="img" aria-label="Attenuation profile bars"></svg>
         <p class="steptext" id="convText" aria-live="polite"></p>
-        <div class="tablewrap">
-          <table class="compare small">
-            <thead><tr><th scope="col">Smoothing filter</th><th scope="col">Edge-enhancing filter</th></tr></thead>
-            <tbody>
-              <tr><td>Reduces the difference between adjacent (side-by-side) pixels</td><td>Accentuates (exaggerates) the difference between neighboring pixels</td></tr>
-              <tr><td>Low <a class="term" href="#g-contrastres">contrast resolution</a>, low <a class="term" href="#g-spatial">spatial resolution</a></td><td>High spatial resolution, high contrast resolution</td></tr>
-              <tr><td>Image smoothing: <b>soft tissue</b></td><td>Edge enhancement: <b>bone</b></td></tr>
-              <tr><td>Low <a class="term" href="#g-noise">noise</a>, more blurred</td><td>Low blurring, high noise</td></tr>
-            </tbody>
-          </table>
-        </div>
+        <div class="tablewrap"><table class="compare small" style="min-width:420px">
+          <thead><tr><th scope="col">Smoothing filter</th><th scope="col">Edge-enhancing filter</th></tr></thead>
+          <tbody>
+            <tr><td>Reduces the difference between adjacent pixels</td><td>Accentuates the difference between neighbouring pixels</td></tr>
+            <tr><td>Low contrast resolution, low spatial resolution</td><td>High spatial resolution, high contrast resolution</td></tr>
+            <tr><td>Image smoothing: <b>soft tissue</b></td><td>Edge enhancement: <b>bone</b></td></tr>
+            <tr><td>Low noise, more blurred</td><td>Low blurring, high noise</td></tr>
+          </tbody>
+        </table></div>
       </div>
-      <aside class="notes">
-        <h4>Board points</h4>
+      <aside class="board">
+        <h4><svg class="spark"><use href="#spark"/></svg>Board points</h4>
         <ul>
           <li>A digital image processing technique</li>
-          <li>Applies a filter to an attenuation profile, changing pixel values with a formula</li>
-          <li>Used to <b>minimize <a class="term" href="#g-streak">streak artifacts</a></b></li>
+          <li>Applies a filter to an attenuation profile, changing pixel values by a formula</li>
+          <li>Used to <b>minimize streak artifacts</b></li>
           <li>Applied <b>only to raw data</b>, not image data</li>
-          <li><a class="term" href="#g-deconv"><b>Deconvolution</b></a> is the reverse: it returns pixel values to their original level</li>
+          <li><a class="term" href="#g-deconv"><b>Deconvolution</b></a>: returns pixel values to their original level by a reverse process</li>
         </ul>
-        <p class="tryit">Memory trick: <b>smooth = soft tissue</b>, <b>sharp = skeleton</b>.</p>
+        <p>Memory trick: <b>smooth = soft tissue</b>, <b>sharp = skeleton</b>.</p>
       </aside>
     </div>
-    <div class="check"><p class="ctl-title">Quick check · convolution</p><div class="quiz" data-topic="conv" data-n="3"></div></div>
+    <div class="check"><div class="quiz" data-topic="conv" data-n="3"></div></div>
   </article>
 
-  <!-- FBP -->
-  <article class="algo" id="fbp">
-    <h3>Filtered back projection</h3>
+  <!-- 4.5 FBP -->
+  <article class="topic" id="fbp">
+    <div class="topic-head"><span class="kicker">4.5</span><h3>Filtered back projection</h3></div>
     <div class="split">
-      <div class="work">
+      <div class="lab">
         <p class="formula"><span>Convolution</span><i>+</i><span>Back projection</span><i>=</i><span class="hl">Filtered back projection</span></p>
-        <p class="lead">Filtered back projection (FBP) puts the last two topics together: <b>filter each profile first, then back project it.</b></p>
-        <p class="lead">Below, one small dot is scanned. <b>Left:</b> plain back projection. Each smear runs right across the image, so spokes stick out of the dot. <b>Right:</b> each profile is filtered first. The filter adds small negative values beside every edge, and when those are smeared back they cancel the spokes. Slide the number of projections up and watch.</p>
+        <p class="lead">One small dot is scanned. <b>Left:</b> plain back projection, where every smear runs right across, so spokes stick out. <b>Right:</b> each profile is filtered first. The filter adds small negative values beside each edge that cancel the spokes. Slide the number of projections.</p>
         <div class="pair">
           <figure class="film"><canvas id="dotBP" width="141" height="141" aria-label="Simple back projection of a dot"></canvas><figcaption>Back projection</figcaption></figure>
           <figure class="film"><canvas id="dotFBP" width="141" height="141" aria-label="Filtered back projection of a dot"></canvas><figcaption>Filtered back projection</figcaption></figure>
@@ -328,252 +1105,434 @@
         <input type="range" id="dotN" min="1" max="72" value="3">
         <p class="steptext" id="dotText" aria-live="polite"></p>
       </div>
-      <aside class="notes">
-        <h4>Board points</h4>
+      <aside class="board">
+        <h4><svg class="spark"><use href="#spark"/></svg>Board points</h4>
         <ul>
-          <li>Also called the <b>convolution method</b>: the projection profile is convolved (filtered)</li>
+          <li>a.k.a. the <b>convolution method</b>: the projection profile is convolved (filtered)</li>
           <li><b>Advantage:</b> removes the star-like blurring of simple back projection</li>
-          <li><b>Disadvantage:</b> <a class="term" href="#g-noise">noise</a> and <a class="term" href="#g-streak">streak artifacts</a></li>
+          <li><b>Disadvantage:</b> noise and streak artifacts</li>
         </ul>
       </aside>
     </div>
-    <div class="check"><p class="ctl-title">Quick check · filtered back projection</p><div class="quiz" data-topic="fbp" data-n="2"></div></div>
+    <div class="check"><div class="quiz" data-topic="fbp" data-n="2"></div></div>
   </article>
 
-  <!-- Fourier -->
-  <article class="algo" id="fourier">
-    <h3>Fourier transformation</h3>
+  <!-- 4.6 Fourier -->
+  <article class="topic" id="fourier">
+    <div class="topic-head"><span class="kicker">4.6</span><h3>Fourier transformation</h3></div>
     <div class="split">
-      <div class="work">
-        <p class="lead"><a class="term" href="#g-fourier">Fourier transformation</a> splits one complicated wave into simple waves, each with its own <a class="term" href="#g-frequency">frequency</a>. Later, the simple waves can be added back together to rebuild the original.</p>
-        <p class="lead">The lecture compares it to hearing. A sound reaching your ear is one complicated wave. Your ear separates it into simple waves, and your brain puts them back together so you hear the original sound. Turn the waves on and off below, then listen.</p>
+      <div class="lab">
+        <p class="lead"><a class="term" href="#g-fourier">Fourier transformation</a> splits one complicated wave into simple waves of different <a class="term" href="#g-frequency">frequencies</a>, and can add them back to rebuild the original. The lecture compares it to <b>hearing</b>. Toggle the waves, then listen.</p>
         <div class="seg" role="group" aria-label="Component waves" id="waveSeg">
-          <button data-w="0" aria-pressed="true">Low wave</button>
-          <button data-w="1" aria-pressed="true">Middle wave</button>
-          <button data-w="2" aria-pressed="true">High wave</button>
+          <button data-w="0" aria-pressed="true">Low wave</button><button data-w="1" aria-pressed="true">Middle wave</button><button data-w="2" aria-pressed="true">High wave</button>
         </div>
         <canvas id="waves" width="640" height="300" aria-label="A complex wave and its simple component waves"></canvas>
         <div class="stepper"><button id="playBtn" class="primary">Play the sound</button><span class="count" id="playNote">Turn your volume down first.</span></div>
-        <ol class="hearing">
-          <li>Incoming sound waves</li><li>Ear</li><li>Separated into different signals</li><li>Intensities</li><li>Brain</li><li>Rearranged</li><li>Perception of the original sound</li>
-        </ol>
+        <ol class="hearing"><li>Incoming sound waves</li><li>Ear</li><li>Separated into different signals</li><li>Intensities</li><li>Brain</li><li>Rearranged</li><li>Perception of the original sound</li></ol>
       </div>
-      <aside class="notes">
-        <h4>Board points</h4>
-        <ul>
-          <li>Used to reconstruct images of the patient's anatomy in <b>MRI</b></li>
-          <li><b>Not used in modern CT scanners</b></li>
-          <li>Analogy: the <b>act of hearing</b></li>
-        </ul>
+      <aside class="board">
+        <h4><svg class="spark"><use href="#spark"/></svg>Board points</h4>
+        <ul><li>Used to reconstruct anatomy images in <b>MRI</b></li><li><b>Not used in modern CT scanners</b></li><li>Analogy: the <b>act of hearing</b></li></ul>
       </aside>
     </div>
-    <div class="check"><p class="ctl-title">Quick check · Fourier transformation</p><div class="quiz" data-topic="fourier" data-n="2"></div></div>
+    <div class="check"><div class="quiz" data-topic="fourier" data-n="2"></div></div>
   </article>
 
-  <!-- Helical -->
-  <article class="algo" id="helical">
-    <h3>Helical interpolation</h3>
+  <!-- 4.7 Helical -->
+  <article class="topic" id="helical">
+    <div class="topic-head"><span class="kicker">4.7</span><h3>Helical interpolation</h3></div>
     <div class="split">
-      <div class="work">
-        <p class="lead">In <a class="term" href="#g-helical">helical scanning</a> the table keeps moving while the tube spins, so the tube draws a spiral around the patient instead of flat circles. That means <b>no complete flat slice is ever measured</b>.</p>
-        <p class="lead"><a class="term" href="#g-interp">Interpolation</a> fills the gap: it estimates a missing value from the two known values on either side. Below, the spiral is "unrolled" flat, so it becomes slanted lines. Across is the tube angle, up is the table position. Move the slider to choose where the flat slice goes. For each angle, the scanner takes the real measurement just below the slice and the one just above it (one full 360° turn later) and estimates the value in between. This is <b>360° linear interpolation</b>.</p>
+      <div class="lab">
+        <p class="lead">In helical scanning the tube draws a spiral, so <b>no flat slice is ever measured</b>. <a class="term" href="#g-interp">Interpolation</a> estimates the missing value from known values on either side. Below the spiral is unrolled: across is the tube angle, up is table position. For each angle the scanner takes the measurement just below the slice and the one a full 360° later just above it: <b>360° linear interpolation</b>.</p>
         <canvas id="helix" width="680" height="320" aria-label="Unrolled helical scan path with an interpolated slice"></canvas>
         <label class="ctl" for="zPos">Where to place the slice <output id="zOut"></output></label>
         <input type="range" id="zPos" min="0" max="100" value="50">
         <p class="steptext" id="helixText" aria-live="polite"></p>
       </div>
-      <aside class="notes">
-        <h4>Board points</h4>
+      <aside class="board">
+        <h4><svg class="spark"><use href="#spark"/></svg>Board points</h4>
         <ul>
           <li>A mathematical method of <b>creating missing data</b></li>
           <li>Estimates an unknown value from known values</li>
-          <li><b>Linear interpolation:</b> the unknown point falls on a straight line between two known points (A = 5, C = 15, so B = 10)</li>
+          <li><b>Linear interpolation:</b> the unknown point falls on a straight line between two known points (A = 5, C = 15 → B = 10)</li>
           <li>Used to <b>straighten up the sectional image</b></li>
-          <li>A <a class="term" href="#g-postacq"><b>post-acquisition</b></a> algorithm applied to the data set</li>
-          <li>The 1st algorithm used <b>360° linear interpolation</b>. Disadvantage: <b>prominent blurring</b>.</li>
+          <li>A <b>post-acquisition</b> algorithm applied to the data set</li>
+          <li>1st algorithm: <b>360° linear interpolation</b>. Disadvantage: <b>prominent blurring</b></li>
         </ul>
       </aside>
     </div>
-    <div class="check"><p class="ctl-title">Quick check · helical interpolation</p><div class="quiz" data-topic="helical" data-n="3"></div></div>
+    <div class="check"><div class="quiz" data-topic="helical" data-n="3"></div></div>
   </article>
 
-  <!-- Iterative -->
-  <article class="algo" id="iterative">
-    <h3>Iterative reconstruction</h3>
+  <!-- 4.8 Iterative -->
+  <article class="topic" id="iterative">
+    <div class="topic-head"><span class="kicker">4.8</span><h3>Iterative reconstruction</h3></div>
     <div class="split">
-      <div class="work">
-        <p class="lead"><a class="term" href="#g-iter">Iterative</a> means "repeated". Iterative reconstruction is <b>guess and check</b>:</p>
-        <ol class="steps compact">
-          <li>Start with a guess where every box in the matrix has the same value.</li>
-          <li>Work out what the scanner <i>would</i> have measured if that guess were true.</li>
-          <li>Compare it with what the scanner <i>really</i> measured.</li>
-          <li>Correct the guess, then repeat until they match.</li>
-        </ol>
-        <p class="lead">Same 1, 2, 3, 4 object as in back projection. Press <b>Next step</b>.</p>
+      <div class="lab">
+        <p class="lead"><a class="term" href="#g-iter">Iterative</a> = repeated. It is <b>guess and check</b>: start with every box the same value, work out what the scanner <i>would</i> have measured, compare it with what it <i>did</i> measure, correct, repeat. Same 1, 2, 3, 4 object.</p>
         <div class="bpfig">
           <figure><svg id="irRays" viewBox="0 0 240 230" role="img" aria-label="Measured ray sums compared with the current guess"></svg><figcaption>Measured vs guessed ray sums</figcaption></figure>
           <figure><div class="mat" id="irMat"></div><figcaption id="irLabel">Current guess</figcaption></figure>
         </div>
-        <div class="stepper">
-          <button id="irPrev">Back</button>
-          <button id="irNext" class="primary">Next step</button>
-          <span id="irCount" class="count"></span>
-        </div>
+        <div class="stepper"><button id="irPrev">Back</button><button id="irNext" class="primary">Next step</button><span id="irCount" class="count"></span></div>
         <p class="steptext" id="irText" aria-live="polite"></p>
       </div>
-      <aside class="notes">
-        <h4>Board points</h4>
+      <aside class="board">
+        <h4><svg class="spark"><use href="#spark"/></svg>Board points</h4>
         <ul>
           <li>Starts by assuming <b>all points in the matrix have the same value</b></li>
           <li>Performed <b>after obtaining all projection data sets</b></li>
-          <li><b>Advantages:</b> reduces image <a class="term" href="#g-noise">noise</a> (primary), low patient <a class="term" href="#g-dose">dose</a> (primary), improves <a class="term" href="#g-cnr">CNR</a>, minimal streak artifacts (metal, motion, <a class="term" href="#g-photon">photon starvation</a>)</li>
-          <li><b>Disadvantages:</b> needs high computing power (<a class="term" href="#g-gpu">GPUs</a>), computationally intensive, slower reconstruction</li>
+          <li><b>Advantages:</b> reduced image noise (primary), low patient dose (primary), better CNR, minimal streaks (metal, motion, photon starvation)</li>
+          <li><b>Disadvantages:</b> needs <b>GPUs</b>, computationally intensive, slower reconstruction</li>
         </ul>
       </aside>
     </div>
-    <div class="check"><p class="ctl-title">Quick check · iterative reconstruction</p><div class="quiz" data-topic="iter" data-n="3"></div></div>
+    <div class="check"><div class="quiz" data-topic="iter" data-n="3"></div></div>
   </article>
 
-  <!-- Scanner lab -->
-  <article class="algo" id="scanner">
-    <h3>Putting it together: the scanner bench</h3>
-    <p class="lead">Now see everything on a realistic slice. The three black panels are:</p>
-    <ol class="steps compact">
-      <li><b>Gantry:</b> the tube and detector going around the patient, with the <a class="term" href="#g-profile">attenuation profile</a> measured at each angle.</li>
-      <li><b>Raw data:</b> each profile stacked as one row of the <a class="term" href="#g-sinogram">sinogram</a>.</li>
-      <li><b>Image data:</b> the picture being rebuilt from the raw data.</li>
-    </ol>
+  <!-- 4.9 Scanner bench -->
+  <article class="topic" id="scanner">
+    <div class="topic-head"><span class="kicker">4.9</span><h3>Putting it together: the scanner bench</h3></div>
     <div class="guide">
       <p class="ctl-title">Try these in order</p>
       <ol>
-        <li>Press <b>Scan</b> with the starting settings (filtered back projection). That is the normal clinical result.</li>
-        <li>Change Method to <b>Back projection</b> and scan again. The image is blurry, the reason it is not used clinically.</li>
-        <li>Pick <b>Single dot</b> and set projections to about 6. You will see the star pattern.</li>
-        <li>Go back to <b>Abdomen slice</b> and <b>Filtered back projection</b>, then choose <b>Low dose</b>. The image gets grainy (noise). Switch between the two filters.</li>
-        <li>Keep Low dose and change Method to <b>Iterative</b>. It waits for all the projections, then the noise drops. That is why it allows a lower dose.</li>
+        <li>Press <b>Scan</b> with the starting settings (filtered back projection): the normal clinical result.</li>
+        <li>Switch to <b>Back projection</b>: blurry, which is why it is not used clinically.</li>
+        <li>Pick <b>Single dot</b>, set projections to about 6: the star pattern.</li>
+        <li>Back to <b>Abdomen</b> + <b>FBP</b>, choose <b>Low dose</b>: noise. Compare the two filters.</li>
+        <li>Keep low dose, choose <b>Iterative</b>: it waits for all projections, then the noise drops.</li>
       </ol>
     </div>
-
-    <div class="bench">
-      <figure class="film"><canvas id="gantry" width="360" height="360" aria-label="Gantry with x-ray tube, detector and attenuation profile"></canvas><figcaption>Gantry and attenuation profile</figcaption></figure>
-      <figure class="film"><canvas id="sino" width="360" height="360" aria-label="Sinogram of raw data"></canvas><figcaption>Raw data (sinogram): one row per projection</figcaption></figure>
-      <figure class="film"><canvas id="recon" width="360" height="360" aria-label="Reconstructed CT image"></canvas><figcaption id="reconCap">Image data</figcaption></figure>
+    <div class="lab">
+      <div class="bench">
+        <figure class="film"><canvas id="gantry" width="360" height="360" aria-label="Gantry with x-ray tube, detector and attenuation profile"></canvas><figcaption>Gantry and attenuation profile</figcaption></figure>
+        <figure class="film"><canvas id="sino" width="360" height="360" aria-label="Sinogram of raw data"></canvas><figcaption>Raw data (sinogram): one row per projection</figcaption></figure>
+        <figure class="film"><canvas id="recon" width="360" height="360" aria-label="Reconstructed CT image"></canvas><figcaption id="reconCap">Image data</figcaption></figure>
+      </div>
+      <div class="console">
+        <div class="cgroup"><p class="ctl-title">Patient</p><div class="seg" role="group" aria-label="Phantom" id="phantomSeg"><button data-p="abdomen" aria-pressed="true">Abdomen slice</button><button data-p="dot" aria-pressed="false">Single dot</button></div></div>
+        <div class="cgroup"><p class="ctl-title">Method</p><div class="seg" role="group" aria-label="Reconstruction method" id="methodSeg"><button data-r="bp" aria-pressed="false">Back projection</button><button data-r="fbp" aria-pressed="true">Filtered BP</button><button data-r="ir" aria-pressed="false">Iterative</button></div></div>
+        <div class="cgroup" id="kernelGroup"><p class="ctl-title">Convolution filter</p><div class="seg" role="group" aria-label="Convolution filter" id="kernelSeg"><button data-k="soft" aria-pressed="true">Smoothing</button><button data-k="bone" aria-pressed="false">Edge enhancing</button></div></div>
+        <div class="cgroup"><p class="ctl-title">Dose</p><div class="seg" role="group" aria-label="Dose" id="doseSeg"><button data-d="std" aria-pressed="true">Standard</button><button data-d="low" aria-pressed="false">Low (noisy)</button></div></div>
+        <div class="cgroup"><label class="ctl" for="nProj">Projections over 180° <output id="nOut">90</output></label><input type="range" id="nProj" min="2" max="180" value="90"></div>
+        <div class="cgroup" id="iterGroup" hidden><label class="ctl" for="nIter">Iterations <output id="itOut">12</output></label><input type="range" id="nIter" min="1" max="40" value="12"></div>
+        <div class="cgroup actions"><button id="scanBtn" class="primary">Scan</button><button id="instantBtn">Show result now</button></div>
+      </div>
+      <p class="status" id="status" aria-live="polite"></p>
+      <p class="explain" id="methodNote"></p>
+      <p class="hint">Simplified for teaching: here half a rotation (180°) already gives a full set of data.</p>
     </div>
-
-    <div class="console">
-      <div class="cgroup">
-        <p class="ctl-title">Patient</p>
-        <div class="seg" role="group" aria-label="Phantom" id="phantomSeg">
-          <button data-p="abdomen" aria-pressed="true">Abdomen slice</button>
-          <button data-p="dot" aria-pressed="false">Single dot</button>
-        </div>
-      </div>
-      <div class="cgroup">
-        <p class="ctl-title">Method</p>
-        <div class="seg" role="group" aria-label="Reconstruction method" id="methodSeg">
-          <button data-r="bp" aria-pressed="false">Back projection</button>
-          <button data-r="fbp" aria-pressed="true">Filtered back projection</button>
-          <button data-r="ir" aria-pressed="false">Iterative</button>
-        </div>
-      </div>
-      <div class="cgroup" id="kernelGroup">
-        <p class="ctl-title">Convolution filter</p>
-        <div class="seg" role="group" aria-label="Convolution filter" id="kernelSeg">
-          <button data-k="soft" aria-pressed="true">Smoothing (soft tissue)</button>
-          <button data-k="bone" aria-pressed="false">Edge enhancing (bone)</button>
-        </div>
-      </div>
-      <div class="cgroup">
-        <p class="ctl-title">Dose</p>
-        <div class="seg" role="group" aria-label="Dose" id="doseSeg">
-          <button data-d="std" aria-pressed="true">Standard</button>
-          <button data-d="low" aria-pressed="false">Low (noisy)</button>
-        </div>
-      </div>
-      <div class="cgroup">
-        <label class="ctl" for="nProj">Projections over 180° <output id="nOut">90</output></label>
-        <input type="range" id="nProj" min="2" max="180" value="90">
-      </div>
-      <div class="cgroup" id="iterGroup" hidden>
-        <label class="ctl" for="nIter">Iterations <output id="itOut">12</output></label>
-        <input type="range" id="nIter" min="1" max="40" value="12">
-      </div>
-      <div class="cgroup actions">
-        <button id="scanBtn" class="primary">Scan</button>
-        <button id="instantBtn">Show result now</button>
-      </div>
-    </div>
-    <p class="status" id="status" aria-live="polite"></p>
-    <p class="explain" id="methodNote"></p>
-    <p class="hint">Simplified for teaching: here half a rotation (180°) already gives a full set of data.</p>
   </article>
 </section>
 
-<!-- ================= PART C ================= -->
-<section id="quiz" class="part">
-  <h2><span class="pn">C</span>Self-check</h2>
-  <p class="intro">Every question from the quick checks, plus a few more, shuffled each round. Questions you miss come back until you get them right.</p>
-  <div class="quiz" id="quizBox" data-topic="all"></div>
+<!-- ================= CHAPTER V · IMAGE DISPLAY ================= -->
+<section class="chapter" id="ch5" data-ch="ch5">
+  <svg class="deco" style="right:6%;top:50px;width:26px;height:26px" aria-hidden="true"><use href="#spark"/></svg>
+  <header class="ch-head">
+    <div class="ch-icon t-mint"><svg><use href="#i-monitor"/></svg></div>
+    <div><span class="ch-num">Chapter V</span><h2>Image display</h2></div>
+    <p class="ch-desc">The last phase of making a CT image, and the 13 display options you use at the workstation, each one working on a simulated scan.</p>
+  </header>
+
+  <article class="topic" id="display-def">
+    <div class="topic-head"><span class="kicker">5.1</span><h3>What image display is</h3></div>
+    <div class="split">
+      <ol class="flow arrows">
+        <li class="tone cyan"><small>From reconstruction</small><b>Digital data</b><span>numbers in the matrix</span></li>
+        <li class="tone yellow"><small>DAC</small><b>Digital-to-analog converter</b><span>numbers → voltages</span></li>
+        <li class="tone mint"><small>Monitor</small><b>Electrical signals</b><span>what the screen needs</span></li>
+      </ol>
+      <aside class="board"><h4><svg class="spark"><use href="#spark"/></svg>Board points</h4><ul><li>Image display is the <b>last phase</b> in the creation of the CT image</li><li>It includes all the components that convert the <b>digital data</b> from reconstruction into the <b>electrical signals</b> the CT display monitor needs</li><li>The converter: <b>DAC</b> (digital-to-analog)</li></ul></aside>
+    </div>
+  </article>
+
+  <article class="topic" id="display-tools">
+    <div class="topic-head"><span class="kicker">5.2</span><h3>Display options at the workstation</h3></div>
+    <p class="lead">Every tool below works. Drag up and down on the scout (the frontal image beside the slice) to choose a slice. Pick a tool, then point, tap or drag on the image.</p>
+    <div class="lab">
+      <div class="ws">
+        <div class="ws-tools" id="wsTools" role="group" aria-label="Workstation tools">
+          <button data-t="cursor" aria-pressed="true"><i>+</i>Cursor</button>
+          <button data-t="roi" aria-pressed="false"><i>◯</i>Region of interest</button>
+          <button data-t="ruler" aria-pressed="false"><i>↔</i>Distance</button>
+          <button data-t="annot" aria-pressed="false"><i>↘</i>Annotation</button>
+          <button data-t="grid" aria-pressed="false"><i>#</i>Grid</button>
+          <button data-t="mag" aria-pressed="false"><i>⊕</i>Magnification</button>
+          <button data-t="dfov" aria-pressed="false"><i>◎</i>Smaller DFOV</button>
+          <button data-t="rev" aria-pressed="false"><i>⇄</i>Reverse display</button>
+          <button data-t="multi" aria-pressed="false"><i>▦</i>Multiple images</button>
+        </div>
+        <div class="stack">
+          <figure class="film ws-view"><canvas id="wsCv" width="420" height="420" aria-label="Simulated CT image on a workstation"></canvas><figcaption id="wsCap"></figcaption></figure>
+          <div class="presets" role="group" aria-label="Window" id="wsWin"><button data-ww="400" data-wl="40" aria-pressed="true">Soft tissue</button><button data-ww="1500" data-wl="-500" aria-pressed="false">Lung</button><button data-ww="2000" data-wl="300" aria-pressed="false">Bone</button></div>
+        </div>
+        <div class="ws-side stack">
+          <figure class="film"><canvas id="wsScout" class="ws-scout" width="180" height="245" aria-label="Scanogram with the current slice marked. Drag up or down to change the slice."></canvas><figcaption>Scanogram + reference line · drag</figcaption></figure>
+          <div class="readout" id="wsRead"></div>
+          <p class="say" id="wsInfo" aria-live="polite"></p>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid3">
+      <div class="card purple"><div class="h"><h4>Scanogram</h4><span class="go">1</span></div><p>a.k.a. <b>localizer, scout, surview, topogram, preview, pilot</b>. A <b>2D localization image</b>, the <b>first image</b> of an exam, with <b>slightly poorer image quality</b>.</p></div>
+      <div class="card"><div class="h"><h4>Grid application</h4><span class="go">2</span></div><p>Used by the RT to <b>confirm exact centering</b>, and by the radiologist to <b>describe structural locations</b>.</p></div>
+      <div class="card"><div class="h"><h4>Cursor</h4><span class="go">3</span></div><p>Outlines the area of interest, finds the <b>HU</b>, displays the area's measurements and gives <b>volume estimates</b>.</p></div>
+      <div class="card"><div class="h"><h4>Reverse display</h4><span class="go">4</span></div><p>Reverses the image <b>left to right</b> and back, and the density display <b>black to white</b> and back.</p></div>
+      <div class="card feat"><div class="h"><h4>Image magnification</h4><span class="go">5</span></div><p>Uses <b>only the image data</b>. <b>Does not improve resolution</b> and is <b>not the same as decreasing the FOV</b>. Lets detail be seen more clearly.</p></div>
+      <div class="card"><div class="h"><h4>Image annotation</h4><span class="go">6</span></div><p>Text added for descriptions or anatomical labels: <b>words, phrases, arrows, markers</b>.</p></div>
+      <div class="card"><div class="h"><h4>3D imaging</h4><span class="go">7</span></div><p>Reconstructs CT data into 3D images that can be <b>rotated, tumbled or tilted</b>. <a href="#mpr">Try it in 4.2</a>.</p></div>
+      <div class="card"><div class="h"><h4>Multiple image display</h4><span class="go">8</span></div><p>More than one image in a single frame, used as a method of <b>saving film</b>.</p></div>
+      <div class="card purple"><div class="h"><h4>Reference image</h4><span class="go">9</span></div><p>Displays the <b>slice lines at their locations on the scout</b> image.</p></div>
+      <div class="card"><div class="h"><h4>Region of interest (ROI)</h4><span class="go">10</span></div><p>An area defined by the operator, <b>most often circular</b> (may be elliptic, square or rectangular).</p></div>
+      <div class="card"><div class="h"><h4>Hounsfield measurement</h4><span class="go">11</span></div><p>A valuable tool for <b>image interpretation</b>: the HU inside the ROI suggests the tissue (fat, fluid, blood, calcium).</p></div>
+      <div class="card"><div class="h"><h4>Standard deviation</h4><span class="go">12</span></div><p>The amount of <b>CT number variance within the ROI</b>. High SD = noisy or mixed tissue.</p></div>
+      <div class="card feat"><div class="h"><h4>Distance measurement</h4><span class="go">13</span></div><p>Reports the <b>size of an abnormality</b>. Essential for placing a <b>biopsy needle or drainage</b> apparatus.</p></div>
+    </div>
+    <div class="tip"><b>Prof's tip</b><p>Magnification vs decreasing the DFOV is a favourite trap. <b>Magnification</b> enlarges the existing pixels (no new detail). <b>Decreasing the DFOV</b> is a retrospective reconstruction from raw data, giving smaller pixels and <b>real</b> detail. Compare the two tools above.</p></div>
+    <div class="check"><div class="quiz" data-topic="disp" data-n="4"></div></div>
+  </article>
 </section>
 
-<!-- ================= PART D ================= -->
-<section id="summary" class="part">
-  <h2><span class="pn">D</span>Last-minute summary</h2>
-  <p class="intro noprint">Only the facts the board asks about. Read it the night before or print it.</p>
-  <div class="stepper noprint"><button class="primary" onclick="print()">Print summary and words to know</button></div>
+<!-- ================= CHAPTER VI · IMAGE QUALITY ================= -->
+<section class="chapter" id="ch6" data-ch="ch6">
+  <svg class="deco o" style="right:6%;top:52px;width:30px;height:30px" aria-hidden="true"><use href="#spark"/></svg>
+  <header class="ch-head">
+    <div class="ch-icon t-yellow"><svg><use href="#i-lens"/></svg></div>
+    <div><span class="ch-num">Chapter VI</span><h2>Image quality &amp; artifacts</h2></div>
+    <p class="ch-desc">The three ways a CT image is judged, the factors that push each one up, the uncoupling effect, and every artifact in the lecture, simulated so you can see it.</p>
+  </header>
+  <ul class="toc"><li><a href="#criteria">Criteria</a></li><li><a href="#factors">Factors</a></li><li><a href="#tradeoff">Tune the scan</a></li><li><a href="#artifacts">Artifacts</a></li><li><a href="#spot">Spot the artifact</a></li></ul>
 
+  <article class="topic" id="criteria">
+    <div class="topic-head"><span class="kicker">6.1</span><h3>Criteria for evaluating a CT image</h3></div>
+    <div class="grid3">
+      <div class="card tone lav"><span class="unit">SPATIAL RESOLUTION</span><h4>How small?</h4><p>How well small objects and sharp edges show as separate things.</p></div>
+      <div class="card tone cyan"><span class="unit">LOW-CONTRAST RESOLUTION</span><h4>How different?</h4><p>How well tissues with only slightly different densities can be told apart. CT's strength.</p></div>
+      <div class="card tone yellow"><span class="unit">TEMPORAL RESOLUTION</span><h4>How fast?</h4><p>How well moving anatomy (the heart, a contrast bolus) is frozen in time.</p></div>
+    </div>
+  </article>
+
+  <article class="topic" id="factors">
+    <div class="topic-head"><span class="kicker">6.2</span><h3>Factors that raise each one</h3></div>
+    <div class="grid3">
+      <div class="card purple"><h4>High spatial resolution</h4><ul><li>Thin slice thickness</li><li>Small pixel size</li><li>Small detector aperture</li><li>Small voxel size</li><li>Large matrix size</li><li>Small DFOV (fixed matrix)</li><li>Bone tissue filter (reconstruction kernel)</li><li>Low pitch</li><li>Short scan time</li><li>Small focal spot size</li></ul></div>
+      <div class="card feat"><h4>High low-contrast resolution</h4><ul><li>Increase mAs (dose)</li><li>Increase SNR</li><li>Large pixel size</li><li>Thick slice thickness</li><li>Soft tissue filter (reconstruction kernel)</li><li>Small patient size</li><li>Wide window width (long scale of contrast)</li></ul></div>
+      <div class="card purple"><h4>High temporal resolution</h4><ul><li>Fast gantry rotation</li><li>Scan mode: helical, MSCT, EBCT, dual source</li><li>Short exposure time</li><li>Cardiac gating</li><li>Improved contrast timing</li><li>Minimized patient motion</li></ul></div>
+    </div>
+    <div class="lab">
+      <div class="lab-title"><span class="lab-tag">Game</span><h4>Sort the factors</h4><span class="count" id="sortScore"></span></div>
+      <p class="hint">Tap a factor, then tap the resolution it improves. Notice the opposites: what helps spatial resolution often hurts contrast resolution.</p>
+      <div class="chips" id="sortChips"></div>
+      <div class="sorter" id="sortBuckets">
+        <button class="bucket tone lav" data-b="s"><h4>Spatial</h4><div class="got"></div></button>
+        <button class="bucket tone cyan" data-b="c"><h4>Low contrast</h4><div class="got"></div></button>
+        <button class="bucket tone yellow" data-b="t"><h4>Temporal</h4><div class="got"></div></button>
+      </div>
+      <div class="stepper"><p class="say" id="sortSay" style="flex:1" aria-live="polite">Pick a factor first.</p><button id="sortReset">Start over</button></div>
+    </div>
+    <div class="check"><div class="quiz" data-topic="iq" data-n="4"></div></div>
+  </article>
+
+  <article class="topic" id="tradeoff">
+    <div class="topic-head"><span class="kicker">6.3</span><h3>Tune the scan, and the uncoupling effect</h3></div>
+    <div class="lab">
+      <div class="lab-title"><span class="lab-tag">Lab</span><h4>Can you see the liver lesion?</h4></div>
+      <div class="lab-grid">
+        <figure class="film"><canvas id="tqCv" width="320" height="320" aria-label="Simulated liver and spine image with the chosen scan settings"></canvas><figcaption>A faint lesion sits in the liver (upper left). Orange ring = lesion ROI, cyan = normal liver ROI.</figcaption></figure>
+        <div class="stack">
+          <label class="ctl" for="tqThk">Slice thickness <output id="tqThkOut"></output></label><input type="range" id="tqThk" min="1" max="10" value="5">
+          <label class="ctl" for="tqMas">mAs <output id="tqMasOut"></output></label><input type="range" id="tqMas" min="25" max="400" step="25" value="100">
+          <div class="row"><div class="seg" role="group" aria-label="Kernel" id="tqKer"><button data-k="soft" aria-pressed="true">Soft tissue filter</button><button data-k="bone" aria-pressed="false">Bone filter</button></div>
+          <div class="seg" role="group" aria-label="Patient size" id="tqSize"><button data-s="1" aria-pressed="true">Average patient</button><button data-s="1.6" aria-pressed="false">Large patient</button></div></div>
+          <div class="meters" id="tqMeters"></div>
+          <p class="say" id="tqSay" aria-live="polite"></p>
+        </div>
+      </div>
+    </div>
+    <div class="card feat">
+      <h4>The uncoupling effect</h4>
+      <p>In digital CT the image is <b>not directly linked to the dose</b>: more dose doesn't make the picture darker or lighter like film did, so you can't "see" overexposure. Change the mAs above: brightness stays the same and only the noise changes.</p>
+      <ul><li>When changing the radiation dose, manipulate <b>mAs rather than kVp</b></li><li>mAs is <b>more flexible</b> and <b>directly affects image quality</b> (noise)</li></ul>
+    </div>
+    <div class="check"><div class="quiz" data-topic="unc" data-n="2"></div></div>
+  </article>
+
+  <article class="topic" id="artifacts">
+    <div class="topic-head"><span class="kicker">6.4</span><h3>Artifacts</h3></div>
+    <p class="lead big">An image artifact is <b>anything appearing on the image that is not present in the object scanned</b>.</p>
+    <div class="tree">
+      <div class="tone lav"><h4>Physics-based</h4><ul><li>Beam hardening (and cupping)</li><li>Partial volume</li><li>Aliasing</li><li>Edge gradient</li></ul></div>
+      <div class="tone pink"><h4>Patient-based</h4><ul><li>Motion</li><li>Metal</li><li>Out-of-field</li></ul></div>
+      <div class="tone cyan"><h4>Equipment-induced</h4><ul><li>Ring</li><li>Tube arcing</li><li>Spiral interpolation (helical effect)</li><li>Cone beam effect</li></ul></div>
+    </div>
+    <div class="lab">
+      <div class="lab-title"><span class="lab-tag">Gallery</span><h4>Every artifact, simulated</h4></div>
+      <div class="art-grid" id="artGrid" role="group" aria-label="Artifacts"></div>
+      <div class="lab-grid">
+        <div class="stack">
+          <div class="wipe" id="artWipe"><canvas class="before" width="320" height="320" aria-label="Image with the artifact"></canvas><canvas class="after" width="320" height="320" aria-label="Image after correction"></canvas><span class="lbl l">Artifact</span><span class="lbl r">Corrected</span><i class="handle"></i></div>
+          <p class="hint">Drag across the image to compare.</p>
+        </div>
+        <div class="stack" id="artInfo" aria-live="polite"></div>
+      </div>
+    </div>
+    <div class="tip"><b>Prof's tip</b><p>Most artifact questions follow one pattern: <b>name ← appearance</b> (rings = detector, streaks from metal = metal, dark bands between petrous bones = beam hardening, windmill = cone beam), or <b>correction ← name</b>. The cards above are written in exactly that order: cause, appearance, correction.</p></div>
+    <div class="check"><div class="quiz" data-topic="art" data-n="4"></div></div>
+  </article>
+
+  <article class="topic" id="spot">
+    <div class="topic-head"><span class="kicker">6.5</span><h3>Spot the artifact</h3></div>
+    <div class="lab">
+      <div class="lab-grid">
+        <figure class="film"><canvas id="spotCv" width="300" height="300" aria-label="A simulated image with one artifact"></canvas><figcaption id="spotCap">What is wrong with this image?</figcaption></figure>
+        <div class="stack">
+          <div class="qhead"><span id="spotScore">0 of 0 right</span></div>
+          <div class="qopts" id="spotOpts"></div>
+          <p class="qwhy" id="spotWhy" hidden></p>
+          <div class="stepper"><button class="primary" id="spotNext">Next image</button></div>
+        </div>
+      </div>
+    </div>
+  </article>
+</section>
+
+<!-- ================= MOCK EXAM ================= -->
+<section class="chapter" id="exam">
+  <header class="ch-head">
+    <div class="ch-icon t-lav"><svg><use href="#i-exam"/></svg></div>
+    <div><span class="ch-num">Final stretch</span><h2>Mock board exam</h2></div>
+    <p class="ch-desc">Questions from every chapter, shuffled each round. The ones you miss come back at the end of the round until you get them right. Your progress is saved in this browser.</p>
+  </header>
+  <div class="lab exam-cfg">
+    <p class="ctl-title">Chapters</p>
+    <div class="chips" id="examCh">
+      <button data-c="all" class="sel">All</button><button data-c="ch1">I · Overview</button><button data-c="ch2">II · Physical principles</button><button data-c="ch3">III · Data acquisition</button>
+      <button data-c="ch4">IV · Reconstruction</button><button data-c="ch5">V · Display</button><button data-c="ch6">VI · Quality &amp; artifacts</button>
+    </div>
+    <p class="ctl-title">How many</p>
+    <div class="seg" role="group" aria-label="Number of questions" id="examN"><button data-n="10" aria-pressed="false">10</button><button data-n="25" aria-pressed="true">25</button><button data-n="50" aria-pressed="false">50</button><button data-n="0" aria-pressed="false">All</button></div>
+    <div class="stepper"><button class="primary" id="examStart">Start a round</button><button id="examReset">Reset saved progress</button><span class="count" id="examInfo"></span></div>
+  </div>
+  <div class="check exam" style="max-width:none"><div class="quiz" id="examBox"></div></div>
+</section>
+
+<!-- ================= SUMMARY ================= -->
+<section class="chapter" id="summary">
+  <header class="ch-head">
+    <div class="ch-icon t-cream"><svg><use href="#i-notes"/></svg></div>
+    <div><span class="ch-num">Night before</span><h2>Last-minute summary</h2></div>
+    <p class="ch-desc noprint">Only the facts the board asks about. Read it the night before, or print it (it prints with the glossary).</p>
+  </header>
+  <div class="stepper noprint"><button class="primary" onclick="print()">Print summary and words to know</button></div>
   <div class="sumgrid">
-    <div><h4>MIP · Maximum intensity projection</h4><ul>
-      <li>Keeps the <b>highest value</b> pixel along each line</li>
-      <li><b>Simplest</b> form of 3D imaging</li>
-      <li>Used in <b>CT angiography</b></li></ul></div>
-    <div><h4>SSD · Shaded surface display</h4><ul>
-      <li><b>Computer-aided</b> technique</li>
-      <li>A <b>narrow range of values</b> = the object; shows its surface</li>
-      <li><b>Bone imaging</b>, <b>virtual colonoscopy</b></li></ul></div>
-    <div><h4>SVD · Shaded volume display</h4><ul>
-      <li>Blends every voxel in the range</li>
-      <li>Looks <b>very 3D</b> (volume rendered)</li>
-      <li><b>Very sensitive to the operator-selected pixel range</b></li></ul></div>
-    <div><h4>Back projection</h4><ul>
-      <li>a.k.a. <b>summation / linear superposition</b> method</li>
-      <li><b>Oldendorf (1961)</b>, <b>Kuhl and Edwards (1963)</b></li>
-      <li>Not sharp → <b>star pattern</b> → <b>not used clinically</b></li>
-      <li>2 × 2 example: (BP + P1 + P2 + P3 − <b>10</b>) ÷ <b>3</b></li></ul></div>
-    <div><h4>Convolution</h4><ul>
-      <li>Filter applied to <b>raw data only</b></li>
-      <li>Minimizes <b>streak artifacts</b></li>
-      <li>Smoothing: <b>soft tissue</b>, low noise, more blur</li>
-      <li>Edge enhancing: <b>bone</b>, high spatial resolution, high noise</li>
-      <li><b>Deconvolution</b> = reverse process</li></ul></div>
-    <div><h4>Filtered back projection</h4><ul>
-      <li><b>Convolution + back projection</b></li>
-      <li>Also called the convolution method</li>
-      <li>+ Removes star-like blurring</li>
-      <li>− <b>Noise and streak artifacts</b></li></ul></div>
-    <div><h4>Fourier transformation</h4><ul>
-      <li>Used in <b>MRI</b></li>
-      <li><b>Not used in modern CT</b></li>
-      <li>Analogy: <b>act of hearing</b></li></ul></div>
-    <div><h4>Helical interpolation</h4><ul>
-      <li><b>Creates missing data</b></li>
-      <li><b>Straightens up the sectional image</b></li>
-      <li><b>Post-acquisition</b></li>
-      <li>1st algorithm: <b>360° linear</b> → <b>prominent blurring</b></li>
-      <li>A = 5, C = 15 → B = 10</li></ul></div>
-    <div><h4>Iterative reconstruction</h4><ul>
-      <li>Starts with <b>all points the same value</b></li>
-      <li>Done <b>after all projection data</b> is collected</li>
-      <li>+ <b>Less noise, low dose</b> (primary), better CNR, fewer streaks (metal, motion, photon starvation)</li>
-      <li>− Needs <b>GPUs</b>, computationally intensive, <b>slower</b></li></ul></div>
+    <div><h4><small>I</small>Definition</h4><ul><li>3D digital tomographic image from diagnostic x-rays</li><li>Usually <b>transverse</b> · finely collimated beam + detector</li><li>Raisin bread: loaf = body, crust = skin, white = organs, raisin = pathology</li><li>Today's term: <b>computed tomography</b></li></ul></div>
+    <div><h4><small>I</small>Advantages vs disadvantages</h4><ul><li>+ <b>Good low-contrast resolution</b>, WW/WL, volume data (helical), 3D/MPR, bone, large vessels (320/370 mgI/mL)</li><li>− <b>Worse spatial resolution: 1 lp/mm</b> (SF 7, DR 5), high dose, artifacts, contrast allergy</li></ul></div>
+    <div><h4><small>I</small>CT processes</h4><ul><li><b>Acquisition</b> (get data) → <b>Reconstruction</b> (use data) → <b>Display</b> (display data) → Manipulation → Storage → Communication</li><li>Prospective = during scan · Retrospective = same raw data later</li><li>1st gen: translate–rotate, 1°, 180 translations</li><li>DICOM · PACS–RIS–HIS</li></ul></div>
+    <div><h4><small>I</small>Windowing</h4><ul><li>Upper = WL + WW/2 · Lower = WL − WW/2</li><li><b>Bone</b> 2000/300 → −700 to 1300</li><li><b>Lung</b> 1500/−500 → −1250 to 250</li><li>Below = black · above = white</li></ul></div>
+    <div><h4><small>II</small>Slice and pixels</h4><ul><li>Z = thickness · X = width · Y = height</li><li>X miscentering: patient to one side · Y: table too high/low</li><li>Pixel 2D · voxel 3D · matrix: EMI <b>80×80</b>, common <b>512×512</b></li><li>Partial volume: (+500 −200 +60 +40)/4 = <b>+100</b></li><li>Pixel = FOV ÷ matrix</li></ul></div>
+    <div><h4><small>II</small>FOV, µ, HU</h4><ul><li>DFOV = zoom, <b>≤ SFOV</b> · SFOV = calibration FOV</li><li>Attenuation: density, thickness, Z, energy</li><li>µ water <b>0.18 cm⁻¹ @125 kVp</b> → 18%/cm</li><li>HU range <b>−1000 to +3000</b>, water 0</li><li>Ray → ray sum · projection = set of ray sums · translation = one projection</li></ul></div>
+    <div><h4><small>III</small>Generations</h4><ul><li>1: TR, parallel, EMI, 80×80, water bag</li><li>2: TR, fan, whole body, bowtie</li><li>3: <b>RR</b>, curvilinear 30–60°, most used, apex at tube</li><li>4: <b>R-stationary</b> ring, overscan 400°, apex at detector</li><li>5: <b>EBCT</b>, 33/50/100 ms</li><li>6: helical · dual source 90°</li><li>7: <b>MSCT</b>, cone beam</li></ul></div>
+    <div><h4><small>III</small>Helical, pitch, MSCT</h4><ul><li>Slip rings made helical possible</li><li>Pitch = couch movement/rotation ÷ beam width</li><li>Low pitch: slow, high dose, high res, oversampling</li><li>High pitch: fast, low dose, low res, undersampling</li><li>20 mm = 4×5 / 2×10 / 1×20 mm</li></ul></div>
+    <div><h4><small>III</small>Hardware</h4><ul><li>Aperture <b>70 cm</b> · tilt <b>±30°</b> (0.5° steps)</li><li>HF generator inside gantry, 20–100 kW (120 kW)</li><li>Anode ≥5 in., 12°, 3,600–10,000 rpm · Straton 5 MHU/min</li><li>Pre-patient = <b>dose</b> · post-patient = <b>slice thickness</b>, scatter</li><li>Couch: carbon fiber, <b>220 kg</b></li></ul></div>
+    <div><h4><small>III</small>Detectors</h4><ul><li>SID <b>44 in.</b> · dynamic range <b>1,000,000:1</b></li><li>Afterglow &lt; 0.01% at 100 ms</li><li><b>Xenon</b>: 60–90%, no afterglow, stable, directional, not in 4th gen/helical</li><li><b>Scintillation</b>: ~100%, afterglow, photodiode, all helical/MSCT</li><li>Deep narrow detector = less scatter</li></ul></div>
+    <div><h4><small>IV</small>Reconstruction basics</h4><ul><li>Microprocessor 30 s · array processor &lt;1 s</li><li>Single source 180° · dual source 90°</li><li>MIP: highest value, simplest, <b>CTA</b></li><li>SSD: narrow range, <b>bone, virtual colonoscopy</b></li><li>SVD: <b>very sensitive to pixel range</b></li></ul></div>
+    <div><h4><small>IV</small>Math algorithms</h4><ul><li>BP: summation, Oldendorf 1961, <b>star pattern</b>, not clinical</li><li>Convolution: raw data only, minimizes streaks</li><li>FBP = convolution + BP · noise & streaks</li><li>Fourier: <b>MRI</b>, hearing</li><li>Helical interp.: 360° linear → blurring</li><li>Iterative: low dose & noise, needs GPUs</li></ul></div>
+    <div><h4><small>V</small>Display</h4><ul><li>Last phase · DAC</li><li>Scanogram = localizer, scout, surview, topogram, preview, pilot</li><li>Magnification ≠ smaller FOV, no better resolution</li><li>ROI mostly circular · SD = variance in ROI</li><li>Multiple images = saves film</li></ul></div>
+    <div><h4><small>VI</small>Image quality</h4><ul><li>Spatial: thin slice, small pixel/voxel/aperture/FSS, large matrix, bone kernel, low pitch</li><li>Contrast: ↑mAs, thick slice, large pixel, soft kernel, small patient, wide WW</li><li>Temporal: fast rotation, helical/MSCT/EBCT/dual source, gating</li><li>Uncoupling: change <b>mAs</b>, not kVp</li></ul></div>
+    <div><h4><small>VI</small>Artifacts</h4><ul><li><b>Physics:</b> beam hardening (dark bands, petrous) · cupping · partial volume · aliasing (fine stripes) · edge gradient (barium–air)</li><li><b>Patient:</b> motion (ghosting) · metal (streaks) · out-of-field (arms down)</li><li><b>Equipment:</b> ring (detector, 3rd gen) · tube arcing · spiral interpolation · cone beam (windmill)</li></ul></div>
+  </div>
+</section>
+
+<!-- ================= GLOSSARY ================= -->
+<section class="chapter" id="words">
+  <header class="ch-head">
+    <div class="ch-icon t-pink"><svg><use href="#i-notes"/></svg></div>
+    <div><span class="ch-num">Appendix</span><h2>Words to know</h2></div>
+    <p class="ch-desc">Every dotted word on the page links here. Plain-language definitions first, board wording in the chapters.</p>
+  </header>
+  <div class="gloss">
+    <div>
+      <h4>The scanner</h4>
+      <dl>
+        <dt id="g-term">Dotted-underline word</dt><dd>Like this one. Tap any of them to see what it means.</dd>
+        <dt id="g-ct">CT (computed tomography)</dt><dd>An x-ray exam where a computer builds cross-section pictures ("slices") of the body from many x-ray measurements taken around the patient.</dd>
+        <dt id="g-gantry">Gantry</dt><dd>The ring-shaped part of the scanner. The x-ray tube and detectors spin around inside it.</dd>
+        <dt id="g-tube">X-ray tube</dt><dd>The part that produces the x-ray beam. It circles the patient during the scan.</dd>
+        <dt id="g-detector">Detector</dt><dd>Sits opposite the tube and measures how much x-ray came out the other side of the patient.</dd>
+        <dt id="g-iso">Isocenter</dt><dd>The exact center of the gantry, where the tube rotates around. The patient's center should sit here.</dd>
+        <dt id="g-laser">Positioning lasers</dt><dd>Red light lines from the gantry that cross at the isocenter, used to center the patient.</dd>
+        <dt id="g-helical">Helical (spiral) scanning</dt><dd>Scanning while the table keeps moving, so the tube's path around the patient becomes a spiral (a helix).</dd>
+        <dt id="g-dose">Dose</dt><dd>How much radiation the patient receives. Lower dose is safer but the image gets grainier (more noise).</dd>
+      </dl>
+    </div>
+    <div>
+      <h4>Data and images</h4>
+      <dl>
+        <dt id="g-attenuation">Attenuation</dt><dd>How much the x-ray beam is weakened as it passes through something. Bone attenuates a lot, air almost nothing.</dd>
+        <dt id="g-ray">Ray</dt><dd>One thin line of x-rays going from the tube, through the patient, to one detector element.</dd>
+        <dt id="g-raysum">Ray sum</dt><dd>The total attenuation along one ray. The scanner only ever knows these totals, never the values inside.</dd>
+        <dt id="g-profile">Attenuation profile (projection)</dt><dd>All the ray sums measured from one angle, side by side: a "shadow" of the body from that direction.</dd>
+        <dt id="g-raw">Raw data</dt><dd>The measurements straight from the detectors, before any image exists.</dd>
+        <dt id="g-sinogram">Sinogram</dt><dd>A picture of the raw data: every attenuation profile stacked as one row per angle. It looks like wavy stripes, not like a body.</dd>
+        <dt id="g-image">Image data</dt><dd>The finished picture after reconstruction: pixels with CT numbers.</dd>
+        <dt id="g-algorithm">Algorithm</dt><dd>A set of step-by-step rules for getting a specific output from a specific input. Like a recipe, but for a computer.</dd>
+        <dt id="g-matrix">Matrix</dt><dd>The grid of rows and columns that makes up the image, for example 512 × 512 boxes.</dd>
+        <dt id="g-pixel">Pixel</dt><dd>One box in the matrix (2D, flat).</dd>
+        <dt id="g-voxel">Voxel</dt><dd>A pixel with thickness: one tiny block of the patient's tissue.</dd>
+        <dt id="g-hu">CT number / Hounsfield unit (HU)</dt><dd>The number in each pixel that tells how much that tissue attenuates. Water = 0, air = −1000, bone about +400 to +1000 or more.</dd>
+        <dt id="g-ww">Window width (WW)</dt><dd>How many HU are spread across the gray scale. Wide = many grays, low contrast. Narrow = few grays, high contrast.</dd>
+        <dt id="g-wl">Window level (WL)</dt><dd>The HU value shown as middle gray: the center of the window.</dd>
+        <dt id="g-range">Operator-selected pixel range</dt><dd>A range of CT numbers chosen by the person running the scanner, for example 200 to 1200 HU. Only values inside the range are used.</dd>
+        <dt id="g-postacq">Post-acquisition</dt><dd>Done after the scan is finished, using data already collected.</dd>
+      </dl>
+    </div>
+    <div>
+      <h4>3D, exams and quality</h4>
+      <dl>
+        <dt id="g-mpr">MPR (multiplanar reformation)</dt><dd>Re-arranging the stack of slices to view the body in other directions or in 3D, without scanning again.</dd>
+        <dt id="g-render">Volume rendering</dt><dd>Showing the whole 3D block at once, partly see-through, so it looks like a real 3D object.</dd>
+        <dt id="g-contrast">Contrast medium</dt><dd>A dye (usually iodine) injected so blood vessels and some organs show up bright.</dd>
+        <dt id="g-cta">CT angiography (CTA)</dt><dd>A CT scan of blood vessels, done with contrast medium.</dd>
+        <dt id="g-vc">Virtual colonoscopy</dt><dd>Using CT to "fly through" the inside of the colon on screen.</dd>
+        <dt id="g-artifact">Artifact</dt><dd>Anything on the image that is not really in the patient.</dd>
+        <dt id="g-star">Star pattern</dt><dd>The artifact of simple back projection: spokes or a halo around bright objects.</dd>
+        <dt id="g-streak">Streak artifact</dt><dd>Bright or dark lines across the image, often from metal, motion or too little x-ray.</dd>
+        <dt id="g-noise">Noise</dt><dd>A grainy, speckled look. Worse at low dose or when edges are sharpened.</dd>
+        <dt id="g-spatial">Spatial resolution</dt><dd>How well the image shows tiny details and sharp edges as separate things.</dd>
+        <dt id="g-contrastres">Contrast resolution</dt><dd>How well the image shows tissues that are only slightly different in density.</dd>
+        <dt id="g-cnr">CNR (contrast-to-noise ratio)</dt><dd>How clearly a structure stands out compared with the graininess around it. Higher is better.</dd>
+        <dt id="g-photon">Photon starvation</dt><dd>Too few x-rays reach the detector (for example through both shoulders), causing streaks.</dd>
+      </dl>
+    </div>
+    <div>
+      <h4>Processing words</h4>
+      <dl>
+        <dt id="g-filter">Filter (kernel)</dt><dd>A math formula that changes the numbers in a profile, either to smooth them or to sharpen edges.</dd>
+        <dt id="g-convolution">Convolution</dt><dd>Applying a filter to the raw data. Each value is changed based on its neighbours.</dd>
+        <dt id="g-deconv">Deconvolution</dt><dd>The reverse process: returning pixel values to their original level.</dd>
+        <dt id="g-bp">Back projection</dt><dd>Spreading each ray sum back across the image along the path it came from, then adding everything up.</dd>
+        <dt id="g-interp">Interpolation</dt><dd>Estimating a missing value from the known values on either side of it.</dd>
+        <dt id="g-iter">Iteration</dt><dd>One round of a repeat. Iterative = done again and again, getting a bit better each time.</dd>
+        <dt id="g-fourier">Fourier transformation</dt><dd>A math method that splits one complicated wave into simple waves of different frequencies.</dd>
+        <dt id="g-frequency">Frequency</dt><dd>How fast a wave goes up and down. A high-frequency sound is a high-pitched sound.</dd>
+        <dt id="g-gpu">GPU</dt><dd>A powerful computer chip built for heavy math. Iterative reconstruction needs it.</dd>
+      </dl>
+    </div>
   </div>
 </section>
 
 </main>
 
 <footer class="foot">
-  <p>Study aid based on Cluster 5, Computed Tomography, Asst. Prof. Meynard Y. Castro, RRT, MSRT (Future RRT Hub). The images are simulations made for teaching, not patient data.</p>
+  <svg class="deco" style="left:7%;top:44px;width:40px;height:40px" aria-hidden="true"><use href="#spark"/></svg>
+  <svg class="deco" style="right:8%;bottom:90px;width:28px;height:28px;animation-delay:-2s" aria-hidden="true"><use href="#spark"/></svg>
+  <p class="eyebrow">— NerdRadTech review —</p>
+  <h2>Helps you learn and hone CT <mark>one slice</mark> at a time</h2>
+  <p>Made to help a future RRT pass the CT part of the boards. Based on Cluster 5, Computed Tomography, by Asst. Prof. Meynard Y. Castro, RRT, MSRT (Future RRT Hub). Every image here is a simulation made for teaching, not patient data.</p>
+  <div class="foot-row"><span>Study aid · not affiliated with the lecturer</span><span>Light and dark themes · tap the moon to switch</span><span>RTLE 2026</span></div>
 </footer>
+</div>
 
 <div id="gpop" popover>
   <p class="gpop-t"></p>
@@ -581,11 +1540,20 @@
   <div class="stepper"><a href="#words" class="gpop-all">All words</a><button popovertarget="gpop" popovertargetaction="hide">Close</button></div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="js/util.js"></script>
+<script src="js/phantom.js"></script>
+<script src="js/hero.js"></script>
+<script src="js/gantry3d.js"></script>
+<script src="js/overview.js"></script>
+<script src="js/principles.js"></script>
+<script src="js/acquisition.js"></script>
 <script src="js/volume.js"></script>
 <script src="js/scanner.js"></script>
 <script src="js/matrix.js"></script>
 <script src="js/labs.js"></script>
+<script src="js/display.js"></script>
+<script src="js/quality.js"></script>
 <script src="js/quiz.js"></script>
 </body>
 </html>

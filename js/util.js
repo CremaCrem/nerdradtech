@@ -39,7 +39,41 @@ window.U = (() => {
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', fire);
   new MutationObserver(fire).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
 
-  return { $, css, reduced, hiDPI, rng, gauss, seg, onRedraw };
+  /* Call fn(true/false) as an element scrolls in and out of view, so animations only run when seen */
+  function visible(el, fn) {
+    if (!('IntersectionObserver' in window)) return fn(true);
+    new IntersectionObserver(es => es.forEach(e => fn(e.isIntersecting)), { rootMargin: '80px' }).observe(el);
+  }
+
+  /* A requestAnimationFrame loop that only runs while its element is on screen and motion is allowed */
+  function loop(el, frame) {
+    let on = false, raf = 0, last = 0;
+    const step = t => { raf = requestAnimationFrame(step); frame(t, Math.min(0.05, (t - (last || t)) / 1000)); last = t; };
+    visible(el, v => { on = v && !reduced(); cancelAnimationFrame(raf); last = 0; if (on) raf = requestAnimationFrame(step); else frame(performance.now(), 0); });
+  }
+
+  return { $, css, reduced, hiDPI, rng, gauss, seg, onRedraw, visible, loop };
+})();
+
+/* Theme toggle (remembered per browser), scroll reveal, chapter tile arrows */
+(() => {
+  const root = document.documentElement, btn = document.getElementById('themeBtn');
+  const dark = () => root.dataset.theme ? root.dataset.theme === 'dark' : matchMedia('(prefers-color-scheme: dark)').matches;
+  btn && btn.addEventListener('click', () => {
+    root.dataset.theme = dark() ? 'light' : 'dark';
+    try { localStorage.setItem('nrt-theme', root.dataset.theme); } catch (e) {}
+  });
+  const els = document.querySelectorAll('.topic, .lab, .card, .board, .tip, .check, .sumgrid > div');
+  if ('IntersectionObserver' in window && !U.reduced()) {
+    const io = new IntersectionObserver(es => es.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { rootMargin: '0px 0px -8% 0px' });
+    els.forEach(el => { el.classList.add('rv'); io.observe(el); });
+  }
+  const tr = document.getElementById('tileTrack');
+  if (tr) {
+    document.getElementById('tilePrev').addEventListener('click', () => tr.scrollBy({ left: -tr.clientWidth * 0.7, behavior: 'smooth' }));
+    document.getElementById('tileNext').addEventListener('click', () => tr.scrollBy({ left: tr.clientWidth * 0.7, behavior: 'smooth' }));
+  }
+  document.querySelectorAll('.menu-list a').forEach(a => a.addEventListener('click', () => a.closest('details').open = false));
 })();
 
 /* Tapping a .term link shows its glossary entry in a popup instead of jumping away.
