@@ -169,10 +169,10 @@
       b ? c.lineTo(x, y) : c.moveTo(x, y);
     }
     c.stroke();
-    c.fillStyle = '#9aa19c'; c.font = '11px "IBM Plex Mono", monospace'; c.textAlign = 'left';
+    c.fillStyle = '#9aa19c'; c.font = '11px "JetBrains Mono", monospace'; c.textAlign = 'left';
     c.fillText(`${Math.round(180 * kk / st.n)}°`, 10, 18);
   }
-  function label(c, w, t) { c.fillStyle = '#9aa19c'; c.font = '11px "IBM Plex Mono", monospace'; c.textAlign = 'left'; c.fillText(t, 10, 18); }
+  function label(c, w, t) { c.fillStyle = '#9aa19c'; c.font = '11px "JetBrains Mono", monospace'; c.textAlign = 'left'; c.fillText(t, 10, 18); }
 
   function drawSino() {
     const cv = $('sino'); const { ctx: c, w } = hiDPI(cv, 1);

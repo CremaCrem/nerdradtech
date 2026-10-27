@@ -121,7 +121,7 @@
     const L = 46, Rm = 10, Tm = 12, B = 26, W = w - L - Rm, H = h - Tm - B;
     const n = 220, s = samples(basis(), probe.u, probe.v, n);
     const Y = (v) => Tm + H * (1 - (v + 1000) / 2300), X = (k) => L + W * k / (n - 1);
-    c.font = '11px "IBM Plex Mono", monospace'; c.textBaseline = 'middle';
+    c.font = '11px "JetBrains Mono", monospace'; c.textBaseline = 'middle';
     // range band
     if (mode !== 'mip') { c.fillStyle = beam; c.globalAlpha = 0.18; c.fillRect(L, Y(hi), W, Y(lo) - Y(hi)); c.globalAlpha = 1; }
     // grid
