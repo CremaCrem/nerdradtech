@@ -1,4 +1,4 @@
-# Slice by Slice: CT algorithms review
+# NerdRadTech: CT algorithms review
 
 An interactive RTLE review page for Cluster 5, Computed Tomography (Asst. Prof. Meynard Y. Castro, RRT, MSRT).
 
