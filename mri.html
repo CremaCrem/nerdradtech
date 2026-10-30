@@ -1,0 +1,1105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>NerdRadTech MRI</title>
+  <meta name="claude:viewport-fit-sides" content="cover">
+  <meta name="description" content="Visual RTLE review of the Cluster 5 Magnetic Resonance Imaging lecture: overview, physical principles, instrumentation, parameters, pulse sequences, safety and artifacts, with labs, quick checks and a mock board exam.">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/main.css">
+  <script>try{const t=localStorage.getItem('nrt-theme');if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+</head>
+<body>
+<a class="skip" href="#ch1">Skip to content</a>
+
+<!-- clay icon sprite -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <radialGradient id="gW" cx="35%" cy="30%" r="80%"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#D9CCF0"/></radialGradient>
+    <radialGradient id="gP" cx="35%" cy="30%" r="80%"><stop offset="0" stop-color="#A994DA"/><stop offset="1" stop-color="#5E4693"/></radialGradient>
+    <radialGradient id="gO" cx="35%" cy="30%" r="80%"><stop offset="0" stop-color="#FFD9A0"/><stop offset="1" stop-color="#F08F1C"/></radialGradient>
+    <radialGradient id="gK" cx="35%" cy="30%" r="80%"><stop offset="0" stop-color="#FFC4DF"/><stop offset="1" stop-color="#EC5E9E"/></radialGradient>
+    <radialGradient id="gC" cx="35%" cy="30%" r="80%"><stop offset="0" stop-color="#C9F4FC"/><stop offset="1" stop-color="#2FB6DC"/></radialGradient>
+    <radialGradient id="gY" cx="35%" cy="30%" r="80%"><stop offset="0" stop-color="#FFEBA6"/><stop offset="1" stop-color="#F2B400"/></radialGradient>
+    <radialGradient id="gM" cx="35%" cy="30%" r="80%"><stop offset="0" stop-color="#CFF2DC"/><stop offset="1" stop-color="#4FB57A"/></radialGradient>
+    <radialGradient id="gD" cx="35%" cy="30%" r="80%"><stop offset="0" stop-color="#57506A"/><stop offset="1" stop-color="#1D1924"/></radialGradient>
+  </defs>
+  <symbol id="spark" viewBox="0 0 24 24"><path d="M12 0C13 7.2 16.8 11 24 12 16.8 13 13 16.8 12 24 11 16.8 7.2 13 0 12 7.2 11 11 7.2 12 0Z" fill="currentColor"/></symbol>
+  <symbol id="logo" viewBox="0 0 32 32"><circle cx="16" cy="16" r="10.5" fill="none" stroke="#FFB257" stroke-width="6"/><path d="M5.5 26.5 26.5 5.5" stroke="#7D65AE" stroke-width="5" stroke-linecap="round"/></symbol>
+  <symbol id="i-magnet" viewBox="0 0 120 120">
+    <ellipse cx="60" cy="110" rx="44" ry="6" fill="#231F2B" opacity=".18"/>
+    <rect x="10" y="20" width="100" height="80" rx="30" fill="url(#gW)"/>
+    <circle cx="60" cy="58" r="26" fill="url(#gD)"/>
+    <rect x="4" y="74" width="112" height="10" rx="5" fill="url(#gO)"/>
+    <ellipse cx="60" cy="70" rx="20" ry="7" fill="url(#gK)"/>
+    <path d="M24 34a40 40 0 0 1 22-10" stroke="#fff" stroke-width="5" stroke-linecap="round" fill="none" opacity=".85"/>
+  </symbol>
+  <symbol id="i-spin" viewBox="0 0 120 120">
+    <ellipse cx="60" cy="112" rx="36" ry="5" fill="#231F2B" opacity=".18"/>
+    <ellipse cx="60" cy="34" rx="34" ry="11" fill="none" stroke="url(#gP)" stroke-width="6"/>
+    <path d="M60 96 78 32" stroke="url(#gO)" stroke-width="10" stroke-linecap="round"/>
+    <path d="M70 26l12 2-4 12z" fill="#F08F1C"/>
+    <circle cx="60" cy="88" r="20" fill="url(#gC)"/>
+    <path d="M50 82a12 12 0 0 1 8-6" stroke="#fff" stroke-width="4" stroke-linecap="round" fill="none"/>
+  </symbol>
+  <symbol id="i-coil" viewBox="0 0 120 120">
+    <ellipse cx="60" cy="112" rx="38" ry="5" fill="#231F2B" opacity=".18"/>
+    <g fill="none" stroke-width="10" stroke-linecap="round"><path d="M20 40c0-14 80-14 80 0" stroke="url(#gP)"/><path d="M20 60c0-14 80-14 80 0" stroke="url(#gW)"/><path d="M20 80c0-14 80-14 80 0" stroke="url(#gP)"/></g>
+    <rect x="12" y="88" width="96" height="14" rx="7" fill="url(#gO)"/>
+  </symbol>
+  <symbol id="i-dial" viewBox="0 0 120 120">
+    <ellipse cx="60" cy="112" rx="38" ry="5" fill="#231F2B" opacity=".18"/>
+    <rect x="12" y="14" width="96" height="90" rx="20" fill="url(#gW)"/>
+    <g stroke="#C9B8EA" stroke-width="6" stroke-linecap="round"><path d="M30 36h60M30 60h60M30 84h60"/></g>
+    <circle cx="48" cy="36" r="9" fill="url(#gO)"/><circle cx="76" cy="60" r="9" fill="url(#gK)"/><circle cx="40" cy="84" r="9" fill="url(#gC)"/>
+  </symbol>
+  <symbol id="i-wave" viewBox="0 0 120 120">
+    <ellipse cx="60" cy="112" rx="38" ry="5" fill="#231F2B" opacity=".18"/>
+    <rect x="8" y="16" width="104" height="80" rx="18" fill="url(#gD)"/>
+    <path d="M18 56h10l6-26 6 52 6-40 6 28 6-18 6 10 6-6h22" stroke="#94D9AF" stroke-width="5" fill="none" stroke-linejoin="round" stroke-linecap="round"/>
+    <circle cx="96" cy="30" r="6" fill="url(#gO)"/>
+  </symbol>
+  <symbol id="i-shield" viewBox="0 0 120 120">
+    <ellipse cx="60" cy="112" rx="34" ry="5" fill="#231F2B" opacity=".18"/>
+    <path d="M60 8 102 22v34c0 26-18 42-42 50C36 98 18 82 18 56V22Z" fill="url(#gO)"/>
+    <path d="M60 22 88 32v24c0 18-12 30-28 36-16-6-28-18-28-36V32Z" fill="url(#gW)"/>
+    <path d="M46 56l10 10 18-20" stroke="#4FB57A" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  </symbol>
+  <symbol id="i-lens" viewBox="0 0 120 120">
+    <ellipse cx="60" cy="112" rx="36" ry="5" fill="#231F2B" opacity=".18"/>
+    <rect x="70" y="72" width="18" height="44" rx="9" transform="rotate(-45 79 94)" fill="url(#gO)"/>
+    <circle cx="50" cy="50" r="38" fill="url(#gW)"/><circle cx="50" cy="50" r="28" fill="url(#gC)"/>
+    <path d="M50 30c1.4 10 5 13.6 15 15-10 1.4-13.6 5-15 15-1.4-10-5-13.6-15-15 10-1.4 13.6-5 15-15Z" fill="#fff"/>
+  </symbol>
+  <symbol id="i-exam" viewBox="0 0 120 120">
+    <ellipse cx="60" cy="112" rx="36" ry="5" fill="#231F2B" opacity=".18"/>
+    <rect x="18" y="14" width="84" height="94" rx="14" fill="url(#gP)"/><rect x="26" y="24" width="68" height="78" rx="9" fill="url(#gW)"/>
+    <rect x="42" y="8" width="36" height="16" rx="8" fill="url(#gO)"/>
+    <path d="M36 50l8 8 14-16M36 80l8 8 14-16" stroke="#4FB57A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <rect x="64" y="48" width="22" height="6" rx="3" fill="#C9B8EA"/><rect x="64" y="78" width="22" height="6" rx="3" fill="#C9B8EA"/>
+  </symbol>
+  <symbol id="i-notes" viewBox="0 0 120 120">
+    <ellipse cx="60" cy="112" rx="36" ry="5" fill="#231F2B" opacity=".18"/>
+    <rect x="30" y="10" width="70" height="88" rx="14" transform="rotate(10 65 54)" fill="url(#gK)"/>
+    <rect x="20" y="16" width="70" height="88" rx="14" fill="url(#gW)"/>
+    <rect x="32" y="34" width="46" height="6" rx="3" fill="#C9B8EA"/><rect x="32" y="48" width="38" height="6" rx="3" fill="#C9B8EA"/><rect x="32" y="62" width="44" height="6" rx="3" fill="#C9B8EA"/>
+    <path d="M86 70c1.6 11 5.6 15 16 16.6-10.4 1.6-14.4 5.6-16 16.4-1.6-10.8-5.6-14.8-16-16.4 10.4-1.6 14.4-5.6 16-16.6Z" fill="url(#gY)"/>
+  </symbol>
+</svg>
+
+<div class="sheet">
+
+<header class="top">
+  <div class="top-in">
+    <nav class="only-wide" aria-label="Main">
+      <a href="#chapters">Chapters</a><a href="#exam">Mock exam</a><a href="#summary">Summary</a><a href="index.html">CT</a>
+    </nav>
+    <a class="logo" href="#top"><svg aria-hidden="true"><use href="#logo"/></svg>NerdRadTech</a>
+    <div class="top-r">
+      <a class="pill sm only-wide" href="#words">Words to know <i aria-hidden="true">↗</i></a>
+      <button class="iconbtn" id="themeBtn" aria-label="Switch light or dark theme"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9Z" fill="currentColor"/></svg></button>
+      <details class="menu">
+        <summary class="iconbtn" aria-label="All chapters"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></summary>
+        <div class="menu-list">
+          <a href="#ch1"><b>I</b>Overview</a><a href="#ch2"><b>II</b>Physical principles</a><a href="#ch3"><b>III</b>Instrumentation</a>
+          <a href="#ch4"><b>IV</b>Parameters</a><a href="#ch5"><b>V</b>Pulse sequences</a><a href="#ch6"><b>VI</b>Safety &amp; shielding</a><a href="#ch7"><b>VII</b>Artifacts</a>
+          <a href="#exam"><b>✦</b>Mock board exam</a><a href="#summary"><b>✦</b>Last-minute summary</a><a href="#words"><b>✦</b>Words to know</a><a href="index.html"><b>←</b>CT lesson</a>
+        </div>
+      </details>
+    </div>
+  </div>
+</header>
+
+<!-- ================= HERO ================= -->
+<section class="hero" id="top">
+  <svg class="deco" style="left:3%;top:120px;width:30px;height:30px" aria-hidden="true"><use href="#spark"/></svg>
+  <svg class="deco o" style="right:9%;top:46%;width:38px;height:38px;animation-delay:-1.5s" aria-hidden="true"><use href="#spark"/></svg>
+  <div class="hero-top">
+    <p class="eyebrow">Cluster 5 · RTLE 2026 review</p>
+    <div class="badges"><a class="badge" href="index.html">← CT lesson</a></div>
+  </div>
+  <h1 aria-label="Magnetic Resonance Imaging">
+    <span class="ln" aria-hidden="true">Magnetic</span>
+    <span class="ln" aria-hidden="true">Res<span class="o"><canvas id="o1" width="120" height="120"></canvas></span>nance</span>
+    <span class="ln" aria-hidden="true">Imaging</span>
+  </h1>
+  <div class="hero-row">
+    <p class="stats"><small>Made visual from</small><b>the MRI lecture</b><b><span id="bankCount2">100</span>+ board questions</b></p>
+    <p class="hero-lede">Every topic from the Cluster 5 MRI lecture, from spinning protons to the 5 gauss line. Read a topic, play with its lab, then pass its quick check.</p>
+    <a class="pill" href="#ch1">Start reviewing <i aria-hidden="true">↗</i></a>
+  </div>
+</section>
+
+<!-- ================= CHAPTER TILES ================= -->
+<nav class="tiles" id="chapters" aria-label="Chapters">
+  <div class="tiles-row">
+    <button class="arrow" id="tilePrev" aria-label="Scroll chapters left">←</button>
+    <div class="tiles-track" id="tileTrack">
+      <a class="tile" href="#ch1" data-ch="ch1"><div class="tile-art t-pink"><svg><use href="#i-magnet"/></svg></div><b>I · Overview</b><small><span>Steps · history</span><span class="pct"></span></small><div class="meter"><i></i></div></a>
+      <a class="tile" href="#ch2" data-ch="ch2"><div class="tile-art t-lav"><svg><use href="#i-spin"/></svg></div><b>II · Physical principles</b><small><span>Spins · T1 · T2</span><span class="pct"></span></small><div class="meter"><i></i></div></a>
+      <a class="tile" href="#ch3" data-ch="ch3"><div class="tile-art t-cyan"><svg><use href="#i-coil"/></svg></div><b>III · Instrumentation</b><small><span>Magnets · coils</span><span class="pct"></span></small><div class="meter"><i></i></div></a>
+      <a class="tile" href="#ch4" data-ch="ch4"><div class="tile-art t-orange"><svg><use href="#i-dial"/></svg></div><b>IV · Parameters</b><small><span>TR · TE · TI · FA</span><span class="pct"></span></small><div class="meter"><i></i></div></a>
+      <a class="tile" href="#ch5" data-ch="ch5"><div class="tile-art t-mint"><svg><use href="#i-wave"/></svg></div><b>V · Pulse sequences</b><small><span>SE · IR · GRE</span><span class="pct"></span></small><div class="meter"><i></i></div></a>
+      <a class="tile" href="#ch6" data-ch="ch6"><div class="tile-art t-yellow"><svg><use href="#i-shield"/></svg></div><b>VI · Safety</b><small><span>Gauss · SAR · zones</span><span class="pct"></span></small><div class="meter"><i></i></div></a>
+      <a class="tile" href="#ch7" data-ch="ch7"><div class="tile-art t-pink"><svg><use href="#i-lens"/></svg></div><b>VII · Artifacts</b><small><span>Cause · remedy</span><span class="pct"></span></small><div class="meter"><i></i></div></a>
+      <a class="tile" href="#exam"><div class="tile-art t-lav"><svg><use href="#i-exam"/></svg></div><b>Mock board exam</b><small><span>All questions</span></small></a>
+      <a class="tile" href="#summary"><div class="tile-art t-cream"><svg><use href="#i-notes"/></svg></div><b>Last-minute summary</b><small><span>Printable</span></small></a>
+    </div>
+    <button class="arrow" id="tileNext" aria-label="Scroll chapters right">→</button>
+  </div>
+</nav>
+
+<main>
+
+<!-- ================= CHAPTER I · OVERVIEW ================= -->
+<section class="chapter" id="ch1" data-ch="ch1">
+  <svg class="deco" style="right:6%;top:40px;width:26px;height:26px" aria-hidden="true"><use href="#spark"/></svg>
+  <header class="ch-head">
+    <div class="ch-icon t-pink"><svg><use href="#i-magnet"/></svg></div>
+    <div><span class="ch-num">Chapter I</span><h2>Overview</h2></div>
+    <p class="ch-desc">What MRI is, where it sits on the electromagnetic spectrum, the four basic steps, what it does well and badly, and the people who built it.</p>
+  </header>
+  <ul class="toc">
+    <li><a href="#what-is-mri">Definition &amp; spectrum</a></li><li><a href="#steps">Basic steps</a></li><li><a href="#mri-adv">Advantages &amp; disadvantages</a></li><li><a href="#history">Brief history</a></li>
+  </ul>
+
+  <article class="topic" id="what-is-mri">
+    <div class="topic-head"><span class="kicker">1.1</span><h3>Definition and the electromagnetic spectrum</h3></div>
+    <div class="split">
+      <div class="stack">
+        <p class="lead big"><b><a class="term" href="#g-mri">Magnetic resonance imaging</a> (once called nuclear magnetic resonance, NMR) creates mathematically reconstructed 3D images of structures through the interaction of a magnetic field and radio waves with tissue.</b> No x-rays are used.</p>
+        <div class="card">
+          <h4>Where MRI sits on the spectrum</h4>
+          <svg viewBox="0 0 520 130" role="img" aria-label="Electromagnetic spectrum from radio waves on the left to gamma rays on the right. MRI uses radio waves, 10 to 300 megahertz. CT uses x-rays at the far, ionizing end.">
+            <defs><linearGradient id="emG" x1="0" x2="1"><stop offset="0" stop-color="#94D9AF"/><stop offset=".35" stop-color="#7ADCF3"/><stop offset=".55" stop-color="#FFCC33"/><stop offset=".75" stop-color="#FFB257"/><stop offset="1" stop-color="#FF8DC1"/></linearGradient></defs>
+            <rect x="10" y="40" width="500" height="26" rx="13" fill="url(#emG)"/>
+            <path d="M14 53q12-14 24 0t24 0 24 0 24 0" stroke="#231F2B" stroke-width="2" fill="none"/>
+            <path d="M420 53q3-8 6 0t6 0 6 0 6 0 6 0 6 0 6 0 6 0 6 0 6 0 6 0 6 0" stroke="#231F2B" stroke-width="2" fill="none"/>
+            <g font-size="11" fill="var(--ink)"><text x="12" y="30">radio</text><text x="150" y="30">microwave</text><text x="250" y="30">visible</text><text x="330" y="30">UV</text><text x="400" y="30">x-ray</text><text x="460" y="30">gamma</text></g>
+            <rect x="10" y="76" width="120" height="44" rx="12" fill="var(--purple)"/><text x="70" y="95" text-anchor="middle" font-size="12" font-weight="700" fill="#fff">MRI</text><text x="70" y="111" text-anchor="middle" font-size="10" fill="#fff">RF 10–300 MHz</text>
+            <rect x="390" y="76" width="120" height="44" rx="12" fill="var(--pink)"/><text x="450" y="95" text-anchor="middle" font-size="12" font-weight="700" fill="#231F2B">CT</text><text x="450" y="111" text-anchor="middle" font-size="10" fill="#231F2B">ionizing</text>
+            <text x="260" y="104" text-anchor="middle" font-size="10" fill="var(--ink-2)">low energy, long wavelength → high energy</text>
+          </svg>
+        </div>
+      </div>
+      <aside class="board">
+        <h4><svg class="spark"><use href="#spark"/></svg>Board points</h4>
+        <ul>
+          <li>Old name: <b>nuclear magnetic resonance (NMR)</b></li>
+          <li>Uses a <b>magnetic field (MF)</b> and <b><a class="term" href="#g-rf">radiofrequency (RF) waves</a></b></li>
+          <li>Magnetic field range: <b>0.1–3.0 T</b></li>
+          <li>RF range: <b>10–300 MHz</b></li>
+          <li>Images are <b>mathematically reconstructed 3D</b> images</li>
+        </ul>
+      </aside>
+    </div>
+    <div class="check"><div class="quiz" data-topic="def" data-n="2"></div></div>
+  </article>
+
+  <article class="topic" id="steps">
+    <div class="topic-head"><span class="kicker">1.2</span><h3>Basic steps of MRI</h3></div>
+    <ol class="flow arrows">
+      <li class="tone cyan"><small>Step 1</small><b>Patient is placed inside the magnet</b><span>protons line up with the field</span></li>
+      <li class="tone yellow"><small>Step 2</small><b>RF pulse is sent in</b><span>protons absorb energy and tip over</span></li>
+      <li class="tone pink"><small>Step 3</small><b>RF pulse is turned off</b><span>protons relax back</span></li>
+      <li class="tone mint"><small>Step 4</small><b>Patient emits a signal</b><span>picked up by the coil, made into an image</span></li>
+    </ol>
+    <p class="lead">Chapter II plays these four steps out proton by proton in the <a href="#signal">spin lab</a>.</p>
+    <div class="check"><div class="quiz" data-topic="def" data-n="2"></div></div>
+  </article>
+
+  <article class="topic" id="mri-adv">
+    <div class="topic-head"><span class="kicker">1.3</span><h3>Advantages and disadvantages</h3></div>
+    <div class="split">
+      <div class="stack">
+        <h4>Advantages</h4>
+        <div class="grid3">
+          <div class="card tone mint"><b>Superior contrast resolution</b><span class="hint">Tissue differences it can show: <b>T1 and PD 20–30%</b>, <b>T2 40%</b>, versus <b>1%</b> for x-ray attenuation</span></div>
+          <div class="card tone mint"><b>Direct multiplanar imaging</b><span class="hint">Any plane without moving the patient</span></div>
+          <div class="card tone mint"><b>In vivo MR spectroscopy (MRS)</b><span class="hint">Chemical makeup of living tissue</span></div>
+          <div class="card tone mint"><b>No ionizing radiation</b><span class="hint">Radio waves and magnets only</span></div>
+          <div class="card tone mint"><b>Direct flow measurements</b><span class="hint">Blood flow without contrast</span></div>
+          <div class="card tone mint"><b>Contrast media not necessarily required</b><span class="hint">Tissues differ enough on their own</span></div>
+        </div>
+        <h4>Disadvantages</h4>
+        <div class="grid3">
+          <div class="card tone pink"><b>Longer examination time</b></div>
+          <div class="card tone pink"><b>Cost of the scanner</b></div>
+          <div class="card tone pink"><b>More expensive than other procedures</b></div>
+          <div class="card tone pink"><b>Not very useful for bones and air</b><span class="hint">Few mobile protons, little signal</span></div>
+          <div class="card tone pink"><b>Contraindicated with claustrophobia</b></div>
+          <div class="card tone pink"><b>Contraindicated with metal implants</b></div>
+        </div>
+      </div>
+      <div class="card">
+        <h4>Contrast resolution: MRI wins easily</h4>
+        <svg viewBox="0 0 300 170" role="img" aria-label="Bar chart of the tissue difference each method can show: T2 40 percent, T1 and proton density 20 to 30 percent, x-ray attenuation 1 percent">
+          <g font-size="12" fill="var(--ink)">
+            <text x="0" y="34">T2</text><rect x="92" y="20" width="196" height="22" rx="11" fill="var(--purple)"/><text x="280" y="35" text-anchor="end" fill="#fff" font-weight="700">40%</text>
+            <text x="0" y="84">T1 · PD</text><rect x="92" y="70" width="135" height="22" rx="11" fill="var(--lav)"/><text x="219" y="85" text-anchor="end" fill="#231F2B" font-weight="700">20–30%</text>
+            <text x="0" y="134">X-ray</text><rect x="92" y="120" width="22" height="22" rx="11" fill="var(--orange)"/><text x="122" y="135" font-weight="700">1%</text>
+          </g>
+        </svg>
+        <p class="hint">The flip side of Chapter I in CT: CT is better for bone, MRI is better for soft tissue.</p>
+      </div>
+    </div>
+    <div class="check"><div class="quiz" data-topic="adv" data-n="3"></div></div>
+  </article>
+
+  <article class="topic" id="history">
+    <div class="topic-head"><span class="kicker">1.4</span><h3>Brief history</h3></div>
+    <div class="grid3">
+      <div class="card"><div class="h"><h4>1946 · Felix Bloch</h4><span class="go">✦</span></div><p>Discovered the properties of magnetic resonance: nuclei absorb radio-wave energy at certain distinct frequencies. Described NMR in <b>solids and water</b>. The nucleus has a magnetic field <b>because it spins</b>. Called the <b>Father of MRI</b> in the lecture.</p></div>
+      <div class="card"><div class="h"><h4>1946 · Edward Purcell</h4><span class="go">✦</span></div><p>Described NMR in <b>solids</b>, at the same time as Bloch. <b>1952:</b> Bloch and Purcell shared the <b>Nobel Prize in Physics</b>.</p></div>
+      <div class="card purple"><div class="h"><h4>1960s–1976 · Raymond Damadian</h4><span class="go">✦</span></div><p>Showed that <b>malignant tissue has a different NMR spectrum</b> and different PD, T1 and T2 from normal tissue. <b>1974:</b> first NMR image of a <b>rat tumor</b>. <b>1976:</b> first <b>body image</b>, which took <b>4 hours</b>.</p></div>
+      <div class="card feat"><div class="h"><h4>1973 · Paul Lauterbur</h4><span class="go">✦</span></div><p>NMR chemist. Developed the first imaging method using NMR: <b>zeugmatography</b> ("a whole bunch of MF whizzing and buzzing around"). Published the <b>first cross-sectional NMR image</b>: two <b>water-filled capillary tubes</b>.</p></div>
+      <div class="card"><div class="h"><h4>Peter Mansfield</h4><span class="go">✦</span></div><p>Developed <b>echo planar imaging (EPI)</b>: a fast pulse sequence that makes images <b>within a few seconds</b>. Used in <b>functional neuroimaging</b>.</p></div>
+      <div class="card purple"><div class="h"><h4>2003 · Lauterbur &amp; Mansfield</h4><span class="go">✦</span></div><p>Shared the <b>Nobel Prize in Physiology or Medicine</b>.</p></div>
+    </div>
+    <div class="tip"><b>Prof's tip</b><p>Two Nobel pairs: <b>Bloch + Purcell = Physics, 1952</b>. <b>Lauterbur + Mansfield = Medicine, 2003</b>. Match the person to the "first": Damadian = rat tumor and first body image, Lauterbur = capillary tubes and zeugmatography, Mansfield = EPI.</p></div>
+    <div class="check"><div class="quiz" data-topic="hist" data-n="3"></div></div>
+  </article>
+</section>
+
+<!-- ================= CHAPTER II · PHYSICAL PRINCIPLES ================= -->
+<section class="chapter" id="ch2" data-ch="ch2">
+  <svg class="deco o" style="right:5%;top:56px;width:30px;height:30px" aria-hidden="true"><use href="#spark"/></svg>
+  <header class="ch-head">
+    <div class="ch-icon t-lav"><svg><use href="#i-spin"/></svg></div>
+    <div><span class="ch-num">Chapter II</span><h2>Physical principles</h2></div>
+    <p class="ch-desc">Why a spinning proton is a tiny magnet, how millions of them add up to one vector, and what happens to that vector when the magnet and the RF pulse go to work.</p>
+  </header>
+  <ul class="toc">
+    <li><a href="#atom">Motion in the atom</a></li><li><a href="#nuclei">MR active nuclei</a></li><li><a href="#nmv">Moment, NMV &amp; axes</a></li><li><a href="#signal">Signal production</a></li><li><a href="#relax">Relaxation &amp; FID</a></li>
+  </ul>
+
+  <article class="topic" id="atom">
+    <div class="topic-head"><span class="kicker">2.1</span><h3>Motion within the atom: Oersted and Faraday</h3></div>
+    <div class="grid2">
+      <div class="card">
+        <div class="h"><h4>Oersted: current makes a magnetic field</h4></div>
+        <svg viewBox="0 0 300 150" role="img" aria-label="A wire carrying current, with circular magnetic field lines around it. A spinning charged proton does the same: it induces its own magnetic field.">
+          <path d="M70 10v130" stroke="var(--orange)" stroke-width="6"/><path d="M70 20l-8 14h16z" fill="var(--orange)"/>
+          <g fill="none" stroke="var(--purple)" stroke-width="2"><ellipse cx="70" cy="80" rx="34" ry="10"/><ellipse cx="70" cy="80" rx="52" ry="16"/></g>
+          <text x="70" y="146" text-anchor="middle" font-size="10" fill="var(--ink-2)">current → MF</text>
+          <circle cx="220" cy="80" r="26" fill="var(--pink)"/><text x="220" y="85" text-anchor="middle" font-size="16" font-weight="700" fill="#231F2B">+</text>
+          <ellipse cx="220" cy="80" rx="40" ry="11" fill="none" stroke="var(--ink)" stroke-width="2" stroke-dasharray="4 4"/>
+          <path d="M220 50V12" stroke="var(--purple)" stroke-width="4"/><path d="M220 8l-7 12h14z" fill="var(--purple)"/>
+          <text x="220" y="146" text-anchor="middle" font-size="10" fill="var(--ink-2)">spinning charge → MF</text>
+        </svg>
+        <p class="hint">No current, no field. A <b>spinning charged particle</b> (the proton's <b>primary spin</b>) is a tiny loop of current, so it <b>induces a magnetic field</b>: a <a class="term" href="#g-moment">magnetic moment</a>, or magnetic dipole.</p>
+      </div>
+      <div class="card">
+        <div class="h"><h4>Faraday: a moving field makes current</h4></div>
+        <svg viewBox="0 0 300 150" role="img" aria-label="A bar magnet moving into a coil makes the meter needle move. A stationary magnet makes no current.">
+          <g fill="none" stroke="var(--purple)" stroke-width="5"><path d="M150 40v70M170 40v70M190 40v70M210 40v70"/></g>
+          <rect x="40" y="60" width="44" height="30" fill="var(--pink)"/><rect x="84" y="60" width="44" height="30" fill="var(--cyan)"/>
+          <text x="62" y="80" text-anchor="middle" font-size="13" font-weight="700" fill="#231F2B">N</text><text x="106" y="80" text-anchor="middle" font-size="13" font-weight="700" fill="#231F2B">S</text>
+          <path d="M44 106h60" stroke="var(--orange)" stroke-width="3"/><path d="M110 106l-10-6v12z" fill="var(--orange)"/>
+          <circle cx="262" cy="74" r="22" fill="var(--sheet)" stroke="var(--ink)" stroke-width="2"/><path d="M262 74l10-14" stroke="var(--marker)" stroke-width="3"/>
+          <path d="M210 110q30 20 52-14M210 40q30-20 52 12" stroke="var(--ink-2)" fill="none" stroke-width="1.5"/>
+          <text x="150" y="140" text-anchor="middle" font-size="10" fill="var(--ink-2)">moving MF → current · stationary MF → nothing</text>
+        </svg>
+        <p class="hint">This is how the signal is caught: the protons' moving magnetization <b>induces a current</b> in the receiver coil.</p>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="card tone lav"><b>Primary spin</b><span class="hint">The nucleus spinning on its own axis. Makes the magnetic moment.</span></div>
+      <div class="card tone yellow"><b>Secondary spin = precession</b><span class="hint">The spinning nucleus wobbling around the main field, like a spinning top.</span></div>
+    </div>
+    <div class="check"><div class="quiz" data-topic="atom" data-n="2"></div></div>
+  </article>
+
+  <article class="topic" id="nuclei">
+    <div class="topic-head"><span class="kicker">2.2</span><h3>MR active nuclei and hydrogen</h3></div>
+    <div class="split">
+      <div class="stack">
+        <p class="lead">MR active nuclei have an <b>odd number of protons (Z)</b> and an <b>odd atomic mass number (A)</b>. They act like <b>tiny bar magnets</b>: their spins don't cancel each other out, so the nucleus spins and induces a field. With <b>even Z and A</b>, the spins <b>cancel out</b>: no net spin, no magnetic field.</p>
+        <div class="tablewrap"><table class="compare" style="min-width:320px">
+          <caption>MR active nuclei (lecture table)</caption>
+          <thead><tr><th scope="col">Element</th><th scope="col">Mass number</th></tr></thead>
+          <tbody>
+            <tr class="on"><td><b>Hydrogen</b></td><td><b>1</b></td></tr><tr><td>Carbon</td><td>13</td></tr><tr><td>Nitrogen</td><td>15</td></tr><tr><td>Oxygen</td><td>17</td></tr>
+            <tr><td>Fluorine</td><td>19</td></tr><tr><td>Sodium</td><td>23</td></tr><tr><td>Phosphorus</td><td>31</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+      <aside class="board">
+        <h4><svg class="spark"><use href="#spark"/></svg>Hydrogen nucleus</h4>
+        <ul>
+          <li><b>Most commonly used</b> MR active nucleus</li>
+          <li><b>A single proton and no neutron</b></li>
+          <li><b>Abundant</b> in the body: <b>fat and water</b></li>
+          <li>Gives a <b>large magnetic moment</b></li>
+          <li>Odd Z + odd A → spins don't cancel → nucleus spins</li>
+          <li>Even Z + even A → spins cancel → no net spin</li>
+        </ul>
+      </aside>
+    </div>
+    <div class="check"><div class="quiz" data-topic="nuc" data-n="3"></div></div>
+  </article>
+
+  <article class="topic" id="nmv">
+    <div class="topic-head"><span class="kicker">2.3</span><h3>Magnetic moment, net magnetization and the coordinate system</h3></div>
+    <div class="split">
+      <div class="stack">
+        <div class="grid2">
+          <div class="card"><h4>Magnetic moment</h4><ul><li>A <b>vector</b>: has <b>size and direction</b>, drawn as an arrow</li><li><b>Vector direction</b> = direction of the magnetic moment</li><li><b>Vector length</b> = size of the magnetic moment</li><li><b>Magnetic dipole</b>: a field with its own north and south pole</li></ul></div>
+          <div class="card"><h4>Net magnetization (M)</h4><ul><li>The <b>sum of the individual magnetic moments</b></li><li>No external MF: moments point every way, <b>M = 0</b></li><li>In an external MF: they line up, <b>M = 1</b></li></ul></div>
+        </div>
+        <div class="card purple">
+          <h4><a class="term" href="#g-nmv">Net magnetization vector (NMV)</a></h4>
+          <ul><li>The <b>net magnetism of the patient</b>, used to get a signal</li><li>Made by the <b>excess hydrogen nuclei aligned with B0</b></li><li><b>Longitudinal</b> (Mz): parallel to B0, <b>cannot be measured</b></li><li><b>Transverse</b> (Mxy): after a 90° RF pulse, perpendicular to B0, <b>can be measured</b></li></ul>
+        </div>
+      </div>
+      <div class="card">
+        <h4>The coordinate system</h4>
+        <svg viewBox="0 0 300 260" role="img" aria-label="Coordinate system: the z-axis runs vertically along B0 and the patient's long axis, carrying longitudinal magnetization Mz. The x-y plane is horizontal, transverse to the patient, where the receiver coil sits and transverse magnetization Mxy is measured.">
+          <ellipse cx="150" cy="170" rx="120" ry="36" fill="var(--lav-soft)" stroke="var(--lav)" stroke-width="2"/>
+          <path d="M150 230V30" stroke="var(--ink)" stroke-width="2"/><path d="M150 22l-6 12h12z" fill="var(--ink)"/>
+          <path d="M150 170V70" stroke="var(--purple)" stroke-width="7" stroke-linecap="round"/><path d="M150 58l-10 16h20z" fill="var(--purple)"/>
+          <path d="M150 170l92 18" stroke="var(--beam)" stroke-width="7" stroke-linecap="round"/><path d="M256 191l-18 4 4-16z" fill="var(--beam)"/>
+          <rect x="248" y="120" width="40" height="26" rx="8" fill="var(--mint)"/><text x="268" y="137" text-anchor="middle" font-size="9" font-weight="700" fill="#231F2B">coil</text>
+          <g font-size="11" fill="var(--ink)"><text x="160" y="34">z · B0</text><text x="160" y="96" fill="var(--purple-ink)" font-weight="700">Mz</text><text x="214" y="214" fill="var(--beam-ink)" font-weight="700">Mxy</text><text x="22" y="230">x-y (transverse)</text></g>
+        </svg>
+        <p class="hint"><b>Z-axis</b>: the axis of B0, along the patient's long axis (Mz). <b>XY-axes</b>: across the patient, where the <b>receiver coil</b> sits (Mxy).</p>
+      </div>
+    </div>
+    <div class="check"><div class="quiz" data-topic="nmv" data-n="3"></div></div>
+  </article>
+
+  <article class="topic" id="signal">
+    <div class="topic-head"><span class="kicker">2.4</span><h3>MRI signal production</h3></div>
+    <p class="lead">Four stages: the patient is put in <b>B0</b>, an <b>RF pulse</b> is applied, the RF is <b>turned off</b>, and the patient <b>emits the signal</b>. Step through them and watch the protons and the NMV.</p>
+    <div class="lab">
+      <div class="lab-title"><span class="lab-tag">Lab</span><h4>The spin lab</h4></div>
+      <div class="lab-grid">
+        <figure class="film"><canvas id="spinCv" width="320" height="320" aria-label="Animated protons and the net magnetization vector on the z-axis and x-y plane"></canvas><figcaption id="spinCap">Purple = individual protons · orange = NMV · green trace = signal in the coil</figcaption></figure>
+        <div class="stack">
+          <div class="seg" role="group" aria-label="Stage" id="spinSeg">
+            <button data-s="0" aria-pressed="true">1 · No B0</button>
+            <button data-s="1" aria-pressed="false">2 · In B0</button>
+            <button data-s="2" aria-pressed="false">3 · RF on</button>
+            <button data-s="3" aria-pressed="false">4 · RF off</button>
+          </div>
+          <label class="ctl" for="b0">Main field B0 <output id="b0Out"></output></label>
+          <input type="range" id="b0" min="0.1" max="3" step="0.1" value="1">
+          <p class="ctl-title">RF pulse frequency</p>
+          <div class="seg" role="group" aria-label="RF frequency" id="rfSeg">
+            <button data-f="10" aria-pressed="false">10 MHz</button>
+            <button data-f="20" aria-pressed="false">20 MHz</button>
+            <button data-f="larmor" aria-pressed="true">Larmor</button>
+          </div>
+          <div class="readout" id="spinRead"></div>
+          <p class="say" id="spinSay" aria-live="polite"></p>
+        </div>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="card">
+        <div class="h"><h4>During exposure to B0</h4><span class="go">2</span></div>
+        <ul>
+          <li><b>Alignment</b> (polarization): moments line up with B0. <b>Spin up</b> = parallel, <b>low energy</b>. <b>Spin down</b> = antiparallel, <b>high energy</b>. A few more go spin up, so the patient becomes a magnet: <b>Mz = 1, Mxy = 0</b> (equilibrium)</li>
+          <li><b><a class="term" href="#g-precession">Precession</a></b>: the wobble of spinning protons around B0, tracing a cone</li>
+          <li>B0 = the main magnetic field, measured in <b><a class="term" href="#g-tesla">tesla (T)</a></b></li>
+        </ul>
+      </div>
+      <div class="card feat">
+        <div class="h"><h4><a class="term" href="#g-larmor" style="color:inherit">Larmor frequency</a></h4><span class="go">ω</span></div>
+        <p>The precession frequency. It depends on the strength of B0.</p>
+        <p class="calc" style="margin:0;color:var(--ink)"><b>ω₀ = γ × B0</b><br>γ (hydrogen) = <b>42.6 MHz/T</b> (gyromagnetic ratio)<br>1.0 T → <b>42.6 MHz</b> · 1.5 T → <b>63.9 MHz</b> · 3.0 T → <b>127.8 MHz</b></p>
+        <p>Hydrogen imaging at 1 T: the RF coil is tuned to about <b>42 MHz</b>.</p>
+      </div>
+      <div class="card">
+        <div class="h"><h4>During the RF pulse</h4><span class="go">3</span></div>
+        <ul>
+          <li>The RF pulse disturbs the protons <b>only if RF frequency = Larmor frequency</b>. It has a "whip-like" action</li>
+          <li><b><a class="term" href="#g-resonance">Resonance</a></b>: RF energy absorption, only at the Larmor frequency</li>
+          <li><b><a class="term" href="#g-phase">Phase coherence</a></b>: protons precess <b>in phase</b> in the xy plane, where the most signal is made</li>
+          <li><b>Phase</b> = the position of a moment on its circular path</li>
+          <li><b>NMV flipped 90°</b>: Mz decreases, Mxy increases, more high-energy spin-down nuclei. <b>Mz = 0, Mxy = 1</b>: maximum signal (excited state)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <div class="h"><h4>After the RF pulse</h4><span class="go">4</span></div>
+        <ul>
+          <li><b>Relaxation</b>: protons return to equilibrium (<b>T1</b>) and phase coherence fades (<b>T2</b>)</li>
+          <li>The <b>FID</b> signal is emitted: <b>Mz = 1, Mxy = 0</b> again (relaxed state)</li>
+        </ul>
+      </div>
+    </div>
+    <div class="tablewrap"><table class="compare" style="min-width:620px">
+      <caption>Signal production at a glance</caption>
+      <thead><tr><th scope="col">Stage</th><th scope="col">What the protons do</th><th scope="col">Mz</th><th scope="col">Mxy</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">Before B0</th><td>Random, spins cancel, M = 0</td><td>0</td><td>0</td></tr>
+        <tr><th scope="row">In B0</th><td>Aligned (polarization, M = 1), precess out of step · equilibrium, can't be measured</td><td>1</td><td>0</td></tr>
+        <tr><th scope="row">RF on</th><td>Resonance, precess in phase, NMV flipped 90° · excited, can be measured</td><td>0</td><td>1</td></tr>
+        <tr><th scope="row">RF off</th><td>Relaxation: T1 recovery, T2 dephasing · FID emitted</td><td>→ 1</td><td>→ 0</td></tr>
+      </tbody>
+    </table></div>
+    <div class="check"><div class="quiz" data-topic="sig" data-n="4"></div></div>
+  </article>
+
+  <article class="topic" id="relax">
+    <div class="topic-head"><span class="kicker">2.5</span><h3>Relaxation, T1, T2 and the FID</h3></div>
+    <p class="lead"><a class="term" href="#g-relax">Relaxation</a> is the return of excited nuclei to their normal state by <b>releasing energy</b> (as heat). The <b>relaxation time</b> is how long that takes. Relaxation makes the signal weaker (low <a class="term" href="#g-snr">SNR</a>, high CNR), and <b>T1 and T2 are the most important factors for tissue contrast</b>.</p>
+    <div class="grid2">
+      <div class="card">
+        <div class="h"><h4>T1: longitudinal, spin-lattice</h4><span class="go">z</span></div>
+        <svg id="t1Plot" viewBox="0 0 320 180" role="img" aria-label="T1 recovery curve: longitudinal magnetization grows back from 0 and reaches 63 percent at time T1"></svg>
+        <ul><li>Time for <b>63% of Mz to recover</b></li><li>Happens on the <b>z-axis</b>: nuclei flip back into line with B0</li><li>Energy goes to the surroundings, the <b>lattice</b></li><li>Depends on <b>surroundings, tissue composition, structure</b></li></ul>
+      </div>
+      <div class="card">
+        <div class="h"><h4>T2: transverse, spin-spin</h4><span class="go">xy</span></div>
+        <svg id="t2Plot" viewBox="0 0 320 180" role="img" aria-label="T2 decay curve: transverse magnetization falls from 100 percent to 37 percent at time T2"></svg>
+        <ul><li>Time for <b>Mxy to decay by 63%</b> (to 37%)</li><li>Happens in the <b>xy plane</b>: nuclei go <b>out of phase</b></li><li>Energy passes between spins: <b>spin-spin</b></li><li>Depends on <b>external and internal MF inhomogeneity</b></li></ul>
+      </div>
+    </div>
+    <div class="split">
+      <div class="tablewrap"><table class="compare" style="min-width:420px">
+        <caption>Approximate T1 and T2 values (lecture table)</caption>
+        <thead><tr><th scope="col">Tissue</th><th scope="col">T1 (ms)</th><th scope="col">T2 (ms)</th></tr></thead>
+        <tbody>
+          <tr><td>Adipose tissue (fat)</td><td>240–250</td><td>60–80</td></tr>
+          <tr><td>Whole blood, deoxygenated</td><td>1350</td><td>50</td></tr>
+          <tr><td>Whole blood, oxygenated</td><td>1350</td><td>200</td></tr>
+          <tr><td>CSF</td><td>4200–4500</td><td>2100–2300</td></tr>
+          <tr><td>Gray matter</td><td>920</td><td>100</td></tr>
+          <tr><td>White matter</td><td>780</td><td>90</td></tr>
+          <tr><td>Liver</td><td>490</td><td>40</td></tr>
+          <tr><td>Kidneys</td><td>650</td><td>60–75</td></tr>
+          <tr><td>Muscles</td><td>860–900</td><td>50</td></tr>
+        </tbody>
+      </table></div>
+      <aside class="board">
+        <h4><svg class="spark"><use href="#spark"/></svg>Board points</h4>
+        <ul>
+          <li>T1 is normally <b>longer than T2</b>, about <b>2–10 times</b></li>
+          <li>T1 range: <b>300–2000 ms</b></li>
+          <li>T2 range: <b>30–150 ms</b></li>
+          <li><b><a class="term" href="#g-fid">FID (free induction decay)</a></b>: the primary MRI signal. Loss of signal from relaxation shortly after the RF pulse is removed: the induced signal in the coil starts to fall (the <b>T2* curve</b>)</li>
+          <li>Fat: shortest T1. CSF: longest T1 and T2</li>
+        </ul>
+      </aside>
+    </div>
+    <div class="tip"><b>Prof's tip</b><p>Remember the two numbers: <b>T1 = 63% recovery</b>, <b>T2 = 63% decay (37% left)</b>. And the two nicknames: <b>T1 = spin-lattice</b>, <b>T2 = spin-spin</b>.</p></div>
+    <div class="check"><div class="quiz" data-topic="relax" data-n="4"></div></div>
+  </article>
+</section>
+
+<!-- ================= CHAPTER III · INSTRUMENTATION ================= -->
+<section class="chapter" id="ch3" data-ch="ch3">
+  <svg class="deco" style="right:7%;top:48px;width:28px;height:28px" aria-hidden="true"><use href="#spark"/></svg>
+  <header class="ch-head">
+    <div class="ch-icon t-cyan"><svg><use href="#i-coil"/></svg></div>
+    <div><span class="ch-num">Chapter III</span><h2>Instrumentation</h2></div>
+    <p class="ch-desc">The gantry, the three kinds of magnet, the cryostat, and the three secondary coils (RF, gradient and shim) from the patient outward.</p>
+  </header>
+  <ul class="toc">
+    <li><a href="#gantry-mri">Gantry &amp; magnet</a></li><li><a href="#magnets">Three magnet types</a></li><li><a href="#assembly">Coil assemblies</a></li><li><a href="#rfcoils">RF coils</a></li><li><a href="#gradshim">Gradient &amp; shim coils</a></li>
+  </ul>
+
+  <article class="topic" id="gantry-mri">
+    <div class="topic-head"><span class="kicker">3.1</span><h3>Gantry and the MRI magnet</h3></div>
+    <div class="split">
+      <div class="grid2">
+        <div class="card"><h4>Gantry</h4><ul><li>Contains the <b>main magnet</b> and several <b>electromagnetic coils</b></li><li><b>No moving parts</b> except the table</li><li>A big, intimidating machine with a <b>thumping sound</b></li></ul></div>
+        <div class="card purple"><h4>MRI magnet</h4><ul><li>The most visible part, <b>the heart of the system</b></li><li>Gives a powerful, <b>sustained, homogeneous</b> static field (B0)</li><li>Two ways to make B0: <b>permanent</b> magnet or <b>electromagnet</b></li></ul></div>
+        <div class="card tone cyan"><b>Clinical: 0.1–3.0 T</b><span class="hint">Earth's field: 0.00005 T</span></div>
+        <div class="card tone yellow"><b>Fringe MF</b><span class="hint">The part of B0 that extends outside the magnet and its housing</span></div>
+      </div>
+      <div class="card">
+        <h4>Inside the bore, patient outward</h4>
+        <svg viewBox="0 0 300 300" role="img" aria-label="Cross-section of the bore. From the patient outward: RF coil, gradient coils, shim coils, then the primary superconducting coils inside the cryostat.">
+          <circle cx="150" cy="150" r="140" fill="var(--lav)"/>
+          <circle cx="150" cy="150" r="112" fill="var(--yellow)"/>
+          <circle cx="150" cy="150" r="92" fill="var(--cyan)"/>
+          <circle cx="150" cy="150" r="74" fill="var(--mint)"/>
+          <circle cx="150" cy="150" r="58" fill="var(--sheet)"/>
+          <ellipse cx="150" cy="160" rx="38" ry="24" fill="var(--pink)"/>
+          <g font-size="10" font-weight="700" fill="#231F2B" text-anchor="middle"><text x="150" y="24">primary coils · cryostat</text><text x="150" y="52">shim coils</text><text x="150" y="70">gradient coils</text><text x="150" y="88">RF coil</text></g>
+          <text x="150" y="164" text-anchor="middle" font-size="10" fill="#231F2B">patient</text>
+        </svg>
+      </div>
+    </div>
+    <div class="check"><div class="quiz" data-topic="mag" data-n="2"></div></div>
+  </article>
+
+  <article class="topic" id="magnets">
+    <div class="topic-head"><span class="kicker">3.2</span><h3>Three types of MRI magnet</h3></div>
+    <div class="tablewrap"><table class="compare" style="min-width:700px">
+      <thead><tr><th scope="col"></th><th scope="col">Superconductive</th><th scope="col">Resistive</th><th scope="col">Permanent</th></tr></thead>
+      <tbody>
+        <tr><th scope="row">How</th><td>Electromagnet + <b>superconductivity</b>; primary coil kept at a <b>cryogenic</b> state</td><td>Electromagnet: <b>4–6 separate coils (30–50 A)</b> to produce B0, extend its length and make it uniform</td><td><b>Open MRI</b>: two assemblies of bricklike magnets on a massive <b>iron yoke</b></td></tr>
+        <tr><th scope="row">Strength</th><td>Up to 3.0 T clinically</td><td><b>0.3 T maximum</b></td><td><b>0.1–0.3 T</b> · 0.3 T practical for whole body · 1.2 T very heavy</td></tr>
+        <tr><th scope="row">Notes</th><td><b>Most common (95%)</b>. Superconductivity: conducting electricity <b>without resistance</b></td><td>Needs constant power</td><td>Ferrite (earliest), alnico, rare earth. <b>No shim coil</b>: shimmed by adjusting the <b>pole faces</b></td></tr>
+      </tbody>
+    </table></div>
+    <div class="grid2">
+      <div class="card">
+        <div class="h"><h4>Dewar (cryostat)</h4><span class="go">❄</span></div>
+        <ul><li>A large <b>insulating container</b> holding the cryogen and the superconducting coils</li><li><b><a class="term" href="#g-cryogen">Cryogens</a></b>: liquefied gases near absolute zero (<b>−273 °C</b>)</li><li><b>Liquid helium −269 °C</b> · <b>liquid nitrogen −196 °C</b></li></ul>
+      </div>
+      <div class="card">
+        <div class="h"><h4>Iron yoke (permanent magnet)</h4><span class="go">⊓</span></div>
+        <ul><li><b>Confines the fringe field</b></li><li><b>Increases B0</b> in the imaging aperture</li><li>Gives a <b>return path</b> for the magnetic field</li></ul>
+      </div>
+    </div>
+    <div class="check"><div class="quiz" data-topic="mag" data-n="3"></div></div>
+  </article>
+
+  <article class="topic" id="assembly">
+    <div class="topic-head"><span class="kicker">3.3</span><h3>Primary and secondary electromagnetic assemblies</h3></div>
+    <div class="grid2">
+      <div class="card purple"><h4>Primary assembly</h4><ul><li>The <b>primary magnetic coils</b></li><li>Not visible: in plastic housing, <b>deep in the cryostat</b></li></ul></div>
+      <div class="card"><h4>Secondary assembly</h4><ul><li>The <b>secondary magnetic coils</b>, covered by thick plastic</li><li>Three sets: <b>RF coil</b>, <b>gradient coils</b>, <b>shim coils</b></li></ul></div>
+    </div>
+    <div class="check"><div class="quiz" data-topic="coil" data-n="2"></div></div>
+  </article>
+
+  <article class="topic" id="rfcoils">
+    <div class="topic-head"><span class="kicker">3.4</span><h3>RF coils</h3></div>
+    <div class="split">
+      <div class="stack">
+        <p class="lead">The <b>RF coil</b>, a.k.a. the <b>integrated body coil</b>, is a separate, removable assembly kept at <b>room temperature</b> (not cryogenic) and sits <b>nearest the patient</b>. It sends the RF pulse at the hydrogen resonance frequency, making a field <b>perpendicular (90°) to B0</b>. Local coils are shaped for the body part: brain and neck, neck and spine, shoulder, chest-abdomen-pelvis.</p>
+        <div class="grid2">
+          <div class="card"><div class="h"><h4>Volume coil</h4></div><ul><li><b>Transceiver</b>: transmits RF and receives the signal</li><li>Mostly <b>quadrature</b> coils (two pairs)</li><li>Leg, knee, foot, head</li><li>Images <b>large areas</b>, <b>lower SNR</b></li></ul></div>
+          <div class="card"><div class="h"><h4>Surface coil</h4></div><ul><li>Used to <b>improve SNR</b>, shaped to fit one area</li><li>Receives signal only up to the coil's edge: <b>superficial</b></li><li>The <b>body coil transmits</b> the RF</li><li>Deep structures: volume, phased array or a <b>local coil</b> (e.g. <b>endorectal</b>)</li></ul></div>
+          <div class="card"><div class="h"><h4>Linear phased array</h4></div><ul><li>Multiple coils and receivers</li><li>Signals combined into one image: <b>better SNR and coverage</b></li><li>Used for the <b>spine</b></li></ul></div>
+          <div class="card feat"><div class="h"><h4>Volume phased array</h4></div><ul><li>Coils around the volume, each filling <b>its own <a class="term" href="#g-kspace">K-space</a> line</b>: 4 coils = <b>4 lines at a time</b></li><li><b>Parallel imaging</b>: 2–32 channels, extra hardware and software</li><li>Produces <b>aliasing</b>, removed by software</li><li><b>Shorter scan time, higher resolution</b></li></ul></div>
+        </div>
+      </div>
+      <aside class="board">
+        <h4><svg class="spark"><use href="#spark"/></svg>Board points</h4>
+        <ul>
+          <li>RF coil = <b>integrated body coil</b>, room temperature, nearest the patient</li>
+          <li>RF field is <b>90° to B0</b></li>
+          <li>Volume coil: transmit + receive, large area, <b>low SNR</b></li>
+          <li>Surface coil: receive only, <b>high SNR</b>, superficial</li>
+          <li>Phased array: more SNR + coverage · parallel imaging: faster</li>
+        </ul>
+      </aside>
+    </div>
+    <div class="check"><div class="quiz" data-topic="coil" data-n="3"></div></div>
+  </article>
+
+  <article class="topic" id="gradshim">
+    <div class="topic-head"><span class="kicker">3.5</span><h3>Gradient and shim coils</h3></div>
+    <div class="grid2">
+      <div class="card">
+        <div class="h"><h4>Gradient coils</h4><span class="go">x y z</span></div>
+        <svg viewBox="0 0 300 120" role="img" aria-label="A gradient makes the field slightly weaker at one end and stronger at the other, so each position precesses at its own frequency">
+          <defs><linearGradient id="grG" x1="0" x2="1"><stop offset="0" stop-color="#7ADCF3"/><stop offset="1" stop-color="#FF8DC1"/></linearGradient></defs>
+          <rect x="20" y="30" width="260" height="34" rx="17" fill="url(#grG)"/>
+          <g font-size="11" fill="var(--ink)"><text x="20" y="22">weaker B0 · lower frequency</text><text x="280" y="22" text-anchor="end">stronger</text></g>
+          <g stroke="var(--ink)" stroke-width="2" fill="none"><path d="M40 86q6-10 12 0t12 0"/><path d="M140 86q4-10 8 0t8 0 8 0"/><path d="M240 86q3-10 6 0t6 0 6 0 6 0"/></g>
+          <text x="150" y="112" text-anchor="middle" font-size="10" fill="var(--ink-2)">position is coded by frequency → slice selection + localization</text>
+        </svg>
+        <ul><li>Large conductors that make a <b>pulsed gradient MF</b>, <b>altering B0</b></li><li>Switched on and off very fast: the <b>Lorentz force</b> on the conductors causes the <b>thumping sound</b></li><li>Used for <b>slice selection and signal localization</b> (x, y, z axes)</li><li>Closest to the patient aperture, room temperature</li></ul>
+      </div>
+      <div class="card">
+        <div class="h"><h4>Shim coils</h4><span class="go">≈</span></div>
+        <svg viewBox="0 0 300 120" role="img" aria-label="Before shimming the field sags between 0.8 and 1.2 tesla. After shimming it is a flat 1.0 tesla.">
+          <path d="M20 60q40-34 70 0t70 10 70-18 50 4" stroke="var(--marker)" stroke-width="3" fill="none"/>
+          <path d="M20 60h260" stroke="var(--purple)" stroke-width="3"/>
+          <g font-size="10" fill="var(--ink)"><text x="22" y="22">1.2 T</text><text x="22" y="104">0.8 T</text><text x="282" y="56" text-anchor="end" fill="var(--purple-ink)" font-weight="700">1.0 T after shim</text></g>
+        </svg>
+        <ul><li>Make the MF <b>more homogeneous</b>: <b>shimming</b></li><li>Between the <b>gradient coils and the primary assembly</b></li><li>Common in systems of <b>3 T or higher</b></li><li>Early systems: room temperature. Advanced: <b>in the cryostat</b></li><li><b>Sags</b> (inhomogeneities) come from unevenly spaced loops. Imaging needs <b>10 ppm</b> homogeneity</li></ul>
+      </div>
+    </div>
+    <div class="check"><div class="quiz" data-topic="grad" data-n="3"></div></div>
+  </article>
+</section>
+
+<!-- ================= CHAPTER IV · PARAMETERS ================= -->
+<section class="chapter" id="ch4" data-ch="ch4">
+  <svg class="deco o" style="right:6%;top:50px;width:30px;height:30px" aria-hidden="true"><use href="#spark"/></svg>
+  <header class="ch-head">
+    <div class="ch-icon t-orange"><svg><use href="#i-dial"/></svg></div>
+    <div><span class="ch-num">Chapter IV</span><h2>Parameters</h2></div>
+    <p class="ch-desc">What the tissue decides (PD, T1, T2, flow, ADC) and what the technologist decides (TR, TE, TI, flip angle, b value), and how they combine into T1, T2 and PD weighted images.</p>
+  </header>
+  <ul class="toc">
+    <li><a href="#intrinsic">Intrinsic parameters</a></li><li><a href="#weighting">Weighted images</a></li><li><a href="#t2star">T2* and ADC</a></li><li><a href="#extrinsic">Extrinsic parameters</a></li>
+  </ul>
+
+  <article class="topic" id="intrinsic">
+    <div class="topic-head"><span class="kicker">4.1</span><h3>Intrinsic parameters</h3></div>
+    <p class="lead"><b>Intrinsic parameters cannot be controlled by the RT</b>: proton density (PD), T1, T2, flow and the apparent diffusion coefficient (ADC). <b>T1, T2 and PD</b> are the principal MRI tissue parameters.</p>
+    <div class="tablewrap"><table class="compare" style="min-width:620px">
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Value</th><th scope="col">What happens</th><th scope="col">Appearance</th></tr></thead>
+      <tbody>
+        <tr><th scope="row" rowspan="2">Proton density</th><td>High PD</td><td>More protons, large Mz</td><td><b>Bright</b></td></tr>
+        <tr><td>Low PD</td><td>Fewer protons, small Mz</td><td><b>Dark</b></td></tr>
+        <tr><th scope="row" rowspan="2">T1</th><td>Long T1</td><td>Slow recovery, small Mz</td><td><b>Dark</b></td></tr>
+        <tr><td>Short T1</td><td>Fast recovery, large Mz</td><td><b>Bright</b></td></tr>
+        <tr><th scope="row" rowspan="2">T2</th><td>Long T2</td><td>Slow decay, large Mxy</td><td><b>Bright</b></td></tr>
+        <tr><td>Short T2</td><td>Fast decay, small Mxy</td><td><b>Dark</b></td></tr>
+        <tr><th scope="row" rowspan="2">Flow</th><td>Stationary</td><td></td><td><b>Bright</b></td></tr>
+        <tr><td>Moving</td><td></td><td><b>Dark</b></td></tr>
+      </tbody>
+    </table></div>
+    <div class="tip"><b>Prof's tip</b><p>Fat has a <b>short T1</b> (about 260 ms, fast recovery, strong signal) so it is <b>bright on T1</b>. Water has a long T1 (about 3500 ms) so it is <b>dark on T1</b>, but its long T2 makes it <b>bright on T2</b>.</p></div>
+    <div class="check"><div class="quiz" data-topic="intr" data-n="3"></div></div>
+  </article>
+
+  <article class="topic" id="weighting">
+    <div class="topic-head"><span class="kicker">4.2</span><h3>Weighted images: TR and TE</h3></div>
+    <p class="lead"><b><a class="term" href="#g-tr">TR</a></b> (repetition time) is the time between one RF excitation and the next. <b><a class="term" href="#g-te">TE</a></b> (echo time) is the time from the excitation to the echo being read. <span class="beyond">definitions beyond the slides</span> TR controls <b>T1 contrast</b>, TE controls <b>T2 contrast</b>.</p>
+    <div class="lab">
+      <div class="lab-title"><span class="lab-tag">Lab</span><h4>Weight the brain yourself</h4></div>
+      <div class="lab-grid">
+        <figure class="film"><canvas id="wtCv" width="320" height="320" aria-label="Simulated brain slice with scalp fat, gray matter, white matter and CSF, shaded by the chosen TR and TE"></canvas><figcaption id="wtCap"></figcaption></figure>
+        <div class="stack">
+          <div class="presets" role="group" aria-label="Weighting presets" id="wtPresets">
+            <button data-tr="500" data-te="15">T1WI · TR 500 / TE 15</button>
+            <button data-tr="4000" data-te="100">T2WI · TR 4000 / TE 100</button>
+            <button data-tr="4000" data-te="15">PDWI · TR 4000 / TE 15</button>
+          </div>
+          <label class="ctl" for="tr">Repetition time TR <output id="trOut"></output></label>
+          <input type="range" id="tr" min="100" max="5000" step="50" value="500">
+          <label class="ctl" for="te">Echo time TE <output id="teOut"></output></label>
+          <input type="range" id="te" min="5" max="200" step="1" value="15">
+          <div class="meters" id="wtMeters"></div>
+          <p class="say" id="wtSay" aria-live="polite"></p>
+        </div>
+      </div>
+      <div class="grid2">
+        <div class="card"><h4>T1 recovery and your TR</h4><svg id="wtT1" viewBox="0 0 320 180" role="img" aria-label="T1 recovery curves for fat, white matter, gray matter and CSF, with a line at the chosen TR"></svg></div>
+        <div class="card"><h4>T2 decay and your TE</h4><svg id="wtT2" viewBox="0 0 320 180" role="img" aria-label="T2 decay curves for fat, white matter, gray matter and CSF, with a line at the chosen TE"></svg></div>
+      </div>
+      <p class="hint">Simulated with the spin-echo signal PD × (1 − e<sup>−TR/T1</sup>) × e<sup>−TE/T2</sup>, the lecture's T1 and T2 values and assumed proton densities. <span class="beyond">beyond the slides</span></p>
+    </div>
+    <div class="split">
+      <div class="tablewrap"><table class="compare" style="min-width:460px">
+        <thead><tr><th scope="col">Image</th><th scope="col">TR</th><th scope="col">TE</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">T1WI</th><td><b>Short</b> (more T1 contrast)</td><td><b>Short</b> (less T2 contrast)</td></tr>
+          <tr><th scope="row">T2WI</th><td><b>Long</b> (less T1 contrast)</td><td><b>Long</b> (more T2 contrast)</td></tr>
+          <tr><th scope="row">PDWI</th><td><b>Long</b> (less T1 contrast)</td><td><b>Short</b> (less T2 contrast)</td></tr>
+          <tr><th scope="row">Very weak</th><td>Short</td><td>Long</td></tr>
+        </tbody>
+      </table></div>
+      <aside class="board">
+        <h4><svg class="spark"><use href="#spark"/></svg>SNR vs CNR</h4>
+        <ul>
+          <li><b>Short TR</b>: low SNR, high CNR (high T1 contrast)</li>
+          <li><b>Long TR</b>: high SNR, low CNR</li>
+          <li><b>Short TE</b>: high SNR, low CNR</li>
+          <li><b>Long TE</b>: low SNR, high CNR (high T2 contrast)</li>
+          <li>Short TR + long TE = <b>very weak signal</b></li>
+        </ul>
+      </aside>
+    </div>
+    <div class="check"><div class="quiz" data-topic="wt" data-n="4"></div></div>
+  </article>
+
+  <article class="topic" id="t2star">
+    <div class="topic-head"><span class="kicker">4.3</span><h3>T2* and the apparent diffusion coefficient</h3></div>
+    <div class="grid2">
+      <div class="card purple">
+        <div class="h"><h4>T2 star (T2*)</h4><span class="go">*</span></div>
+        <ul><li>Mxy decays <b>faster</b> after a 90° pulse than pure T2 predicts</li><li>Mainly from <b>inhomogeneity of the external MF</b>: spins precess out of phase sooner</li><li><b>Much shorter than T2 (T2* &lt; T2)</b></li><li>The FID follows the T2* curve</li></ul>
+      </div>
+      <div class="card">
+        <div class="h"><h4>ADC and DWI</h4><span class="go">b</span></div>
+        <ul><li><b>DWI</b> is used to diagnose <b>stroke</b> (areas of decreased diffusion)</li><li><b>DWI (b = 1000)</b>: restricted diffusion = <b>bright</b>, high diffusion (flowing CSF) = <b>dark</b></li><li><b>ADC map</b>: restricted diffusion = <b>dark</b>, high diffusion = <b>bright</b></li></ul>
+      </div>
+    </div>
+    <div class="tablewrap"><table class="compare" style="min-width:420px">
+      <thead><tr><th scope="col">Structure</th><th scope="col">ADC</th><th scope="col">Relative signal at b = 1000</th></tr></thead>
+      <tbody><tr><td>CSF</td><td>2.94</td><td>0.05</td></tr><tr><td>Gray matter</td><td>0.76</td><td>0.47</td></tr><tr><td>White matter</td><td>0.45</td><td>0.63</td></tr></tbody>
+    </table></div>
+    <div class="tip"><b>Prof's tip</b><p>A fresh stroke is <b>bright on DWI and dark on the ADC map</b>. High ADC (water moves freely) means dark on DWI.</p></div>
+    <div class="check"><div class="quiz" data-topic="intr" data-n="3"></div></div>
+  </article>
+
+  <article class="topic" id="extrinsic">
+    <div class="topic-head"><span class="kicker">4.4</span><h3>Extrinsic parameters: TI, flip angle and b value</h3></div>
+    <p class="lead"><b>Extrinsic parameters can be controlled by the RT</b>: repetition time (TR), echo time (TE), inversion time (TI), flip angle and b value.</p>
+    <div class="lab">
+      <div class="lab-title"><span class="lab-tag">Lab</span><h4>Inversion time: null the fat or the CSF</h4></div>
+      <p class="lead"><b><a class="term" href="#g-ti">TI</a></b> is the time between the <b>180° inversion pulse and the 90° pulse</b>. After the 180° pulse, Mz starts upside down and recovers. Whatever crosses zero at the moment of the 90° pulse gives <b>no signal</b>.</p>
+      <div class="lab-grid">
+        <figure class="film"><canvas id="irCv" width="320" height="320" aria-label="Simulated brain slice with the chosen inversion time"></canvas><figcaption id="irCap"></figcaption></figure>
+        <div class="stack">
+          <div class="presets" role="group" aria-label="Inversion presets" id="irPresets">
+            <button data-ti="170">STIR · TI 170</button>
+            <button data-ti="2000">FLAIR · TI 2000</button>
+          </div>
+          <label class="ctl" for="ti">Inversion time TI <output id="tiOut"></output></label>
+          <input type="range" id="ti" min="20" max="3000" step="10" value="170">
+          <svg id="irPlot" viewBox="0 0 320 180" class="sheetfig" role="img" aria-label="Longitudinal magnetization of each tissue recovering from minus one after the inversion pulse, with a line at the chosen TI"></svg>
+          <p class="say" id="irSay" aria-live="polite"></p>
+        </div>
+      </div>
+    </div>
+    <div class="grid3">
+      <div class="card">
+        <div class="h"><h4>Inversion time (TI)</h4></div>
+        <ul><li>Main weighting control in <b>inversion recovery</b></li><li>Suppresses <b>CSF or fat</b></li><li><b>Short TI 100–180 ms: STIR</b> (dark fat)</li><li><b>Long TI 1700–2200 ms: FLAIR</b> (dark water)</li></ul>
+      </div>
+      <div class="card">
+        <div class="h"><h4>Flip angle (FA)</h4></div>
+        <ul><li>a.k.a. <b><a class="term" href="#g-fa">tip angle</a></b>: how far the NMV is moved by the RF pulse</li><li><b>90° and 180°</b> are the most common</li><li><b>&lt; 90° = alpha (α) pulse</b>, for fast imaging (<b>10–30°</b>)</li><li>90° abolishes Mz: no useful signal if the next pulse comes after a very short TR. <b>Large FA → T1WI</b></li><li>Small FA leaves part of Mz, so short TR still works. <b>Small FA → T2WI and PDWI</b></li></ul>
+      </div>
+      <div class="card">
+        <div class="h"><h4>b value</h4></div>
+        <ul><li>The <b>strength and duration of the diffusion gradients</b></li><li>Controls contrast in a <b>DWI</b> sequence</li><li>In <b>s/mm²</b>, range <b>500–1000</b></li><li><b>High b</b> exaggerates differences in ADC, and senses slower-moving water and smaller diffusion distances</li></ul>
+      </div>
+    </div>
+    <div class="tablewrap"><table class="compare" style="min-width:560px">
+      <caption>Summary of extrinsic parameters</caption>
+      <thead><tr><th scope="col">Parameter</th><th scope="col">Setting</th><th scope="col">Effect</th></tr></thead>
+      <tbody>
+        <tr><th scope="row" rowspan="2">TR</th><td>Long</td><td>Less T1 contrast</td></tr><tr><td>Short</td><td>More T1 contrast</td></tr>
+        <tr><th scope="row" rowspan="2">TE</th><td>Long</td><td>More T2 contrast</td></tr><tr><td>Short</td><td>Less T2 contrast</td></tr>
+        <tr><th scope="row" rowspan="2">TI</th><td>Long</td><td>Dark water (FLAIR)</td></tr><tr><td>Short</td><td>Dark fat (STIR)</td></tr>
+        <tr><th scope="row" rowspan="2">Flip angle</th><td>Large</td><td>Dark (after 90°)</td></tr><tr><td>Small</td><td>Bright (after 90°)</td></tr>
+        <tr><th scope="row" rowspan="2">b value</th><td>High</td><td>More difference in ADC</td></tr><tr><td>Low</td><td>Less difference in ADC</td></tr>
+        <tr><th scope="row" rowspan="2">PWI</th><td>Delayed time to peak</td><td>Low perfusion</td></tr><tr><td>Normal time to peak</td><td>Normal perfusion</td></tr>
+      </tbody>
+    </table></div>
+    <div class="check"><div class="quiz" data-topic="ext" data-n="4"></div></div>
+  </article>
+</section>
+
+<!-- ================= CHAPTER V · PULSE SEQUENCES ================= -->
+<section class="chapter" id="ch5" data-ch="ch5">
+  <svg class="deco" style="right:6%;top:44px;width:26px;height:26px" aria-hidden="true"><use href="#spark"/></svg>
+  <header class="ch-head">
+    <div class="ch-icon t-mint"><svg><use href="#i-wave"/></svg></div>
+    <div><span class="ch-num">Chapter V</span><h2>Pulse sequences</h2></div>
+    <p class="ch-desc">Why the spins need rephasing, the two ways to do it, and the RF pulse pattern of each basic sequence.</p>
+  </header>
+
+  <article class="topic" id="sequences">
+    <div class="topic-head"><span class="kicker">5.1</span><h3>MRI pulse sequences</h3></div>
+    <div class="split">
+      <div class="stack">
+        <p class="lead big">A <a class="term" href="#g-seq">pulse sequence</a> is <b>a series of RF pulses, gradient applications and intervening time periods</b>.</p>
+        <p class="lead">Right after the RF pulse is removed, the spins <b>dephase</b> and the signal falls to the <b>null point</b>. Without a sequence to <b>rephase</b> them and compensate for field inhomogeneities, there is not enough signal to make an image. The sequence also <b>controls image weighting</b>.</p>
+        <div class="grid2">
+          <div class="card"><h4>Main purpose</h4><ul><li>Rephase spins</li><li>Remove inhomogeneity effects</li><li>Produce a signal, the <b>echo</b></li><li>Let TR and TE be changed for different contrast</li></ul></div>
+          <div class="card purple"><h4>Spins are rephased by</h4><ul><li>A <b>180° RF pulse</b> (spin echo family)</li><li>A <b>gradient</b> (gradient echo)</li></ul></div>
+        </div>
+      </div>
+      <aside class="board">
+        <h4><svg class="spark"><use href="#spark"/></svg>Board points</h4>
+        <ul>
+          <li><b>Spin echo</b>: 90°–180°</li>
+          <li><b>Fast spin echo</b>: 90° then many 180°s</li>
+          <li><b>Saturation recovery / partial saturation</b>: 90°–90°–90°</li>
+          <li><b>Inversion recovery</b>: 180°–90°</li>
+          <li><b>Gradient echo</b>: α–α–α (less than 90°)</li>
+        </ul>
+      </aside>
+    </div>
+    <div class="lab">
+      <div class="lab-title"><span class="lab-tag">Visual</span><h4>The RF pulse pattern of each sequence</h4></div>
+      <svg id="seqArt" viewBox="0 0 640 330" class="sheetfig" role="img" aria-label="Pulse trains: spin echo 90 180 repeating; fast spin echo 90 then four 180s; saturation recovery all 90s; inversion recovery 180 90 repeating; gradient echo small alpha pulses"></svg>
+      <p class="hint">Tall bar = 180°, medium = 90°, short = α. The orange 180° pulses are the rephasing pulses. Gradient echo has none: it rephases with a gradient.</p>
+    </div>
+    <div class="check"><div class="quiz" data-topic="seq" data-n="4"></div></div>
+  </article>
+</section>
+
+<!-- ================= CHAPTER VI · SAFETY ================= -->
+<section class="chapter" id="ch6" data-ch="ch6">
+  <svg class="deco o" style="right:5%;top:56px;width:30px;height:30px" aria-hidden="true"><use href="#spark"/></svg>
+  <header class="ch-head">
+    <div class="ch-icon t-yellow"><svg><use href="#i-shield"/></svg></div>
+    <div><span class="ch-num">Chapter VI</span><h2>Safety and shielding</h2></div>
+    <p class="ch-desc">The three fields that act on the body, the gauss lines, contraindications, SAR, the four zones of the suite, quenching and the ways the magnet is shielded.</p>
+  </header>
+  <ul class="toc">
+    <li><a href="#fields">Three energy fields</a></li><li><a href="#projectiles">Projectiles &amp; gauss lines</a></li><li><a href="#implants">Implants, torque &amp; heating</a></li><li><a href="#zones">Zoning</a></li><li><a href="#quench">Quenching</a></li><li><a href="#shielding">Shielding</a></li>
+  </ul>
+
+  <article class="topic" id="fields">
+    <div class="topic-head"><span class="kicker">6.1</span><h3>The three MRI energy fields</h3></div>
+    <p class="lead">Safety matters because the field interacts with <b>metal objects and tissues</b>. Patients and staff nearby are exposed to the <b>static</b>, <b>gradient</b> and <b>RF</b> magnetic fields.</p>
+    <div class="grid3">
+      <div class="card tone lav"><div class="h"><h4>Static field (B0)</h4></div><span class="hint">Interaction: <b>polarization</b></span>
+        <ul><li>The best-recognized field, in <b>tesla</b></li><li>Clinical maximum <b>8 T</b>; <b>3 T and below</b> is common</li><li><b>Always on, 24/7</b>. The fringe field can reach several meters past the room</li><li>Bioeffects: <b>taller ECG T-wave</b>, heating, fatigue, headaches, hypotension, irritability</li></ul></div>
+      <div class="card tone cyan"><div class="h"><h4>Gradient field (Bx, By, Bz)</h4></div><span class="hint">Interaction: <b>induced current</b></span>
+        <ul><li><b>Time-varying</b>, only during scanning</li><li>Exposure limited to patients and relatives in the room</li><li>Induces current in nerves, vessels and muscles (the body is a conductor)</li><li>Bioeffects: <b>light flashes in the eyes</b>, changes in cell biochemistry and fracture union, mild skin sensations, involuntary muscle contractions, <b>cardiac arrhythmias</b></li></ul></div>
+      <div class="card tone pink"><div class="h"><h4>RF field (B1)</h4></div><span class="hint">Interaction: <b>thermal heating</b></span>
+        <ul><li>Responsible for significant <b>burn hazards</b></li><li>Bioeffect: tissue heating, which <b>raises blood pressure and heart rate</b></li></ul></div>
+    </div>
+    <div class="card">
+      <h4>Safety concerns associated with MRI</h4>
+      <ol class="steps"><li>Potential hazard of <b>projectiles</b></li><li><b>Electrical interference</b> with implants</li><li><b>Torquing</b> of certain metallic objects</li><li><b>Local heating</b> of tissues and metallic objects</li><li>Electrical interference with normal function of <b>nerve cells and muscle fibers</b></li></ol>
+    </div>
+    <div class="check"><div class="quiz" data-topic="safe" data-n="3"></div></div>
+  </article>
+
+  <article class="topic" id="projectiles">
+    <div class="topic-head"><span class="kicker">6.2</span><h3>Projectiles and the gauss lines</h3></div>
+    <div class="split">
+      <div class="stack">
+        <p class="lead">The projectile hazard comes from the <b><a class="term" href="#g-fringe">fringe field</a></b>: a static field around the magnet, measured in <b><a class="term" href="#g-gauss">gauss (G)</a></b>, falling off as <b>1/d³</b> from the bore. At 1.5 T, a metal object <b>3 ft away is pulled at 10 × gravity</b>; at <b>7 ft, about 1 × gravity</b>.</p>
+        <div class="lab">
+          <div class="lab-title"><span class="lab-tag">Lab</span><h4>How close can it go?</h4></div>
+          <div class="seg" role="group" aria-label="Object" id="gaussSeg">
+            <button data-g="50" aria-pressed="true">Oxygen tank</button>
+            <button data-g="10" aria-pressed="false">Credit card</button>
+            <button data-g="5" aria-pressed="false">Patient with pacemaker</button>
+          </div>
+          <svg id="gaussArt" viewBox="0 0 420 260" class="sheetfig" role="img" aria-label="Top view of the magnet room with the 50, 10 and 5 gauss lines drawn around the magnet, and the selected object's limit highlighted"></svg>
+          <p class="say" id="gaussSay" aria-live="polite"></p>
+        </div>
+      </div>
+      <aside class="board">
+        <h4><svg class="spark"><use href="#spark"/></svg>Board points</h4>
+        <ul>
+          <li><b>50 G line</b>: no oxygen tanks, IV pumps, wheelchairs, carts, patient monitors</li>
+          <li><b>10 G line</b>: no magnetic tapes, credit cards, analog watches</li>
+          <li><b>5 G line</b>: no pacemakers</li>
+          <li>Room needs <b>warning posters</b> and <b>door security</b></li>
+          <li><b>Code blue</b>: take the patient <b>out of the scan room first</b></li>
+        </ul>
+      </aside>
+    </div>
+    <div class="check"><div class="quiz" data-topic="safe" data-n="3"></div></div>
+  </article>
+
+  <article class="topic" id="implants">
+    <div class="topic-head"><span class="kicker">6.3</span><h3>Implants, torquing, heating and nerve stimulation</h3></div>
+    <div class="grid2">
+      <div class="card">
+        <div class="h"><h4>Electrical interference with implants</h4></div>
+        <ul><li>Can damage electronic parts and <b>affect cardiac pacemakers</b></li><li>RF pulses <b>induce voltage in pacemaker leads</b></li></ul>
+        <h4>Contraindications to MRI</h4>
+        <ul><li>Pacemakers</li><li>Ferromagnetic aneurysm clips</li><li><b>Metallic fragment in the eye</b></li><li>Cochlear implants</li><li>Neurostimulators</li><li>Implanted drug infusion pumps</li><li>Bone growth stimulators</li><li>Ferromagnetic GI surgical clips</li></ul>
+      </div>
+      <div class="stack">
+        <div class="card"><div class="h"><h4>Torquing</h4></div><ul><li>A <b>twisting movement</b> of ferromagnetic objects (surgical clips) in the static field</li><li>Can damage tissue around the surgical site</li><li>Screen patients carefully: a <b>conventional radiograph before MRI</b></li></ul></div>
+        <div class="card"><div class="h"><h4>Nerve and muscle stimulation</h4></div><ul><li>From <b>currents induced</b> by rapidly changing gradient fields</li><li>Gradient strength: 10–40 mT/m</li><li><b>3 T/s</b> induces about <b>3 µA/cm²</b>, enough for involuntary contraction and cardiac fibrillation in experimental animals</li></ul></div>
+      </div>
+    </div>
+    <div class="card feat">
+      <div class="h"><h4>Local heating and SAR</h4><span class="go">W/kg</span></div>
+      <ul>
+        <li>RF pulses heat tissue. Heating depends on <b>number of slices, FA, NSA, TR and tissue type</b></li>
+        <li>One reason <b>pregnant women are not routinely scanned</b> (fetal temperature). 20 W/kg caused abnormalities in the offspring of pregnant animals</li>
+        <li><b><a class="term" href="#g-sar" style="color:inherit">SAR (specific absorption rate)</a></b> measures tissue heating, in <b>watts per kilogram</b>. 1–4 W/kg is high risk for <b>elderly and dehydrated</b> patients</li>
+        <li>Whole-body limits: <b>1.5 T → 3.5 W/kg</b>, <b>3.0 T → 3.0 W/kg</b>, each over 15 minutes</li>
+        <li>The RT must <b>enter the patient's weight</b>. SAR is highest with sequences that use <b>many 180° pulses</b></li>
+      </ul>
+    </div>
+    <div class="check"><div class="quiz" data-topic="safe" data-n="3"></div></div>
+  </article>
+
+  <article class="topic" id="zones">
+    <div class="topic-head"><span class="kicker">6.4</span><h3>Zoning of an MRI suite</h3></div>
+    <p class="lead">Zones control access to the scanner with barriers that protect patients and staff. Recommended by the <b>American College of Radiology (ACR) White Paper on MR safety</b>. Each entrance is clearly marked.</p>
+    <div class="split">
+      <svg viewBox="0 0 400 300" class="sheetfig" role="img" aria-label="Four nested zones. Zone I public areas outside. Zone II reception and screening. Zone III control and computer rooms inside the 5 gauss line. Zone IV the magnet room at the center.">
+        <rect x="10" y="10" width="380" height="280" rx="26" fill="var(--mint)"/>
+        <rect x="50" y="46" width="300" height="230" rx="22" fill="var(--yellow)"/>
+        <rect x="90" y="82" width="220" height="180" rx="18" fill="var(--orange)"/>
+        <rect x="130" y="118" width="140" height="130" rx="14" fill="var(--pink)"/>
+        <circle cx="200" cy="190" r="30" fill="var(--sheet)" stroke="#231F2B" stroke-width="3"/><circle cx="200" cy="190" r="12" fill="#231F2B"/>
+        <g font-size="12" font-weight="700" fill="#231F2B"><text x="24" y="34">ZONE I · waiting area, corridor</text><text x="64" y="70">ZONE II · reception, screening</text><text x="104" y="106">ZONE III · control room</text><text x="144" y="142">ZONE IV · magnet</text></g>
+      </svg>
+      <div class="stack">
+        <div class="card tone mint"><b>Zone I</b><span class="hint">Everything outside the MR environment, freely open to the public. No risk. Waiting area, corridor.</span></div>
+        <div class="card tone yellow"><b>Zone II</b><span class="hint">Patients and visitors supervised by MR staff. The bridge between Zone I and III/IV. Screening and history taking. Reception, preparation area.</span></div>
+        <div class="card tone orange"><b>Zone III</b><span class="hint">Restricted to MR personnel, marked as hazardous. Exclusion zone set by the <b>5 gauss line</b>; no pacemakers or defibrillators. <b>Pass-key lock</b>. Computer room, control room.</span></div>
+        <div class="card tone pink"><b>Zone IV</b><span class="hint">The scanner room: <b>most potential risk</b>. Warning light and signs ("The magnet is ALWAYS on"). Entrance always visible to MR staff.</span></div>
+      </div>
+    </div>
+    <div class="check"><div class="quiz" data-topic="zone" data-n="3"></div></div>
+  </article>
+
+  <article class="topic" id="quench">
+    <div class="topic-head"><span class="kicker">6.5</span><h3>MRI quenching</h3></div>
+    <div class="split">
+      <div class="stack">
+        <ol class="flow arrows">
+          <li class="tone cyan"><small>Normal</small><b>Coils near absolute zero</b><span>superconducting, field on</span></li>
+          <li class="tone yellow"><small>Quench</small><b>Sudden loss of the cold</b><span>coils become resistive</span></li>
+          <li class="tone pink"><small>Result</small><b>Field is lost</b><span>helium boils off very fast</span></li>
+        </ol>
+        <div class="card"><ul><li>The <b>helium-venting system</b> carries the helium outside the building</li><li>Started by pressing the <b>quench button</b>, or happens by accident</li><li>Press it only if someone in the scan room is <b>pinned to the magnet by a projectile that can't be removed by hand</b></li></ul></div>
+      </div>
+      <aside class="board">
+        <h4><svg class="spark"><use href="#spark"/></svg>Board points</h4>
+        <ul><li><a class="term" href="#g-quench">Quench</a> = sudden loss of <b>superconductivity</b></li><li>Coils become <b>resistive</b>, field is lost</li><li><b>Helium</b> escapes rapidly</li><li>Quench button: <b>person pinned by a projectile</b></li></ul>
+      </aside>
+    </div>
+    <div class="check"><div class="quiz" data-topic="zone" data-n="2"></div></div>
+  </article>
+
+  <article class="topic" id="shielding">
+    <div class="topic-head"><span class="kicker">6.6</span><h3>MRI shielding</h3></div>
+    <div class="grid2">
+      <div class="card"><div class="h"><h4>Passive shielding</h4><span class="go">Fe</span></div><ul><li><b>Iron</b> in the room walls or around the magnet reduces the fringe field</li><li><b>Rarely used</b>: heavy (<b>250 tons at 7 T</b>) and expensive</li></ul></div>
+      <div class="card feat"><div class="h"><h4>Active shielding</h4><span class="go">✦</span></div><ul><li><b>The standard today</b></li><li>A <b>second set of superconducting coils</b> outside the primary ones, current flowing the <b>opposite way</b></li><li>Cuts the fringe field (0.5 mT kept within 4 m), improves homogeneity</li><li>Magnets shortened from 2 m to 1.5 m. Expensive</li></ul></div>
+      <div class="card"><div class="h"><h4>Active shielded gradient</h4></div><ul><li><b>Self-shielding</b> gradient coils just outside the imaging gradients</li><li>Make eddy currents that <b>cancel the eddy currents</b> of the main gradient coils</li></ul></div>
+      <div class="card purple"><div class="h"><h4>Faraday cage</h4></div><ul><li>Metal sheets or mesh around the room</li><li>Keeps <b>outside RF</b> out of the scan room (stops zipper artifacts)</li></ul></div>
+    </div>
+    <div class="check"><div class="quiz" data-topic="shield" data-n="3"></div></div>
+  </article>
+</section>
+
+<!-- ================= CHAPTER VII · ARTIFACTS ================= -->
+<section class="chapter" id="ch7" data-ch="ch7">
+  <svg class="deco" style="right:6%;top:44px;width:26px;height:26px" aria-hidden="true"><use href="#spark"/></svg>
+  <header class="ch-head">
+    <div class="ch-icon t-pink"><svg><use href="#i-lens"/></svg></div>
+    <div><span class="ch-num">Chapter VII</span><h2>Artifacts</h2></div>
+    <p class="ch-desc">Ten artifacts in three groups. Each card gives the cause, the look and the remedy, which is exactly how the board asks.</p>
+  </header>
+
+  <article class="topic" id="mri-artifacts">
+    <div class="topic-head"><span class="kicker">7.1</span><h3>Image artifacts</h3></div>
+    <p class="lead big">An MRI artifact is a <b>structure in the image that does not correspond to the spatial distribution of tissue</b> in the imaging plane.</p>
+    <div class="tree">
+      <div class="tone pink"><h4>Patient and tissue</h4><ul><li>Motion</li><li>Chemical shift</li><li>Chemical misregistration</li><li>Magnetic susceptibility</li></ul></div>
+      <div class="tone cyan"><h4>System</h4><ul><li>Distortion</li><li>Zipper</li><li>Magic angle</li></ul></div>
+      <div class="tone lav"><h4>User and application</h4><ul><li>Truncation</li><li>Wrap-around</li><li>Cross-talk</li></ul></div>
+    </div>
+    <div class="lab">
+      <div class="lab-title"><span class="lab-tag">Gallery</span><h4>Every artifact: cause, look, remedy</h4></div>
+      <div class="chips" id="artChips" role="group" aria-label="Artifacts"></div>
+      <div class="lab-grid">
+        <figure class="film"><canvas id="artCv" width="320" height="320" aria-label="Simulated image showing the selected artifact"></canvas><figcaption id="artCap"></figcaption></figure>
+        <div class="stack" id="artInfo" aria-live="polite"></div>
+      </div>
+    </div>
+    <div class="tip"><b>Prof's tip</b><p>Three remedies come up again and again: <b>spin echo / TSE</b> (the 180° RF rephasing pulse fixes susceptibility and misregistration), <b>wider <a class="term" href="#g-bandwidth">bandwidth</a></b> (chemical shift, susceptibility), and <b>bigger FOV or more phase steps</b> (wrap-around, truncation).</p></div>
+    <div class="check"><div class="quiz" data-topic="art" data-n="5"></div></div>
+  </article>
+</section>
+
+<!-- ================= MOCK EXAM ================= -->
+<section class="chapter" id="exam">
+  <header class="ch-head">
+    <div class="ch-icon t-lav"><svg><use href="#i-exam"/></svg></div>
+    <div><span class="ch-num">Final stretch</span><h2>Mock board exam</h2></div>
+    <p class="ch-desc">Questions from every MRI chapter, shuffled each round. The ones you miss come back at the end of the round until you get them right. Your progress is saved in this browser.</p>
+  </header>
+  <div class="lab exam-cfg">
+    <p class="ctl-title">Chapters</p>
+    <div class="chips" id="examCh">
+      <button data-c="all" class="sel">All</button><button data-c="ch1">I · Overview</button><button data-c="ch2">II · Physical principles</button><button data-c="ch3">III · Instrumentation</button>
+      <button data-c="ch4">IV · Parameters</button><button data-c="ch5">V · Pulse sequences</button><button data-c="ch6">VI · Safety</button><button data-c="ch7">VII · Artifacts</button>
+    </div>
+    <p class="ctl-title">How many</p>
+    <div class="seg" role="group" aria-label="Number of questions" id="examN"><button data-n="10" aria-pressed="false">10</button><button data-n="25" aria-pressed="true">25</button><button data-n="50" aria-pressed="false">50</button><button data-n="0" aria-pressed="false">All</button></div>
+    <div class="stepper"><button class="primary" id="examStart">Start a round</button><button id="examReset">Reset saved progress</button><span class="count" id="examInfo"></span></div>
+  </div>
+  <div class="check exam" style="max-width:none"><div class="quiz" id="examBox"></div></div>
+</section>
+
+<!-- ================= SUMMARY ================= -->
+<section class="chapter" id="summary">
+  <header class="ch-head">
+    <div class="ch-icon t-cream"><svg><use href="#i-notes"/></svg></div>
+    <div><span class="ch-num">Night before</span><h2>Last-minute summary</h2></div>
+    <p class="ch-desc noprint">Only the facts the board asks about. Read it the night before, or print it (it prints with the glossary).</p>
+  </header>
+  <div class="stepper noprint"><button class="primary" onclick="print()">Print summary and words to know</button></div>
+  <div class="sumgrid">
+    <div><h4><small>I</small>Overview</h4><ul><li>Old name: <b>NMR</b> · MF + RF, no ionizing radiation</li><li>MF <b>0.1–3.0 T</b> · RF <b>10–300 MHz</b></li><li>Contrast: T1/PD 20–30%, <b>T2 40%</b>, x-ray 1%</li><li>Weak for bone and air · contraindicated: claustrophobia, metal</li></ul></div>
+    <div><h4><small>I</small>History</h4><ul><li>1946 Bloch (solids + water, "Father of MRI") &amp; Purcell (solids) · Nobel Physics <b>1952</b></li><li>Damadian: malignant ≠ normal · <b>1974 rat tumor</b> · 1976 body, 4 h</li><li>Lauterbur: <b>zeugmatography</b>, 1973 capillary tubes</li><li>Mansfield: <b>EPI</b> · Nobel Medicine <b>2003</b></li></ul></div>
+    <div><h4><small>II</small>Nuclei and vectors</h4><ul><li>Oersted: current → MF · Faraday: moving MF → current</li><li>Primary spin = spin · secondary = <b>precession</b></li><li>MR active: <b>odd Z, odd A</b> · H = 1 proton, 0 neutrons</li><li>Mz ∥ B0 (can't measure) · Mxy ⊥ B0 (can measure)</li><li>z = B0 axis · xy = receiver coil</li></ul></div>
+    <div><h4><small>II</small>Signal production</h4><ul><li>B0: alignment (spin up = low energy) + precession</li><li><b>ω = γB0</b>, γ<sub>H</sub> = <b>42.6 MHz/T</b> · 1.5 T = 63.9 MHz</li><li>RF at Larmor → resonance + phase coherence → NMV 90°</li><li>Excited: Mz 0, Mxy 1 · RF off → FID</li></ul></div>
+    <div><h4><small>II</small>Relaxation</h4><ul><li><b>T1</b>: spin-lattice, 63% recovery, z-axis, 300–2000 ms</li><li><b>T2</b>: spin-spin, 63% decay (37% left), xy, 30–150 ms</li><li>T1 is 2–10 × T2</li><li>Fat T1 240–250 · CSF T1 4200–4500, T2 2100–2300</li></ul></div>
+    <div><h4><small>III</small>Magnets</h4><ul><li><b>Superconductive</b>: 95%, cryogenic · He −269 °C, N −196 °C</li><li><b>Resistive</b>: 4–6 coils, 30–50 A, max 0.3 T</li><li><b>Permanent</b>: open, 0.1–0.3 T, iron yoke, no shim coil (pole faces)</li><li>Earth 0.00005 T</li></ul></div>
+    <div><h4><small>III</small>Coils</h4><ul><li>Patient outward: <b>RF → gradient → shim → primary</b></li><li>RF = integrated body coil, 90° to B0, room temp</li><li>Volume: transceiver, low SNR · surface: high SNR, superficial</li><li>Gradient: Lorentz force → thump · slice selection, localization</li><li>Shim: homogeneity <b>10 ppm</b>, ≥ 3 T</li></ul></div>
+    <div><h4><small>IV</small>Weighting</h4><ul><li><b>T1WI</b>: short TR, short TE · fat bright, CSF dark</li><li><b>T2WI</b>: long TR, long TE · CSF bright</li><li><b>PDWI</b>: long TR, short TE</li><li>Short TR + long TE = very weak</li><li>T2* &lt; T2 (B0 inhomogeneity)</li></ul></div>
+    <div><h4><small>IV</small>Extrinsic</h4><ul><li><b>STIR</b>: TI 100–180 ms, dark fat</li><li><b>FLAIR</b>: TI 1700–2200 ms, dark CSF</li><li>FA &lt; 90° = α, 10–30°, fast imaging · large FA T1WI</li><li>b value 500–1000 s/mm² · stroke bright on DWI, dark on ADC</li></ul></div>
+    <div><h4><small>V</small>Pulse sequences</h4><ul><li>RF pulses + gradients + time periods</li><li>Rephase with <b>180° RF</b> or <b>gradient</b></li><li>SE 90–180 · FSE 90–180–180… · SR 90–90 · IR 180–90 · GRE α–α</li></ul></div>
+    <div><h4><small>VI</small>Safety</h4><ul><li>B0 → polarization · gradient → induced current · RF → heating</li><li><b>50 G</b> O₂ tanks · <b>10 G</b> cards, watches · <b>5 G</b> pacemakers</li><li>Fringe ∝ 1/d³ · code blue: patient out first</li><li>SAR W/kg: 1.5 T <b>3.5</b>, 3 T <b>3.0</b> (15 min)</li></ul></div>
+    <div><h4><small>VI</small>Zones, quench, shields</h4><ul><li>Zone I public · II screening · III control, 5 G · IV magnet</li><li>Quench: loss of superconductivity, helium out · button = person pinned</li><li>Passive iron (rare) · <b>active</b> (standard) · self-shielded gradient · Faraday cage (RF)</li></ul></div>
+    <div><h4><small>VII</small>Artifacts</h4><ul><li><b>Patient:</b> motion (ghost/smear) · chemical shift (fat–water, kidneys) · misregistration (india ink, Dixon) · susceptibility (metal, air–bone, GRE/EPI)</li><li><b>System:</b> distortion (FOV edge) · zipper (RF, Faraday cage) · magic angle (<b>55°</b>, short TE)</li><li><b>User:</b> truncation (rings) · wrap-around (small FOV) · cross-talk (overlap)</li></ul></div>
+  </div>
+</section>
+
+<!-- ================= GLOSSARY ================= -->
+<section class="chapter" id="words">
+  <header class="ch-head">
+    <div class="ch-icon t-pink"><svg><use href="#i-notes"/></svg></div>
+    <div><span class="ch-num">Appendix</span><h2>Words to know</h2></div>
+    <p class="ch-desc">Every dotted word on the page links here. Plain-language definitions first, board wording in the chapters.</p>
+  </header>
+  <div class="gloss">
+    <div>
+      <h4>The basics</h4>
+      <dl>
+        <dt id="g-mri">MRI (magnetic resonance imaging)</dt><dd>A scan that uses a strong magnet and radio waves, not x-rays, to make pictures of the inside of the body. Especially good for soft tissue.</dd>
+        <dt id="g-tesla">Tesla (T)</dt><dd>The unit of magnetic field strength. Clinical scanners are 0.1 to 3 T. 1 T = 10,000 gauss.</dd>
+        <dt id="g-gauss">Gauss (G)</dt><dd>A smaller unit of magnetic field, used for the weak fringe field around the magnet (the 5 G line, for example).</dd>
+        <dt id="g-rf">RF (radiofrequency) pulse</dt><dd>A short burst of radio waves sent into the patient to tip the protons over.</dd>
+        <dt id="g-moment">Magnetic moment</dt><dd>The tiny magnet made by one spinning proton, drawn as an arrow showing its strength and direction.</dd>
+        <dt id="g-nmv">NMV (net magnetization vector)</dt><dd>All the protons' tiny magnets added together into one arrow: the patient's overall magnetism.</dd>
+      </dl>
+    </div>
+    <div>
+      <h4>Spins and signal</h4>
+      <dl>
+        <dt id="g-precession">Precession</dt><dd>The wobble of a spinning proton around the main field, like a spinning top that leans and circles.</dd>
+        <dt id="g-larmor">Larmor frequency</dt><dd>How fast the protons precess. It grows with the field: 42.6 MHz for every tesla.</dd>
+        <dt id="g-resonance">Resonance</dt><dd>Taking in energy only when it arrives at exactly the right frequency, like pushing a swing in time with it.</dd>
+        <dt id="g-phase">Phase coherence</dt><dd>All the protons pointing the same way at the same moment as they precess. That is when the signal is strongest.</dd>
+        <dt id="g-relax">Relaxation</dt><dd>Protons settling back to normal after the RF pulse, giving off the energy they absorbed.</dd>
+        <dt id="g-fid">FID (free induction decay)</dt><dd>The signal the coil picks up right after the RF pulse. It fades quickly as the protons fall out of step.</dd>
+      </dl>
+    </div>
+    <div>
+      <h4>Scan settings</h4>
+      <dl>
+        <dt id="g-tr">TR (repetition time)</dt><dd>The time from one RF pulse to the next. Controls T1 contrast.</dd>
+        <dt id="g-te">TE (echo time)</dt><dd>The time from the RF pulse to reading the signal. Controls T2 contrast.</dd>
+        <dt id="g-ti">TI (inversion time)</dt><dd>In inversion recovery, the wait between the 180° pulse and the 90° pulse. Chooses which tissue goes black.</dd>
+        <dt id="g-fa">Flip angle</dt><dd>How far the RF pulse tips the NMV over, in degrees.</dd>
+        <dt id="g-snr">SNR / CNR</dt><dd>Signal-to-noise ratio: how strong the signal is compared with graininess. Contrast-to-noise ratio: how well tissues stand apart.</dd>
+        <dt id="g-seq">Pulse sequence</dt><dd>The recipe of RF pulses, gradients and waiting times that makes one kind of image.</dd>
+      </dl>
+    </div>
+    <div>
+      <h4>Safety and hardware</h4>
+      <dl>
+        <dt id="g-fringe">Fringe field</dt><dd>The part of the magnet's field that leaks out around it. It is what pulls metal objects in.</dd>
+        <dt id="g-sar">SAR (specific absorption rate)</dt><dd>How much RF heat the body takes in, in watts per kilogram of body weight.</dd>
+        <dt id="g-quench">Quench</dt><dd>The magnet suddenly warming and losing its field, with the liquid helium boiling away.</dd>
+        <dt id="g-cryogen">Cryogen</dt><dd>A liquefied gas, like helium, that keeps the magnet coils extremely cold.</dd>
+        <dt id="g-kspace">K-space</dt><dd>The grid where the raw signal is stored line by line before it is turned into an image.</dd>
+        <dt id="g-bandwidth">Bandwidth</dt><dd>The range of frequencies the scanner listens to. Wider bandwidth means less fat–water shift and less susceptibility distortion.</dd>
+      </dl>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <svg class="deco" style="left:7%;top:44px;width:40px;height:40px" aria-hidden="true"><use href="#spark"/></svg>
+  <svg class="deco" style="right:8%;bottom:90px;width:28px;height:28px;animation-delay:-2s" aria-hidden="true"><use href="#spark"/></svg>
+  <p class="eyebrow">— NerdRadTech review —</p>
+  <h2>Helps you learn and hone MRI <mark>one spin</mark> at a time</h2>
+  <p>Made to help a future RRT pass the MRI part of the boards. Based on the Cluster 5 Magnetic Resonance Imaging lecture. The <a href="index.html">CT lesson</a> covers the rest of the cluster. Every image here is a simulation made for teaching, not patient data.</p>
+  <div class="foot-row"><span>Study aid · not affiliated with the lecturer</span><span>Light and dark themes · tap the moon to switch</span><span>RTLE 2026</span></div>
+</footer>
+</div>
+
+<div id="gpop" popover>
+  <p class="gpop-t"></p>
+  <p class="gpop-d"></p>
+  <div class="stepper"><a href="#words" class="gpop-all">All words</a><button popovertarget="gpop" popovertargetaction="hide">Close</button></div>
+</div>
+
+<script src="js/util.js"></script>
+<script src="js/mri.js"></script>
+<script src="js/mri-bank.js"></script>
+<script src="js/quiz.js"></script>
+</body>
+</html>

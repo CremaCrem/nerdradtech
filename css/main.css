@@ -75,6 +75,7 @@ svg text{font-family:var(--mono)}
 .pill:hover i{transform:rotate(45deg)}
 .pill.sm{padding:3px 3px 3px 14px;font-size:.85rem}.pill.sm i{width:26px;height:26px}
 .badge{display:inline-block;background:var(--purple);color:#fff;border-radius:999px;padding:3px 12px;font:500 .8rem var(--body)}
+a.badge{text-decoration:none}
 .badges{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
 button{font:600 .88rem var(--body);color:var(--ink);background:var(--sheet);border:1.5px solid var(--rule-2);border-radius:999px;padding:8px 15px;cursor:pointer;line-height:1.2;transition:background-color .15s,border-color .15s,color .15s,transform .15s}
 button:hover{border-color:var(--purple)}
