@@ -1,13 +1,14 @@
 /* Question bank, quick checks, mock exam and saved progress.
    Each question: [question, [correct, wrong, wrong, wrong], why, topic]. Options are shuffled when shown.
-   Progress (questions answered right at least once) is kept in this browser only. */
+   Progress (questions answered right at least once) is kept in this browser only.
+   Another page can bring its own bank by setting window.QUIZ = { CH, BANK } before this file loads. */
 (() => {
-  const CH = {
+  const CH = window.QUIZ ? window.QUIZ.CH : {
     ch1: ['def', 'adv', 'proc', 'win', 'store'], ch2: ['slice', 'pix', 'fov', 'atten', 'hu', 'ray'],
     ch3: ['gen', 'pitch', 'msct', 'slip', 'parts', 'coll', 'det'], ch4: ['recon', 'mpr', 'bp', 'conv', 'fbp', 'fourier', 'helical', 'iter'],
     ch5: ['disp'], ch6: ['iq', 'unc', 'art']
   };
-  const BANK = [
+  const BANK = window.QUIZ ? window.QUIZ.BANK : [
     /* ---------- I · definition ---------- */
     ['CT produces a 3D digital tomographic image from:', ['Diagnostic x-rays', 'Radio waves in a magnetic field', 'High-frequency sound waves', 'Gamma rays from an injected tracer'], 'Computed tomography uses diagnostic x-rays. Radio waves + magnet = MRI, sound = ultrasound, tracer = nuclear medicine.', 'def'],
     ['CT is usually performed in which plane, giving a high-quality direct image?', ['Transverse', 'Coronal', 'Sagittal', 'Oblique'], 'CT is usually performed transversely: a high-quality direct transverse image. Coronal needs special positioning and gantry tilt.', 'def'],
